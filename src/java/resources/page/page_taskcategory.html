@@ -1,0 +1,125 @@
+<div component_id="page_taskcategory" class="row apd-page" id="page_taskcategory">
+    <div  class="col-md-12">
+        <div class="row text-center module-heading">
+            <label qlang>taskcategory</label>
+        </div>
+    </div> 
+    <div  class="col-md-12 apd-page-btn"> 
+        <div class="col-md-4  text-left ">
+            <button component_id="serviceTmGetTaskCategoryList" id='serviceTmGetTaskCategoryList' qlang type="button" class="btn btn-md task-button apd-task-load apd-task-page-loader" 
+                    onclick="loadTable('tbl_taskcategory_list')">taskcategoryList
+            </button>
+            <button component_id="serviceTmInsertNewTaskCategory" id='btn_serviceTmInsertNewTaskCategory' type="button" class="btn btn-md task-button apd-task-create apd-task-form" 
+                    data-toggle="modal" data-target="#insertNewTaskCategory" qlang>insert
+            </button> 
+        </div>
+    </div>
+    <div class="col-md-12"><hr>
+    </div>
+    <div class="col-md-12 apd-submodule-button-list" id="apd-submodule-button-list-id">
+    </div>
+    <div  id= "taskcategorylist" class="col-md-12 apd-page-body"> 
+    </div>
+    <!-- Modal -->
+    <div component_id="serviceTmInsertNewTaskCategory" id="insertNewTaskCategory" apd-form-reload-button-id='serviceTmGetTaskCategoryList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>new</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewTaskCategory" class="apd-form" method="POST" action="srv/serviceTmInsertNewTaskCategory">
+                        <div class="form-group col-md-6">
+                            <label qlang>categoryCode</label>
+                            <input class="form-control apd-form-input" type="text" 
+                                   id="categoryCode" name="categoryCode" placeholder=" "  >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label qlang>categoryName</label>
+                            <input class="form-control apd-form-input" type="text" 
+                                   id="categoryName"
+                                   name="categoryName" placeholder=" "  >
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label qlang>description</label>
+                            <textarea class="form-control apd-form-textarea" id="description" 
+                                      name="description" placeholder=""></textarea>
+                        </div>
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div> 
+
+    <div component_id="serviceTmUpdateTaskCategory" id="updateTaskCategory" apd-form-reload-button-id='serviceTmGetTaskCategoryList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Update TaskCategory</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_updateTaskCategory" class="apd-form" method="POST" action="srv/serviceTmUpdateTaskCategory">
+                        <div class="form-group col-md-6 hidden"> 
+                            <label qlang>id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id" placeholder="TaskCategory Code"  >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label qlang>categoryCode</label>
+                            <input class="form-control apd-form-input" type="text" 
+                                   id="categoryCode" name="categoryCode" placeholder=" "  >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label qlang>categoryName</label>
+                            <input class="form-control apd-form-input" type="text" 
+                                   id="categoryName"
+                                   name="categoryName" placeholder=" "  >
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label qlang>description</label>
+                            <textarea class="form-control apd-form-textarea" id="description" 
+                                      name="description" placeholder=""></textarea>
+                        </div>
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="false" qlang>update</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+</div>
+<script>
+    $(function () {
+        $(".youtube").YouTubeModal({autoplay: 0, width: 640, height: 480});
+    });
+
+    $(function () {
+        $('.apd-form-date').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+    });
+
+</script>

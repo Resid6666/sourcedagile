@@ -1,0 +1,423 @@
+<div component_id="page_productpurchase" class="row apd-page" id="page_productpurchase">
+    <div  class="col-md-12">
+        <div class="row text-center module-heading">
+            <label qlang>productPurchase</label>
+        </div>
+    </div> 
+    <div  class="col-md-12 apd-page-btn"> 
+        <button   component_id="serviceGfGetProductPurchaseList"  id='serviceGfGetProductPurchaseList' type="button" 
+                  class="btn btn-md task-button apd-task-load apd-task-page-loader" 
+                  onclick="loadTable('tbl_productpurchase_list')" qlang>list
+        </button>
+        <button  component_id="serviceGfInsertNewProductPurchase"  id='btn_serviceGfInsertNewProductPurchase' type="button"
+                 class="btn btn-md task-button apd-task-create apd-task-form" 
+                 data-toggle="modal" data-target="#insertNewProductPurchase" qlang>new
+        </button>
+        <hr>
+    </div>
+
+    <div  id= "productpurchaselist" class="col-md-12 apd-page-body"> 
+
+    </div>
+
+    <!-- Modal -->
+    <div component_id="serviceGfInsertNewProductPurchase"  id="insertNewProductPurchase" apd-form-reload-button-id='serviceGfGetProductPurchaseList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>insert</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewAttribute" class="apd-form" method="POST" 
+                          action="srv/serviceGfInsertNewProductPurchase">
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>product</label>
+                            <select class="form-control apd-form-custom-man-select" 
+                                    id="fkProductId" name="fkProductId"
+                                    select_text="productName,productCode" select_value="id" 
+                                    filter_text="productName"
+                                    select_separator=","
+                                    onchange="fillCustomSelectCombo(this)"
+                                    srv_url="srv/serviceGfGetProductAllList">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>anbar</label>
+                            <select class="form-control apd-form-select" 
+                                    id="fkAnbarId" name="fkAnbarId"
+                                    select_text="anbarName" select_value="id" 
+                                    srv_url="srv/serviceGfGetAnbarList">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-12"></div>
+                        
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>purchaseDate</label>
+                            <div class='input-group date apd-form-date' id="purchaseDate"  >
+                                <input type="text" class="form-control">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>purchaseAmount</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="purchaseAmount" name="purchaseAmount" 
+                                    onchange="calcTotalPrice(this)">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>purchasePrice</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="purchasePrice" name="purchasePrice" 
+                                    onchange="calcTotalPrice(this)">
+                        </div>
+
+                         <div class="form-group col-md-12"></div>
+                         
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>purchaseDiscount</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    value="0" dont_clear
+                                    id="purchaseDiscount" name="purchaseDiscount"
+                                    onchange="calcTotalPrice(this)">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>purchaseTotalAmount</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="purchaseTotalAmount" name="purchaseTotalAmount" >
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>currency</label>
+                            <select class="form-control apd-form-select" select_text="itemValue" 
+                                    select_value="itemKey" id="currency" name="currency" 
+                                    srv_url="srv/serviceCrGetCurrencyOfCompany">
+                            </select> 
+                        </div>
+
+                        <div class="form-group col-md-12">
+
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost1</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost1" name="extraCost1">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost1Explain</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost1Explain" name="extraCost1Explain">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost2</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost2" name="extraCost2">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost2Explain</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost2Explain" name="extraCost2Explain">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost3</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost3" name="extraCost3">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost3Explain</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost3Explain" name="extraCost3Explain">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost4</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost4" name="extraCost4">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost4Explain</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost4Explain" name="extraCost4Explain">
+                        </div>
+
+
+                        <div class="form-group col-md-12">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+                        <!--
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>param2</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="param2" name="param2" >
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>param3</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="param3" name="param3" >
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>param4</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="param4" name="param4" >
+                        </div>-->
+
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div component_id="serviceGfUpdateProductPurchase"  id="updateProductPurchase" apd-form-reload-button-id='serviceGfGetProductPurchaseList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>update</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_updateProductPurchase" class="apd-form" method="POST" action="srv/serviceGfUpdateProductPurchase">
+                        <div class="form-group col-md-6 hidden"> 
+                            <label class="float">id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id"    >
+                        </div>
+                      
+                       <div class="form-group col-md-6">
+                            <label class="float" qlang>product</label>
+                            <select class="form-control apd-form-custom-man-select" 
+                                    id="fkProductId" name="fkProductId"
+                                    select_text="productName,productCode" select_value="id" 
+                                    filter_text="productName"
+                                    select_separator=","
+                                    onchange="fillCustomSelectCombo(this)"
+                                    srv_url="srv/serviceGfGetProductAllList">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>anbar</label>
+                            <select class="form-control apd-form-select" 
+                                    id="fkAnbarId" name="fkAnbarId"
+                                    select_text="anbarName" select_value="id" 
+                                    srv_url="srv/serviceGfGetAnbarList">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-12"></div>
+                        
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>purchaseDate</label>
+                            <div class='input-group date apd-form-date' id="purchaseDate"  >
+                                <input type="text" class="form-control">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>purchaseAmount</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="purchaseAmount" name="purchaseAmount" 
+                                    onchange="calcTotalPrice(this)">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>purchasePrice</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="purchasePrice" name="purchasePrice" 
+                                    onchange="calcTotalPrice(this)">
+                        </div>
+
+                         <div class="form-group col-md-12"></div>
+                         
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>purchaseDiscount</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    value="0" dont_clear
+                                    id="purchaseDiscount" name="purchaseDiscount"
+                                    onchange="calcTotalPrice(this)">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>purchaseTotalAmount</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="purchaseTotalAmount" name="purchaseTotalAmount" >
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>currency</label>
+                            <select class="form-control apd-form-select" select_text="itemValue" 
+                                    select_value="itemKey" id="currency" name="currency" 
+                                    srv_url="srv/serviceCrGetCurrencyOfCompany">
+                            </select> 
+                        </div>
+
+                        <div class="form-group col-md-12">
+
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost1</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost1" name="extraCost1">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost1Explain</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost1Explain" name="extraCost1Explain">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost2</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost2" name="extraCost2">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost2Explain</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost2Explain" name="extraCost2Explain">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost3</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost3" name="extraCost3">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost3Explain</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost3Explain" name="extraCost3Explain">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost4</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost4" name="extraCost4">
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>extraCost4Explain</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="extraCost4Explain" name="extraCost4Explain">
+                        </div>
+
+
+                        <div class="form-group col-md-12">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+                         
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="true" qlang>update</button>
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="assignSubmodule" apd-form-reload-button-id='serviceGfGetRelProductPurchaseAndSubmoduleList' 
+         class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>showSelectedSubmodules</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewRule" class="apd-form" method="POST" action="srv/serviceGfInsertNewRelProductPurchaseAndSubmodule">
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>paymentName</label>
+                            <select class="form-control apd-form-select" 
+                                    id="fkProductPurchaseId" name="fkProductPurchaseId"
+                                    select_text="paymentName" select_value="id" 
+                                    srv_url="srv/serviceGfGetProductPurchaseList">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>submodule</label>
+                            <select class="form-control apd-form-multiselect" 
+                                    multiple 
+                                    id="fkSubmoduleId" name="fkSubmoduleId"
+                                    select_text="submoduleName" select_value="id" 
+                                    dependence_id="fkProductPurchaseId"
+                                    srv_url="srv/serviceGfGetSubmoduleListByProductPurchase">
+                            </select>
+                        </div>
+
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="false" qlang>insert</button>
+                            <button type="button" class="btn btn-default" 
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.apd-form-date').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+    });
+
+    function calcTotalPrice(e) {
+        var el = $(e).closest('form');
+
+        var purchaseAmount = el.find("#purchaseAmount").val();
+        var purchasePrice = el.find("#purchasePrice").val();
+        var purchaseDiscount = el.find("#purchaseDiscount").val();
+
+        var purchaseTotalPayment = purchaseAmount * purchasePrice;
+        purchaseTotalPayment = purchaseTotalPayment - purchaseTotalPayment * purchaseDiscount / 100;
+        console.log('purchaseTotalPayment==' + purchaseTotalPayment);
+        el.find("#purchaseTotalAmount").val(purchaseTotalPayment);
+
+
+    }
+</script>

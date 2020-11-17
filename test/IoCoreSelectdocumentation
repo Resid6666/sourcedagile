@@ -1,0 +1,7 @@
+entity
+startLimit
+endLimit
+sortByAsc
+sortByField
+selectedField
+distinctField

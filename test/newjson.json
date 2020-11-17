@@ -1,0 +1,550 @@
+{
+    "expand": "renderedFields,names,schema,operations,editmeta,changelog,versionedRepresentations",
+    "id": "16268",
+    "self": "https://smart-solutions.atlassian.net/rest/api/2/issue/16268",
+    "key": "IP-159",
+    "fields": {
+        "statuscategorychangedate": "2020-03-03T19:26:31.096+0400",
+        "issuetype": {
+            "self": "https://smart-solutions.atlassian.net/rest/api/2/issuetype/10420",
+            "id": "10420",
+            "description": "Tasks track small, distinct pieces of work.",
+            "iconUrl": "https://smart-solutions.atlassian.net/secure/viewavatar?size=medium&avatarId=10318&avatarType=issuetype",
+            "name": "Task",
+            "subtask": false,
+            "avatarId": 10318,
+            "entityId": "a4b673ef-35c2-45ff-98db-5aacfaf3ee31"
+        },
+        "parent": {
+            "id": "16267",
+            "key": "IP-158",
+            "self": "https://smart-solutions.atlassian.net/rest/api/2/issue/16267",
+            "fields": {
+                "summary": "US (85): yoyoyo",
+                "status": {
+                    "self": "https://smart-solutions.atlassian.net/rest/api/2/status/10473",
+                    "description": "",
+                    "iconUrl": "https://smart-solutions.atlassian.net/",
+                    "name": "To Do",
+                    "id": "10473",
+                    "statusCategory": {
+                        "self": "https://smart-solutions.atlassian.net/rest/api/2/statuscategory/2",
+                        "id": 2,
+                        "key": "new",
+                        "colorName": "blue-gray",
+                        "name": "To Do"
+                    }
+                },
+                "priority": {
+                    "self": "https://smart-solutions.atlassian.net/rest/api/2/priority/4",
+                    "iconUrl": "https://smart-solutions.atlassian.net/images/icons/priorities/low.svg",
+                    "name": "Low",
+                    "id": "4"
+                },
+                "issuetype": {
+                    "self": "https://smart-solutions.atlassian.net/rest/api/2/issuetype/10421",
+                    "id": "10421",
+                    "description": "Epics track collections of related bugs, stories, and tasks.",
+                    "iconUrl": "https://smart-solutions.atlassian.net/secure/viewavatar?size=medium&avatarId=10307&avatarType=issuetype",
+                    "name": "Epic",
+                    "subtask": false,
+                    "avatarId": 10307,
+                    "entityId": "b5df871b-6b45-423f-aecc-6bdf85264099"
+                }
+            }
+        },
+        "timespent": 27240,
+        "project": {
+            "self": "https://smart-solutions.atlassian.net/rest/api/2/project/10353",
+            "id": "10353",
+            "key": "IP",
+            "name": "Integration Project",
+            "projectTypeKey": "software",
+            "simplified": true,
+            "avatarUrls": {
+                "48x48": "https://smart-solutions.atlassian.net/secure/projectavatar?pid=10353&avatarId=10704",
+                "24x24": "https://smart-solutions.atlassian.net/secure/projectavatar?size=small&s=small&pid=10353&avatarId=10704",
+                "16x16": "https://smart-solutions.atlassian.net/secure/projectavatar?size=xsmall&s=xsmall&pid=10353&avatarId=10704",
+                "32x32": "https://smart-solutions.atlassian.net/secure/projectavatar?size=medium&s=medium&pid=10353&avatarId=10704"
+            }
+        },
+        "fixVersions": [],
+        "aggregatetimespent": 27240,
+        "resolution": {
+            "self": "https://smart-solutions.atlassian.net/rest/api/2/resolution/10100",
+            "id": "10100",
+            "description": "",
+            "name": "Done"
+        },
+        "customfield_10104": "0|i00pm7:",
+        "resolutiondate": "2020-03-03T19:26:31.091+0400",
+        "workratio": -1,
+        "lastViewed": "2020-03-03T18:17:59.531+0400",
+        "watches": {
+            "self": "https://smart-solutions.atlassian.net/rest/api/2/issue/IP-159/watchers",
+            "watchCount": 1,
+            "isWatching": true
+        },
+        "created": "2020-03-03T18:17:41.800+0400",
+        "customfield_10100": null,
+        "priority": {
+            "self": "https://smart-solutions.atlassian.net/rest/api/2/priority/4",
+            "iconUrl": "https://smart-solutions.atlassian.net/images/icons/priorities/low.svg",
+            "name": "Low",
+            "id": "4"
+        },
+        "customfield_10101": "10473_*:*_1_*:*_4129312_*|*_10475_*:*_1_*:*_0",
+        "customfield_10102": null,
+        "customfield_10103": null,
+        "labels": [],
+        "customfield_10214": null,
+        "customfield_10215": null,
+        "aggregatetimeoriginalestimate": null,
+        "timeestimate": 0,
+        "customfield_10219": "2020-03-03T18:17:00.000+0400",
+        "versions": [],
+        "issuelinks": [
+            {
+                "id": "10955",
+                "self": "https://smart-solutions.atlassian.net/rest/api/2/issueLink/10955",
+                "type": {
+                    "id": "10003",
+                    "name": "Relates",
+                    "inward": "relates to",
+                    "outward": "relates to",
+                    "self": "https://smart-solutions.atlassian.net/rest/api/2/issueLinkType/10003"
+                },
+                "outwardIssue": {
+                    "id": "16272",
+                    "key": "IP-163",
+                    "self": "https://smart-solutions.atlassian.net/rest/api/2/issue/16272",
+                    "fields": {
+                        "summary": "BUG: Aytan Aliyeva (Back End Development)",
+                        "status": {
+                            "self": "https://smart-solutions.atlassian.net/rest/api/2/status/10473",
+                            "description": "",
+                            "iconUrl": "https://smart-solutions.atlassian.net/",
+                            "name": "To Do",
+                            "id": "10473",
+                            "statusCategory": {
+                                "self": "https://smart-solutions.atlassian.net/rest/api/2/statuscategory/2",
+                                "id": 2,
+                                "key": "new",
+                                "colorName": "blue-gray",
+                                "name": "To Do"
+                            }
+                        },
+                        "priority": {
+                            "self": "https://smart-solutions.atlassian.net/rest/api/2/priority/4",
+                            "iconUrl": "https://smart-solutions.atlassian.net/images/icons/priorities/low.svg",
+                            "name": "Low",
+                            "id": "4"
+                        },
+                        "issuetype": {
+                            "self": "https://smart-solutions.atlassian.net/rest/api/2/issuetype/10423",
+                            "id": "10423",
+                            "description": "Bugs track problems or errors.",
+                            "iconUrl": "https://smart-solutions.atlassian.net/secure/viewavatar?size=medium&avatarId=10303&avatarType=issuetype",
+                            "name": "Bug",
+                            "subtask": false,
+                            "avatarId": 10303,
+                            "entityId": "4d83a4d0-cabb-4f43-8119-5952a299313b"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "10956",
+                "self": "https://smart-solutions.atlassian.net/rest/api/2/issueLink/10956",
+                "type": {
+                    "id": "10003",
+                    "name": "Relates",
+                    "inward": "relates to",
+                    "outward": "relates to",
+                    "self": "https://smart-solutions.atlassian.net/rest/api/2/issueLinkType/10003"
+                },
+                "outwardIssue": {
+                    "id": "16273",
+                    "key": "IP-164",
+                    "self": "https://smart-solutions.atlassian.net/rest/api/2/issue/16273",
+                    "fields": {
+                        "summary": "BUG: Aytan Aliyeva (Back End Development)",
+                        "status": {
+                            "self": "https://smart-solutions.atlassian.net/rest/api/2/status/10473",
+                            "description": "",
+                            "iconUrl": "https://smart-solutions.atlassian.net/",
+                            "name": "To Do",
+                            "id": "10473",
+                            "statusCategory": {
+                                "self": "https://smart-solutions.atlassian.net/rest/api/2/statuscategory/2",
+                                "id": 2,
+                                "key": "new",
+                                "colorName": "blue-gray",
+                                "name": "To Do"
+                            }
+                        },
+                        "priority": {
+                            "self": "https://smart-solutions.atlassian.net/rest/api/2/priority/4",
+                            "iconUrl": "https://smart-solutions.atlassian.net/images/icons/priorities/low.svg",
+                            "name": "Low",
+                            "id": "4"
+                        },
+                        "issuetype": {
+                            "self": "https://smart-solutions.atlassian.net/rest/api/2/issuetype/10423",
+                            "id": "10423",
+                            "description": "Bugs track problems or errors.",
+                            "iconUrl": "https://smart-solutions.atlassian.net/secure/viewavatar?size=medium&avatarId=10303&avatarType=issuetype",
+                            "name": "Bug",
+                            "subtask": false,
+                            "avatarId": 10303,
+                            "entityId": "4d83a4d0-cabb-4f43-8119-5952a299313b"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "10957",
+                "self": "https://smart-solutions.atlassian.net/rest/api/2/issueLink/10957",
+                "type": {
+                    "id": "10003",
+                    "name": "Relates",
+                    "inward": "relates to",
+                    "outward": "relates to",
+                    "self": "https://smart-solutions.atlassian.net/rest/api/2/issueLinkType/10003"
+                },
+                "outwardIssue": {
+                    "id": "16274",
+                    "key": "IP-165",
+                    "self": "https://smart-solutions.atlassian.net/rest/api/2/issue/16274",
+                    "fields": {
+                        "summary": "BUG: Aytan Aliyeva (Back End Development)",
+                        "status": {
+                            "self": "https://smart-solutions.atlassian.net/rest/api/2/status/10473",
+                            "description": "",
+                            "iconUrl": "https://smart-solutions.atlassian.net/",
+                            "name": "To Do",
+                            "id": "10473",
+                            "statusCategory": {
+                                "self": "https://smart-solutions.atlassian.net/rest/api/2/statuscategory/2",
+                                "id": 2,
+                                "key": "new",
+                                "colorName": "blue-gray",
+                                "name": "To Do"
+                            }
+                        },
+                        "priority": {
+                            "self": "https://smart-solutions.atlassian.net/rest/api/2/priority/4",
+                            "iconUrl": "https://smart-solutions.atlassian.net/images/icons/priorities/low.svg",
+                            "name": "Low",
+                            "id": "4"
+                        },
+                        "issuetype": {
+                            "self": "https://smart-solutions.atlassian.net/rest/api/2/issuetype/10423",
+                            "id": "10423",
+                            "description": "Bugs track problems or errors.",
+                            "iconUrl": "https://smart-solutions.atlassian.net/secure/viewavatar?size=medium&avatarId=10303&avatarType=issuetype",
+                            "name": "Bug",
+                            "subtask": false,
+                            "avatarId": 10303,
+                            "entityId": "4d83a4d0-cabb-4f43-8119-5952a299313b"
+                        }
+                    }
+                }
+            },
+            {
+                "id": "10958",
+                "self": "https://smart-solutions.atlassian.net/rest/api/2/issueLink/10958",
+                "type": {
+                    "id": "10003",
+                    "name": "Relates",
+                    "inward": "relates to",
+                    "outward": "relates to",
+                    "self": "https://smart-solutions.atlassian.net/rest/api/2/issueLinkType/10003"
+                },
+                "outwardIssue": {
+                    "id": "16275",
+                    "key": "IP-166",
+                    "self": "https://smart-solutions.atlassian.net/rest/api/2/issue/16275",
+                    "fields": {
+                        "summary": "BUG: Aytan Aliyeva (Back End Development)",
+                        "status": {
+                            "self": "https://smart-solutions.atlassian.net/rest/api/2/status/10473",
+                            "description": "",
+                            "iconUrl": "https://smart-solutions.atlassian.net/",
+                            "name": "To Do",
+                            "id": "10473",
+                            "statusCategory": {
+                                "self": "https://smart-solutions.atlassian.net/rest/api/2/statuscategory/2",
+                                "id": 2,
+                                "key": "new",
+                                "colorName": "blue-gray",
+                                "name": "To Do"
+                            }
+                        },
+                        "priority": {
+                            "self": "https://smart-solutions.atlassian.net/rest/api/2/priority/4",
+                            "iconUrl": "https://smart-solutions.atlassian.net/images/icons/priorities/low.svg",
+                            "name": "Low",
+                            "id": "4"
+                        },
+                        "issuetype": {
+                            "self": "https://smart-solutions.atlassian.net/rest/api/2/issuetype/10423",
+                            "id": "10423",
+                            "description": "Bugs track problems or errors.",
+                            "iconUrl": "https://smart-solutions.atlassian.net/secure/viewavatar?size=medium&avatarId=10303&avatarType=issuetype",
+                            "name": "Bug",
+                            "subtask": false,
+                            "avatarId": 10303,
+                            "entityId": "4d83a4d0-cabb-4f43-8119-5952a299313b"
+                        }
+                    }
+                }
+            }
+        ],
+        "assignee": {
+            "self": "https://smart-solutions.atlassian.net/rest/api/2/user?accountId=5d5a41b20b82fa0c3ca3c65f",
+            "accountId": "5d5a41b20b82fa0c3ca3c65f",
+            "avatarUrls": {
+                "48x48": "https://secure.gravatar.com/avatar/f6be9e13bfe130631cbfeeb775cf6fc0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAM-5.png&size=48&s=48",
+                "24x24": "https://secure.gravatar.com/avatar/f6be9e13bfe130631cbfeeb775cf6fc0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAM-5.png&size=24&s=24",
+                "16x16": "https://secure.gravatar.com/avatar/f6be9e13bfe130631cbfeeb775cf6fc0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAM-5.png&size=16&s=16",
+                "32x32": "https://secure.gravatar.com/avatar/f6be9e13bfe130631cbfeeb775cf6fc0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAM-5.png&size=32&s=32"
+            },
+            "displayName": "Araz Mammadov",
+            "active": true,
+            "timeZone": "Asia/Dubai",
+            "accountType": "atlassian"
+        },
+        "updated": "2020-03-03T19:26:31.096+0400",
+        "status": {
+            "self": "https://smart-solutions.atlassian.net/rest/api/2/status/10475",
+            "description": "",
+            "iconUrl": "https://smart-solutions.atlassian.net/",
+            "name": "Done",
+            "id": "10475",
+            "statusCategory": {
+                "self": "https://smart-solutions.atlassian.net/rest/api/2/statuscategory/3",
+                "id": 3,
+                "key": "done",
+                "colorName": "green",
+                "name": "Done"
+            }
+        },
+        "components": [],
+        "timeoriginalestimate": null,
+        "description": " Related User Story: [yoyoyo |https://app.sourcedagile.com/bview.html?pid=19120318420602449317&bid=20030318172407591658&lbl=]",
+        "customfield_10211": null,
+        "customfield_10212": null,
+        "customfield_10213": null,
+        "timetracking": {
+            "remainingEstimate": "0m",
+            "timeSpent": "7h 34m",
+            "remainingEstimateSeconds": 0,
+            "timeSpentSeconds": 27240
+        },
+        "customfield_10203": null,
+        "customfield_10204": [],
+        "customfield_10006": null,
+        "customfield_10205": null,
+        "customfield_10007": {
+            "hasEpicLinkFieldDependency": false,
+            "showField": false,
+            "nonEditableReason": {
+                "reason": "PLUGIN_LICENSE_ERROR",
+                "message": "Portfolio for Jira must be licensed for the Parent Link to be available."
+            }
+        },
+        "security": null,
+        "customfield_10206": null,
+        "aggregatetimeestimate": 0,
+        "attachment": [],
+        "customfield_10209": null,
+        "summary": "Aytan Aliyeva (Back End Development)",
+        "creator": {
+            "self": "https://smart-solutions.atlassian.net/rest/api/2/user?accountId=5aba62ca5c335d2a73a8e0bb",
+            "accountId": "5aba62ca5c335d2a73a8e0bb",
+            "emailAddress": "me@anarrustamov.com",
+            "avatarUrls": {
+                "48x48": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=48&s=48",
+                "24x24": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=24&s=24",
+                "16x16": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=16&s=16",
+                "32x32": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=32&s=32"
+            },
+            "displayName": "Anar Rustamov",
+            "active": true,
+            "timeZone": "Asia/Dubai",
+            "accountType": "atlassian"
+        },
+        "subtasks": [],
+        "reporter": {
+            "self": "https://smart-solutions.atlassian.net/rest/api/2/user?accountId=5aba62ca5c335d2a73a8e0bb",
+            "accountId": "5aba62ca5c335d2a73a8e0bb",
+            "emailAddress": "me@anarrustamov.com",
+            "avatarUrls": {
+                "48x48": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=48&s=48",
+                "24x24": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=24&s=24",
+                "16x16": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=16&s=16",
+                "32x32": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=32&s=32"
+            },
+            "displayName": "Anar Rustamov",
+            "active": true,
+            "timeZone": "Asia/Dubai",
+            "accountType": "atlassian"
+        },
+        "customfield_10000": "{}",
+        "aggregateprogress": {
+            "progress": 27240,
+            "total": 27240,
+            "percent": 100
+        },
+        "customfield_10001": null,
+        "customfield_10002": null,
+        "customfield_10201": null,
+        "customfield_10202": null,
+        "environment": null,
+        "duedate": null,
+        "progress": {
+            "progress": 27240,
+            "total": 27240,
+            "percent": 100
+        },
+        "votes": {
+            "self": "https://smart-solutions.atlassian.net/rest/api/2/issue/IP-159/votes",
+            "votes": 0,
+            "hasVoted": false
+        },
+        "comment": {
+            "comments": [],
+            "maxResults": 0,
+            "total": 0,
+            "startAt": 0
+        },
+        "worklog": {
+            "startAt": 0,
+            "maxResults": 20,
+            "total": 3,
+            "worklogs": [
+                {
+                    "self": "https://smart-solutions.atlassian.net/rest/api/2/issue/16268/worklog/12591",
+                    "author": {
+                        "self": "https://smart-solutions.atlassian.net/rest/api/2/user?accountId=5aba62ca5c335d2a73a8e0bb",
+                        "accountId": "5aba62ca5c335d2a73a8e0bb",
+                        "emailAddress": "me@anarrustamov.com",
+                        "avatarUrls": {
+                            "48x48": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=48&s=48",
+                            "24x24": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=24&s=24",
+                            "16x16": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=16&s=16",
+                            "32x32": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=32&s=32"
+                        },
+                        "displayName": "Anar Rustamov",
+                        "active": true,
+                        "timeZone": "Asia/Dubai",
+                        "accountType": "atlassian"
+                    },
+                    "updateAuthor": {
+                        "self": "https://smart-solutions.atlassian.net/rest/api/2/user?accountId=5aba62ca5c335d2a73a8e0bb",
+                        "accountId": "5aba62ca5c335d2a73a8e0bb",
+                        "emailAddress": "me@anarrustamov.com",
+                        "avatarUrls": {
+                            "48x48": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=48&s=48",
+                            "24x24": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=24&s=24",
+                            "16x16": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=16&s=16",
+                            "32x32": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=32&s=32"
+                        },
+                        "displayName": "Anar Rustamov",
+                        "active": true,
+                        "timeZone": "Asia/Dubai",
+                        "accountType": "atlassian"
+                    },
+                    "created": "2020-03-03T18:18:08.280+0400",
+                    "updated": "2020-03-03T18:18:08.280+0400",
+                    "started": "2020-03-03T16:17:57.582+0400",
+                    "timeSpent": "2h",
+                    "timeSpentSeconds": 7200,
+                    "id": "12591",
+                    "issueId": "16268"
+                },
+                {
+                    "self": "https://smart-solutions.atlassian.net/rest/api/2/issue/16268/worklog/12592",
+                    "author": {
+                        "self": "https://smart-solutions.atlassian.net/rest/api/2/user?accountId=5aba62ca5c335d2a73a8e0bb",
+                        "accountId": "5aba62ca5c335d2a73a8e0bb",
+                        "emailAddress": "me@anarrustamov.com",
+                        "avatarUrls": {
+                            "48x48": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=48&s=48",
+                            "24x24": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=24&s=24",
+                            "16x16": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=16&s=16",
+                            "32x32": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=32&s=32"
+                        },
+                        "displayName": "Anar Rustamov",
+                        "active": true,
+                        "timeZone": "Asia/Dubai",
+                        "accountType": "atlassian"
+                    },
+                    "updateAuthor": {
+                        "self": "https://smart-solutions.atlassian.net/rest/api/2/user?accountId=5aba62ca5c335d2a73a8e0bb",
+                        "accountId": "5aba62ca5c335d2a73a8e0bb",
+                        "emailAddress": "me@anarrustamov.com",
+                        "avatarUrls": {
+                            "48x48": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=48&s=48",
+                            "24x24": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=24&s=24",
+                            "16x16": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=16&s=16",
+                            "32x32": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=32&s=32"
+                        },
+                        "displayName": "Anar Rustamov",
+                        "active": true,
+                        "timeZone": "Asia/Dubai",
+                        "accountType": "atlassian"
+                    },
+                    "created": "2020-03-03T18:31:57.583+0400",
+                    "updated": "2020-03-03T18:31:57.583+0400",
+                    "started": "2020-03-03T18:27:43.939+0400",
+                    "timeSpent": "4m",
+                    "timeSpentSeconds": 240,
+                    "id": "12592",
+                    "issueId": "16268"
+                },
+                {
+                    "self": "https://smart-solutions.atlassian.net/rest/api/2/issue/16268/worklog/12593",
+                    "author": {
+                        "self": "https://smart-solutions.atlassian.net/rest/api/2/user?accountId=5aba62ca5c335d2a73a8e0bb",
+                        "accountId": "5aba62ca5c335d2a73a8e0bb",
+                        "emailAddress": "me@anarrustamov.com",
+                        "avatarUrls": {
+                            "48x48": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=48&s=48",
+                            "24x24": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=24&s=24",
+                            "16x16": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=16&s=16",
+                            "32x32": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=32&s=32"
+                        },
+                        "displayName": "Anar Rustamov",
+                        "active": true,
+                        "timeZone": "Asia/Dubai",
+                        "accountType": "atlassian"
+                    },
+                    "updateAuthor": {
+                        "self": "https://smart-solutions.atlassian.net/rest/api/2/user?accountId=5aba62ca5c335d2a73a8e0bb",
+                        "accountId": "5aba62ca5c335d2a73a8e0bb",
+                        "emailAddress": "me@anarrustamov.com",
+                        "avatarUrls": {
+                            "48x48": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=48&s=48",
+                            "24x24": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=24&s=24",
+                            "16x16": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=16&s=16",
+                            "32x32": "https://secure.gravatar.com/avatar/fc7e83a77d82d49fbe6c7dcc06b4b5f8?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAR-0.png&size=32&s=32"
+                        },
+                        "displayName": "Anar Rustamov",
+                        "active": true,
+                        "timeZone": "Asia/Dubai",
+                        "accountType": "atlassian"
+                    },
+                    "created": "2020-03-03T18:37:47.482+0400",
+                    "updated": "2020-03-03T18:37:47.482+0400",
+                    "started": "2020-03-03T13:07:34.352+0400",
+                    "timeSpent": "5h 30m",
+                    "timeSpentSeconds": 19800,
+                    "id": "12593",
+                    "issueId": "16268"
+                }
+            ]
+        }
+    }
+}

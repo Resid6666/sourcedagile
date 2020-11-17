@@ -1,0 +1,6 @@
+modification_date::varchar::43::-::
+insert_date::varchar::43::-::
+status::varchar::300::-::
+id::varchar::300::-::
+surname::varchar::300::-::
+name::varchar::300::-::

@@ -1,0 +1,168 @@
+<div component_id="page_discount" class="row apd-page" id="page_discount">
+    <div  class="col-md-12">
+        <div class="row text-center module-heading">
+            <label qlang>discount</label>
+        </div>
+    </div> 
+    <div  class="col-md-10 apd-page-btn"> 
+        <button component_id="serviceGfGetDiscountList"  id='serviceGfGetDiscountList' type="button" 
+                class="btn btn-md task-button apd-task-load apd-task-page-loader" 
+                onclick="loadTable('tbl_discount_list')" qlang> list
+        </button>
+        <button component_id="serviceGfInsertNewDiscount"   id='btn_serviceGfInsertNewDiscount' type="button" 
+                class="btn btn-md task-button apd-task-create apd-task-form" 
+                data-toggle="modal" data-target="#insertNewDiscount" qlang>new
+        </button>
+
+        <hr>
+    </div>
+
+    <div  id= "discountlist" class="col-md-12 apd-page-body"> 
+
+    </div>
+    <!-- Modal -->
+    <div  component_id="serviceGfInsertNewDiscount" id="insertNewDiscount" apd-form-reload-button-id='serviceGfGetDiscountList' 
+          class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>new</h4>
+                </div>
+                <div class="modal-body-1  ">
+                    <form id="form_insertNewDiscount" class="apd-form" method="POST" 
+                          action="srv/serviceGfInsertNewDiscount">
+
+                        <div class="form-group col-md-12"></div>
+
+                        <div class="form-group col-md-7">
+                            <label qlang>discountName</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="discountName" name="discountName"    > 
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label qlang>discountAmount</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="discountAmount" name="discountAmount"  > 
+                        </div>
+
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang  qlang >validDate</label>
+                            <div class='input-group date apd-form-date' id="validDate"  >
+                                <input type="text" class="form-control ">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group1 col-md-6" >
+                            <label qlang>param1</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param1" name="param1"  >
+                        </div>
+
+                        <div class="form-group1 col-md-6" >
+                            <label qlang>param2</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param2" name="param2"  >
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+
+
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div component_id="serviceGfUpdateDiscount" id="updateDiscount" apd-form-reload-button-id='serviceGfGetDiscountList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>update</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_updateDiscount" class="apd-form" method="POST" action="srv/serviceGfUpdateDiscount">
+                        <div class="form-group col-md-6 hidden"> 
+                            <label class="float">id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id">
+                        </div>
+                        <div class="form-group col-md-7">
+                            <label qlang>discountName</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="discountName" name="discountName"    > 
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label qlang>discountAmount</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="discountAmount" name="discountAmount"  > 
+                        </div>
+
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang  qlang >validDate</label>
+                            <div class='input-group date apd-form-date' id="validDate"  >
+                                <input type="text" class="form-control ">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group1 col-md-6" >
+                            <label qlang>param1</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param1" name="param1"  >
+                        </div>
+
+                        <div class="form-group1 col-md-6" >
+                            <label qlang>param2</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param2" name="param2"  >
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="false" qlang>update</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.apd-form-date').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+    });
+</script>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="DEBUG"  monitorInterval="30" name="tsn-log">
+    <Properties>
+        <Property name="LOG_DIR">${sys:catalina.home}/logs</Property>
+        <Property name="ARCHIVE">${LOG_DIR}/archive</Property>
+        <Property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %c:%L - %enc{%m}%n</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${PATTERN}"/>
+        </Console>
+        <RollingFile name="logFile" fileName="${LOG_DIR}/tsn.log" filePattern="${ARCHIVE}/tsn-%d{yyyyMMdd}-%i.log.gz">
+            <PatternLayout pattern="${PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile> 
+        <RollingFile name="logSqlFile" fileName="${LOG_DIR}/tsn-sql.log" filePattern="${ARCHIVE}/tsn-sql-%d{yyyyMMdd}-%i.log.gz">
+            <PatternLayout pattern="${PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>  
+        <RollingFile name="logErrorFile" fileName="${LOG_DIR}/tsn-error.log" filePattern="${ARCHIVE}/tsn-error-%d{yyyyMMdd}-%i.log.gz">
+            <PatternLayout pattern="${PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile> 
+    </Appenders>
+    <Loggers>
+        <Logger name="sqlLogger" level="debug" additivity="false">
+            <AppenderRef ref="logSqlFile" level="debug"/>
+        </Logger>
+        <Root level="debug" >
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="logFile" level="debug" />
+            <AppenderRef ref="logErrorFile" level="error"/>
+        </Root>
+    </Loggers>
+</Configuration>

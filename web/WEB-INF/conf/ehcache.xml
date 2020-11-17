@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config
+    xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+    xmlns='http://www.ehcache.org/v3'
+    xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core.xsd">
+    
+    <!--thread-pools> 
+        <thread-pool alias="defaultDiskPool" min-size="1" max-size="3"/>
+    </thread-pools-->
+    
+    <!--disk-store thread-pool="defaultDiskPool" /-->
+    <persistence directory="${java.io.tmpdir}/ehcache1"  />
+    <!--persistence directory="D:/ehcachetmp/ehcache"/-->
+    
+    <cache alias="modelCache">
+        <key-type>java.lang.String</key-type> 
+        <value-type>utility.Carrier</value-type> 
+        <expiry>
+            <tti unit="hours">1</tti>
+        </expiry>
+        <resources>
+            <disk unit="GB" persistent="true">1</disk>
+            <heap unit="MB">100</heap> 
+            <offheap unit="MB">150</offheap>
+        </resources>
+        <!--disk-store-settings thread-pool="defaultDiskPool" writer-concurrency="2" /-->
+    </cache>
+    
+    <cache alias="tokenKeyCache">
+        <key-type>java.lang.String</key-type> 
+        <value-type>java.security.Key</value-type> 
+        <expiry>
+            <tti unit="days">100</tti>
+        </expiry>
+        <resources>
+            <disk unit="GB" persistent="true">2</disk>
+            <heap unit="MB">100</heap> 
+            <offheap unit="MB">150</offheap>
+        </resources>
+        <!--disk-store-settings thread-pool="defaultDiskPool" writer-concurrency="2" /-->
+    </cache>
+
+    
+<!--    <cache alias="serviceCache"> 
+        <key-type>java.lang.String</key-type> 
+        <value-type>java.lang.String</value-type> 
+        <expiry>
+            <ttl unit="hours">1</ttl>
+        </expiry>
+        <resources>
+            <disk unit="GB">2</disk>
+            <heap unit="MB">500</heap> 
+            <offheap unit="MB">600</offheap>
+        </resources>-->
+        <!--disk-store-settings thread-pool="defaultDiskPool" writer-concurrency="2" /-->
+    
+    
+    
+    <!--loader-writer>
+        <class>module.cr.CrModel</class>
+       
+        </loader-writer-->
+    
+    <!--</cache>-->
+  
+</config>

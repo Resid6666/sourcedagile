@@ -1,0 +1,234 @@
+<div component_id="page_productpricelist" class="row apd-page" id="page_productpricelist">
+    <div  class="col-md-12">
+        <div class="row text-center module-heading">
+            <label qlang>productPriceList</label>
+        </div>
+    </div> 
+    <div  class="col-md-12 apd-page-btn"> 
+        <button   component_id="serviceGfGetProductPriceListList"  id='serviceGfGetProductPriceListList' type="button" 
+                class="btn btn-md task-button apd-task-load apd-task-page-loader" 
+                onclick="loadTable('tbl_productpricelist_list')" qlang>list
+        </button>
+        <button  component_id="serviceGfInsertNewProductPriceList"  id='btn_serviceGfInsertNewProductPriceList' type="button"
+                class="btn btn-md task-button apd-task-create apd-task-form" 
+                data-toggle="modal" data-target="#insertNewProductPriceList" qlang>
+            new
+        </button>
+        <hr>
+    </div>
+
+    <div  id= "productpricelistlist" class="col-md-12 apd-page-body"> 
+
+    </div>
+    
+    <!-- Modal -->
+    <div component_id="serviceGfInsertNewProductPriceList"  id="insertNewProductPriceList" apd-form-reload-button-id='serviceGfGetProductPriceListList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>new</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewAttribute" class="apd-form" method="POST" 
+                          action="srv/serviceGfInsertNewProductPriceList">
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>product</label>
+                            <select class="form-control apd-form-select" 
+                                    id="fkProductId" name="fkProductId"
+                                    select_text="productCode,productName" select_value="id" 
+                                    srv_url="srv/serviceGfGetProductAllList">
+                            </select>
+                        </div>
+                        
+                        <div class="form-group col-md-2">
+                            <label class="float" qlang>averageCost</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="averageCost" name="averageCost" >
+                        </div>
+                        
+                        <div class="form-group col-md-2">
+                            <label class="float" qlang>salePrice</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="salePrice" name="salePrice" >
+                        </div>
+                        
+                        <div class="form-group col-md-2">
+                            <label qlang>currency</label>
+                            <select class="form-control apd-form-select" select_text="itemValue" 
+                                    select_value="itemKey" id="currency" name="currency" 
+                                    srv_url="srv/serviceCrGetCurrencyOfCompany">
+                            </select> 
+                        </div>
+                        
+                        <div class="form-group col-md-12">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>param1</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="param1" name="param1" >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>param2</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="param2" name="param2" >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>param3</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="param3" name="param3" >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>param4</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="param4" name="param4" >
+                        </div>
+                        
+                         
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div component_id="serviceGfUpdateProductPriceList"  id="updateProductPriceList" apd-form-reload-button-id='serviceGfGetProductPriceListList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>update</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_updateProductPriceList" class="apd-form" method="POST" action="srv/serviceGfUpdateProductPriceList">
+                        <div class="form-group col-md-6 hidden"> 
+                            <label class="float">id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id"    >
+                        </div>
+                            <div class="form-group col-md-6">
+                            <label class="float" qlang>product</label>
+                            <select class="form-control apd-form-select" 
+                                    id="fkProductId" name="fkProductId"
+                                    select_text="productCode,productName" select_value="id" 
+                                    srv_url="srv/serviceGfGetProductAllList">
+                            </select>
+                        </div>
+                        
+                        <div class="form-group col-md-2">
+                            <label class="float" qlang>averageCost</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="averageCost" name="averageCost" >
+                        </div>
+                        
+                        <div class="form-group col-md-2">
+                            <label class="float" qlang>salePrice</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="salePrice" name="salePrice" >
+                        </div>
+                        
+                        <div class="form-group col-md-2">
+                            <label qlang>currency</label>
+                            <select class="form-control apd-form-select" select_text="itemValue" 
+                                    select_value="itemKey" id="currency" name="currency" 
+                                    srv_url="srv/serviceCrGetCurrencyOfCompany">
+                            </select> 
+                        </div>
+                        
+                        <div class="form-group col-md-12">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>param1</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="param1" name="param1" >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>param2</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="param2" name="param2" >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>param3</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="param3" name="param3" >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>param4</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="param4" name="param4" >
+                        </div>
+                        
+                         
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+     <div id="assignSubmodule" apd-form-reload-button-id='serviceGfGetRelProductPriceListAndSubmoduleList' 
+          class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>showSelectedSubmodules</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewRule" class="apd-form" method="POST" action="srv/serviceGfInsertNewRelProductPriceListAndSubmodule">
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>paymentName</label>
+                            <select class="form-control apd-form-select" 
+                                    id="fkProductPriceListId" name="fkProductPriceListId"
+                                    select_text="paymentName" select_value="id" 
+                                    srv_url="srv/serviceGfGetProductPriceListList">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>submodule</label>
+                            <select class="form-control apd-form-multiselect" 
+                                    multiple 
+                                    id="fkSubmoduleId" name="fkSubmoduleId"
+                                    select_text="submoduleName" select_value="id" 
+                                    dependence_id="fkProductPriceListId"
+                                    srv_url="srv/serviceGfGetSubmoduleListByProductPriceList">
+                            </select>
+                        </div>
+                         
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="false" qlang>insert</button>
+                            <button type="button" class="btn btn-default" 
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

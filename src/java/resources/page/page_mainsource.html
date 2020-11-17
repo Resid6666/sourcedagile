@@ -1,0 +1,44 @@
+<div component_id="page_mainsource" class="row apd-page" id="page_mainsource">
+    <div class="row"></div>
+     <div class="row"></div>
+     <div class="row"></div>
+     <div class="row"></div>
+     <div class="row"></div>
+    <div class="row">
+        <div class="col-md-12">
+            main zad burda olacaq.
+        </div>
+    </div>
+
+</div>
+<script>
+    $(function () {
+        $(".youtube").YouTubeModal({autoplay: 0, width: 640, height: 480});
+    });
+
+    $('.selectpicker').selectpicker('refresh');
+
+    $(function () {
+        $('.apd-form-date').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+    });
+
+
+    const f = new ApdForm('update');
+    f.setFormId('form_taskdetail');
+    f.fillURL("srv/serviceTmGetTaskList");
+    f.fillAllComponents();
+
+    const f1 = new ApdForm('update');
+    f1.setFormId('form_insertNewTask');
+    f1.fillURL("srv/serviceTmGetTaskList");
+    f1.activateManualAction();
+    f1.fillAllComponents();
+
+    shortcut.add("Ctrl+i", function () {
+        $('#btn_serviceTmInsertNewTask').click();
+
+    });
+
+</script>

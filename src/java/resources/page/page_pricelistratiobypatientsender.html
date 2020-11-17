@@ -1,0 +1,147 @@
+<div component_id="page_pricelistratiobypatientsender" class="row apd-page"
+     id="page_pricelistratiobypatientsender">
+    <div  class="col-md-12">
+        <div class="row text-center module-heading">
+            <label qlang>pricelistratiobypatientsender</label>
+        </div>
+    </div> 
+    <div  class="col-md-10 apd-page-btn"> 
+        <button component_id="serviceGfGetPriceListRatioByPatientSenderList"  id='serviceGfGetPriceListRatioByPatientSenderList' type="button" 
+                class="btn btn-md task-button apd-task-load apd-task-page-loader" 
+                onclick="loadTable('tbl_pricelistratiobypatientsender_list')" qlang> list
+        </button>
+        <button component_id="serviceGfInsertNewPriceListRatioByPatientSender"   id='btn_serviceGfInsertNewPriceListRatioByPatientSender' type="button" 
+                class="btn btn-md task-button apd-task-create apd-task-form" 
+                data-toggle="modal" data-target="#insertNewPriceListRatioByPatientSender" qlang>new
+        </button>
+
+        <hr>
+    </div>
+
+    <div  id= "pricelistratiobypatientsenderlist" class="col-md-12 apd-page-body"> 
+
+    </div>
+    <!-- Modal -->
+    <div  component_id="serviceGfInsertNewPriceListRatioByPatientSender" id="insertNewPriceListRatioByPatientSender" apd-form-reload-button-id='serviceGfGetPriceListRatioByPatientSenderList' 
+          class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>new</h4>
+                </div>
+                <div class="modal-body-1  ">
+                    <form id="form_insertNewPriceListRatioByPatientSender" class="apd-form" method="POST" 
+                          action="srv/serviceGfInsertNewPriceListRatioByPatientSender">
+
+                        <div class="form-group col-md-12"></div>
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>patientSenderFulname</label>
+                            <select class="form-control apd-form-select" 
+                                    id="fkPatientSenderId" name="fkPatientSenderId" select_separator=" " 
+                                    select_text="senderFulnameFull"    select_value="id" 
+                                    srv_url="srv/serviceGfGetPatientSenderList">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>priceList</label>
+                            <select class="form-control apd-form-select-back" 
+                                    id="fkPriceListId" name="fkPriceListId"
+                                    select_separator=", " 
+                                    select_text="paymentName,price,currencyName" select_value="id" 
+                                    srv_url="srv/serviceGfGetPriceList4RatioCombo">
+                            </select>
+                        </div>
+                        
+                          <div class="form-group col-md-12"><br></div>
+                        
+                        
+                        <div class="form-group col-md-6">
+                            <label qlang>ratioOfPatientSender</label><label>(0-100)</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="ratioOfPatientSender" name="ratioOfPatientSender"  > 
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+
+
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div component_id="serviceGfUpdatePriceListRatioByPatientSender" id="updatePriceListRatioByPatientSender" apd-form-reload-button-id='serviceGfGetPriceListRatioByPatientSenderList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>update</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_updatePriceListRatioByPatientSender" class="apd-form" method="POST" action="srv/serviceGfUpdatePriceListRatioByPatientSender">
+                        <div class="form-group col-md-6 hidden"> 
+                            <label class="float">id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>patientSenderFulname</label>
+                            <select class="form-control apd-form-select" 
+                                    id="fkPatientSenderId" name="fkPatientSenderId" select_separator=" " 
+                                    select_text="senderFulnameFull"    select_value="id" 
+                                    srv_url="srv/serviceGfGetPatientSenderList">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>priceList</label>
+                            <select class="form-control apd-form-select-back" 
+                                    id="fkPriceListId" name="fkPriceListId"
+                                    select_separator=", " 
+                                    select_text="paymentName,price,currencyName" select_value="id" 
+                                    srv_url="srv/serviceGfGetPriceList4RatioCombo">
+                            </select>
+                        </div>
+
+                       <div class="form-group col-md-12"><br></div>
+                       
+                        <div class="form-group col-md-6">
+                            <label qlang>ratioOfPatientSender</label><label>(0-100)</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="ratioOfPatientSender" name="ratioOfPatientSender"  > 
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="false" qlang>update</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

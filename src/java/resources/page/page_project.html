@@ -1,0 +1,185 @@
+<div component_id="page_project" class="row apd-page" id="page_project">
+    <div  class="col-md-12">
+        <div class="row text-center module-heading">
+            <label qlang>project</label>
+        </div>
+    </div> 
+    <div  class="col-md-12 apd-page-btn"> 
+        <div class="col-md-4  text-left ">
+            <button component_id="serviceTmGetProjectList" id='serviceTmGetProjectList' qlang type="button" class="btn btn-md task-button apd-task-load apd-task-page-loader" 
+                    onclick="loadTable('tbl_project_list')">projectList
+            </button>
+            <button component_id="serviceTmInsertNewProject" id='btn_serviceTmInsertNewProject' type="button" class="btn btn-md task-button apd-task-create apd-task-form" 
+                    data-toggle="modal" data-target="#insertNewProject" qlang>insert
+            </button> 
+        </div>
+    </div>
+    <div class="col-md-12"><hr>
+    </div>
+    <div class="col-md-12 apd-submodule-button-list" id="apd-submodule-button-list-id">
+    </div>
+    <div  id= "projectlist" class="col-md-12 apd-page-body"> 
+    </div>
+    <!-- Modal -->
+    <div component_id="serviceTmInsertNewProject" id="insertNewProject" apd-form-reload-button-id='serviceTmGetProjectList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>new</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewProject" class="apd-form" method="POST" action="srv/serviceTmInsertNewProject">
+                        <div class="form-group col-md-12">
+                            <label qlang>projectName</label>
+                            <input class="form-control apd-form-input" type="text" id="projectName"
+                                   name="projectName" placeholder=" "  >
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang >startDate</label>
+                            <div class='input-group date apd-form-date' id="startDate"  >
+                                <input type="text" class="form-control apd-form-date">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang >endDate</label>
+                            <div class='input-group date apd-form-date' id="endDate"  >
+                                <input type="text" class="form-control apd-form-date">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label qlang>network</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="networkName" select_value="id"
+                                    id="fkNetworkId" name="fkNetworkId" 
+                                    srv_url="srv/serviceTmGetNetworkList">
+                            </select> 
+                        </div >
+
+                        <div class="form-group col-md-6">
+                            <label qlang>purpose</label>
+                            <input class="form-control apd-form-input" type="text" 
+                                   id="purpose" name="purpose" placeholder=" "  >
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label qlang>description</label>
+                            <textarea class="form-control apd-form-textarea" id="description" 
+                                      name="description" placeholder=""></textarea>
+                        </div>
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div> 
+
+    <div component_id="serviceTmUpdateProject" id="updateProject" apd-form-reload-button-id='serviceTmGetProjectList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Update Project</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_updateProject" class="apd-form" method="POST" action="srv/serviceTmUpdateProject">
+                        <div class="form-group col-md-6 hidden"> 
+                            <label qlang>id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id" placeholder="Project Code"  >
+                        </div>
+
+
+                        <div class="form-group col-md-12">
+                            <label qlang>projectName</label>
+                            <input class="form-control apd-form-input" type="text" id="projectName"
+                                   name="projectName" placeholder=" "  >
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang >startDate</label>
+                            <div class='input-group date apd-form-date' id="startDate"  >
+                                <input type="text" class="form-control apd-form-date">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang >endDate</label>
+                            <div class='input-group date apd-form-date' id="endDate"  >
+                                <input type="text" class="form-control apd-form-date">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label qlang>network</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="networkName" select_value="id"
+                                    id="fkNetworkId" name="fkNetworkId" 
+                                    srv_url="srv/serviceTmGetNetworkList">
+                            </select> 
+                        </div >
+
+                        <div class="form-group col-md-6">
+                            <label qlang>purpose</label>
+                            <input class="form-control apd-form-input" type="text" 
+                                   id="purpose" name="purpose" placeholder=" "  >
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label qlang>description</label>
+                            <textarea class="form-control apd-form-textarea" id="description" 
+                                      name="description" placeholder=""></textarea>
+                        </div>
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="false" qlang>update</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+</div>
+<script>
+    $(function () {
+        $(".youtube").YouTubeModal({autoplay: 0, width: 640, height: 480});
+    });
+
+    $(function () {
+        $('.apd-form-date').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+    });
+
+</script>

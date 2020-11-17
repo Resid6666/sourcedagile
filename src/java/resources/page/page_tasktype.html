@@ -1,0 +1,113 @@
+<div component_id="page_tasktype" class="row apd-page" id="page_tasktype">
+    <div  class="col-md-12">
+        <div class="row text-center module-heading">
+            <label qlang>taskType</label>
+        </div>
+    </div> 
+    <div  class="col-md-12 apd-page-btn"> 
+        <div class="col-md-4  text-left ">
+            <button component_id="serviceTmGetTaskTypeList" id='serviceTmGetTaskTypeList' qlang type="button" class="btn btn-md task-button apd-task-load apd-task-page-loader" 
+                    onclick="loadTable('tbl_tasktype_list')">tasktypeList
+            </button>
+            <button component_id="serviceTmInsertNewTaskType" id='btn_serviceTmInsertNewTaskType' type="button" class="btn btn-md task-button apd-task-create apd-task-form" 
+                    data-toggle="modal" data-target="#insertNewTaskType" qlang>insert
+            </button> 
+        </div>
+    </div>
+    <div class="col-md-12"><hr>
+    </div>
+    <div class="col-md-12 apd-submodule-button-list" id="apd-submodule-button-list-id">
+    </div>
+    <div  id= "tasktypelist" class="col-md-12 apd-page-body"> 
+    </div>
+    <!-- Modal -->
+    <div component_id="serviceTmInsertNewTaskType" id="insertNewTaskType" apd-form-reload-button-id='serviceTmGetTaskTypeList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>new</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewTaskType" class="apd-form" method="POST" action="srv/serviceTmInsertNewTaskType">
+                        <div class="form-group col-md-12">
+                            <label qlang>typeName</label>
+                            <input class="form-control apd-form-input" type="text" id="typeName"
+                                   name="typeName" placeholder=" "  >
+                        </div>
+                                                
+                        <div class="form-group col-md-12">
+                            <label qlang>description</label>
+                            <textarea class="form-control apd-form-textarea" id="description" 
+                                      name="description" placeholder=""></textarea>
+                        </div>
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div> 
+
+    <div component_id="serviceTmUpdateTaskType" id="updateTaskType" apd-form-reload-button-id='serviceTmGetTaskTypeList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">update</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_updateTaskType" class="apd-form" method="POST" action="srv/serviceTmUpdateTaskType">
+                        <div class="form-group col-md-6 hidden"> 
+                            <label qlang>id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id" placeholder="TaskType Code"  >
+                        </div>
+                       <div class="form-group col-md-12">
+                            <label qlang>typeName</label>
+                            <input class="form-control apd-form-input" type="text" id="typeName"
+                                   name="typeName" placeholder=" "  >
+                        </div>
+                                                
+                        <div class="form-group col-md-12">
+                            <label qlang>description</label>
+                            <textarea class="form-control apd-form-textarea" id="description" 
+                                      name="description" placeholder=""></textarea>
+                        </div>
+                        
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="false" qlang>update</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+</div>
+<script>
+    $(function () {
+        $(".youtube").YouTubeModal({autoplay: 0, width: 640, height: 480});
+    });
+
+    $(function () {
+        $('.apd-form-date').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+    });
+
+</script>

@@ -1,0 +1,808 @@
+<div component_id="page_appointment" class="row apd-page" id="page_appointment">
+    <div  class="col-md-12">
+        <div class="row text-center module-heading">
+            <label id="headertitle" qlang>sessionList</label>
+        </div>
+    </div> 
+
+    <div class="col-md-12" >
+        <br>
+    </div>
+
+    <div class="col-md-12  " >
+
+        <div class="form-group1 col-md-4" >
+            <label qlang>patient</label>
+            <select class="form-control apd-form-select" id="fkPatientId" 
+                    has_null="1" name="fkPatientId" select_separator=" " 
+                    select_text="patientName"  select_value="id" 
+                    srv_url="srv/serviceCrGetModuleList" onchange='filterPatientCombo()'>
+            </select>
+        </div>
+        <div class="form-group col-md-6" >
+            <br>  
+            <button component_id = "" id='btn_searchPatient' type="button" 
+                    class="btn btn-md task-button " 
+                    style='margin-top:5px' onclick="filterPatientCombo(this)"
+                    >
+                <i class="fa fa-search" aria-hidden="true"  
+                   style='font-size: 12px;padding-left: 12px;padding-right: 12px;'></i>
+            </button>
+            <button id='btn_searchPatient' type="button" 
+                    class="btn btn-md task-button  " 
+                    style='margin-top:5px' onclick="clearAndshowAllPatientListCombo(this)" qlang
+                    >
+                showAll
+            </button>
+            <button component_id = "serviceCrInsertNewPatient"  id='btn_serviceCrInsertNewPatient' type="button" 
+                    class="btn btn-md task-button apd-task-create apd-task-form" 
+                    style='margin-top:5px'
+                    data-toggle="modal"   data-target="#insertNewPatient"  qlang >insertNewPatient
+            </button>
+
+            <button component_id = "serviceCrUpdatePatient" id='btn_serviceCrUpdatePatient' type="button" 
+                    class="btn btn-md task-button apd-task-create 
+                    apd-task-form-fill  " 
+                    style='margin-top:5px;font-size: 12px;  padding-left: 14px;padding-right: 14px; display: none;' 
+                    apd-form-fill-url="srv/serviceCrGetPatientList" 
+                    apd-form-fill-kv="id=201708120805030545" 
+                    data-toggle="modal"   data-target="#updatePatient" qlang>
+                updatePatientInfo
+            </button>
+            <button component_id = "serviceCrInsertNewAppointment" id='btn_newSessionWizard' type="button" 
+                    onclick="toggleNewSession(this)"
+                    class="btn btn-md task-button  apd-task-create apd-task-form toggle-on-click" 
+                    style='margin-top:5px;font-size: 12px;  padding-left: 14px;padding-right: 14px;display: none; '
+                    data-toggle="modal"   data-target="#newSessionWizard" qlang>
+                newSession
+            </button>
+            <button  component_id = "serviceCrFinishSession"  type="button" qlang 
+                     id="btnFinishSession"
+                     class="btn btn-md task-button toggle-on-click  " 
+                     style='margin-top:5px;font-size: 12px;  padding-left: 14px;padding-right: 14px; display: none;'
+                     onclick="finishSession(this)" >finishSession
+            </button>
+
+        </div>
+        <div class="col-md-2  text-right">
+            <br>
+            <div class="dropdown ">
+                <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-primary" 
+                   data-target="#" href="">
+                    <i class="fa fa-bars" aria-hidden="true" style="font-size:20px;"></i> </span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right  multi-level" role="menu" 
+                    aria-labelledby="dropdownMenu">
+
+                    <!--                    <li class="dropdown-submenu pull-left">
+                                            <a tabindex="-1" href="#" qlang> module</a>
+                                            <ul class="dropdown-menu dropdown-menu-right " id="moduleList" >
+                                                                            <li><a class="apd-module-cmb-list" mid="201706221522420346" 
+                                                                                   tabindex="-1" href="#">APD Voice</a></li>
+                    
+                                            </ul>
+                                        </li>-->
+                    <li>
+                        <a tabindex="-1" href="#" qlang 
+                           onclick='loadInspectionListBySession(this)'>inspectionList</a>
+                    </li>
+                    <li>
+                        <a tabindex="-1" href="#" qlang 
+                           onclick='loadSession(this)'>sessionList</a>
+                    </li>
+                    <li class="dropdown-submenu pull-left toggle-on-click" >
+                        <a tabindex="-1" href="#" qlang> report</a>
+                        <ul class="dropdown-menu dropdown-menu-right" id="report4Appointment" >
+                        </ul>
+                    </li>
+
+                    </button>
+                </ul>
+            </div>
+        </div >
+        <div class="col-md-12" ><br></div>
+    </div>
+
+
+
+
+    <div  
+        class="col-md-12 apd-submodule-button-list toggle-on-click" style="display:block;" 
+        id="apd-submodule-button-list-id">
+    </div>
+    <div  id= "patientlist" class="col-md-12 apd-page-body"> 
+
+    </div>
+
+
+    <!-- Modal -->
+
+
+
+
+
+    <div  id="popup1" role="dialog" class="modal fade" apd-form-reload-button-id="serviceCrGetAppointmentList">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" type="button" data-dismiss="modal">x</button>
+                    <h4 class="modal-insert-title-name" id="modal-insert-title-name">Submodule name</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewInspection" method="POST" class="apd-form" action="srv/serviceCrInsertNewInspection">
+                        <div class="form-insert-element-body" id="form-insert-element-body"></div>
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button"
+                                    class="btn btn-default   apd-form-submodule-attr-prvs  " 
+                                    apd-clear-form-data="true" qlang>previous
+                            </button>
+                            <button type="button"
+                                    class="btn btn-default   apd-form-submodule-attr-nxt  " 
+                                    apd-clear-form-data="true" qlang>next
+                            </button>
+                            <!--                            <button type="button"
+                                                                class="btn btn-default    apd-form-submodule-attr-sv-nxt  " 
+                                                                apd-clear-form-data="true" qlang>insert_N_next
+                                                        </button>-->
+                            <button component_id="serviceCrInsertNewInspection" type="button"
+                                    class="btn btn-default apd-form-btn apd-form-attr-btn" 
+                                    apd-clear-form-data="true" qlang >insert
+                            </button>
+                            <button type="button" class="btn btn-default  " 
+                                    data-dismiss="modal" role="button" qlang>close
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="apdImageViewer"   class="modal fade col-md-12" role="dialog">
+        <div class="modal-dialog ">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"  qlang >imageViewer</h4>
+                </div>
+                <div class="modal-body-1">
+                    <div id="myCarousel211" class="carousel slide" data-ride="carousel">
+                        <ol class="carousel-indicators" >
+                        </ol>
+                        <div class="carousel-inner">
+                        </div>
+                        <a class="left carousel-control" href="#myCarousel211" data-slide="prev">
+                            <span class="glyphicon glyphicon-chevron-left"></span>
+                            <span class="sr-only"  qlang >previous</span>
+                        </a>
+                        <a class="right carousel-control" href="#myCarousel211" data-slide="next">
+                            <span class="glyphicon glyphicon-chevron-right"></span>
+                            <span class="sr-only"  qlang >next</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="apdVideoPlayer"   class="modal fade col-md-12" role="dialog">
+        <div class="modal-dialog ">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"  qlang  >videoPlayer</h4>
+                </div>
+                <div class="modal-body-1">
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="apdSoundPlayer"   class="modal fade col-md-12" role="dialog">
+        <div class="modal-dialog ">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"   qlang  >soundPlayer</h4>
+                </div>
+                <div class="modal-body-1">
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div component_id="serviceCrInsertNewPatient" id="insertNewPatient" apd-form-reload-button-id='serviceCrGetPatientList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"   qlang  >insertNewPatient</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewPatient" class="apd-form" method="POST" action="srv/serviceCrInsertNewPatient">
+                        <div class="form-group col-md-4">
+                            <label qlang>patientName</label>
+                            <input class="form-control apd-form-input" type="text" id="patientName"
+                                   name="patientName" placeholder=" "  >
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>patientSurname</label>
+                            <input type="text" class="form-control apd-form-input" id="patientSurname" 
+                                   name="patientSurname" placeholder="">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>patientMiddleName</label>
+                            <input type="text" class="form-control apd-form-input" id="patientMiddleName" 
+                                   name="patientMiddleName" placeholder="">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>patientBirthPlace</label>
+                            <input type="text" class="form-control apd-form-input" id="patientBirthPlace" 
+                                   name="patientBirthPlace" placeholder="">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang  qlang >patientBirthDate</label>
+                            <div class='input-group date apd-form-date' id="patientBirthDate"  >
+                                <input type="text" class="form-control ">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>maritualStatus</label>
+                            <select class="form-control apd-form-select-back" id="maritualStatus" name="maritualStatus"
+                                    select_text="itemValue" select_value="itemKey" 
+                                    async="true" has_null="1"
+                                    srv_url="li/maritualStatus">
+                            </select>
+
+                        </div>
+                        <div class="form-group col-md-12">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>occupation</label>
+                            <select class="form-control apd-form-select-back" id="occupation" name="occupation"
+                                    async="true" has_null="1"
+                                    select_text="itemValue" select_value="itemKey" onchange="toogleOccupationOther(this)"
+                                    has_other="1"
+                                    srv_url="li/occupation">
+                            </select>
+
+                        </div>
+                        <br>
+                        <div class="form-group col-md-4">
+                            <label qlang>occupationOther</label>
+                            <input type="text" class="form-control apd-form-input" id="occupationOther" 
+                                   disabled
+                                   name="occupationOther" placeholder="">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>education</label>
+                            <select class="form-control apd-form-select-back" id="education" name="education"
+                                    async="true" has_null="1"
+                                    select_text="itemValue" select_value="itemKey" 
+                                    srv_url="li/educationType">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-12">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>sex</label>
+                            <select class="form-control apd-form-select-back" id="sex" name="sex"
+                                    async="true" has_null="1"
+                                    select_text="itemValue" select_value="itemKey" 
+                                    srv_url="li/sex">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>bloodGroup</label>
+                            <select class="form-control apd-form-select-back" id="bloodGroup" name="bloodGroup"
+                                    async="true" select_text="itemValue" select_value="itemKey" 
+                                    has_null="1"
+                                    srv_url="li/bloodGroup">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>rhFactor</label>
+                            <select class="form-control apd-form-select-back" id="rhFactor" name="rhFactor"
+                                    async="true" has_null="1"
+                                    select_text="itemValue" select_value="itemKey" 
+                                    srv_url="li/rhFactor">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <br>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>mobile1</label>
+                            <input type="text" class="form-control apd-form-input" id="mobile1" 
+                                   name="mobile1" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>mobile2</label>
+                            <input type="text" class="form-control apd-form-input" id="mobile2" 
+                                   name="mobile2" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>telephone1</label>
+                            <input type="text" class="form-control apd-form-input" id="telephone1" 
+                                   name="telephone1" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>telephone2</label>
+                            <input type="text" class="form-control apd-form-input" id="telephone2" 
+                                   name="telephone2" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label qlang>email1</label>
+                            <input type="email" class="form-control apd-form-email" id="email1" 
+                                   name="email1" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label qlang>email2</label>
+                            <input type="email" class="form-control apd-form-email" id="email2" 
+                                   name="email2" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>country</label>
+                            <input type="text" class="form-control apd-form-input" id="country" 
+                                   name="country" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>city</label>
+                            <input type="text" class="form-control apd-form-input" id="city" 
+                                   name="city" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>postIndex</label>
+                            <input type="text" class="form-control apd-form-input" id="postIndex" 
+                                   name="postIndex" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>isActive</label>
+                            <select class="form-control apd-form-select-back" id="isActive" name="isActive"
+                                    async="true" has_null="1"
+                                    select_text="itemValue" select_value="itemKey" 
+                                    srv_url="li/pa">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label qlang>description</label>
+                            <textarea class="form-control apd-form-textarea" id="description" 
+                                      name="description" placeholder=""></textarea>
+                        </div> 
+                        <div class="form-group col-md-6">
+                            <label qlang>addressLine</label>
+                            <textarea class="form-control apd-form-textarea" id="addressLine" 
+                                      name="addressLine" placeholder=""></textarea>
+                        </div>
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="true" 
+                                    id="insertNewPatientBtn" qlang>insert</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div component_id="serviceCrUpdatePatient" id="updatePatient" apd-form-reload-button-id='serviceCrGetPatientList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"  qlang  >updatePatient</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_updatePatient" class="apd-form" method="POST" action="srv/serviceCrUpdatePatient">
+                        <div class="form-group col-md-6 hidden"> 
+                            <label qlang>id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id" placeholder="Patient Code"  >
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>patientName</label>
+                            <input class="form-control apd-form-input" type="text" id="patientName"
+                                   name="patientName" placeholder=" "  >
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>patientSurname</label>
+                            <input type="text" class="form-control apd-form-input" id="patientSurname" 
+                                   name="patientSurname" placeholder="">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>patientMiddleName</label>
+                            <input type="text" class="form-control apd-form-input" id="patientMiddleName" 
+                                   name="patientMiddleName" placeholder="">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>patientBirthPlace</label>
+                            <input type="text" class="form-control apd-form-input" id="patientBirthPlace" 
+                                   name="patientBirthPlace" placeholder="">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang  qlang >patientBirthDate</label>
+                            <div class='input-group date apd-form-date' id="patientBirthDate"  >
+                                <input type="text" class="form-control ">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>maritualStatus</label>
+                            <select class="form-control apd-form-select-back" id="maritualStatus" name="maritualStatus"
+                                    select_text="itemValue" select_value="itemKey" 
+                                    async="true" has_null="1"
+                                    srv_url="li/maritualStatus">
+                            </select>
+
+                        </div>
+                        <div class="form-group col-md-12">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>occupation</label>
+                            <select class="form-control apd-form-select-back" id="occupation" name="occupation"
+                                    async="true" has_null="1"
+                                    select_text="itemValue" select_value="itemKey" onchange="toogleOccupationOther(this)"
+                                    has_other="1"
+                                    srv_url="li/occupation">
+                            </select>
+
+                        </div>
+                        <br>
+                        <div class="form-group col-md-4">
+                            <label qlang>occupationOther</label>
+                            <input type="text" class="form-control apd-form-input" id="occupationOther" 
+                                   disabled
+                                   name="occupationOther" placeholder="">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>education</label>
+                            <select class="form-control apd-form-select-back" id="education" name="education"
+                                    async="true" has_null="1"
+                                    select_text="itemValue" select_value="itemKey" 
+                                    srv_url="li/educationType">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-12">
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>sex</label>
+                            <select class="form-control apd-form-select-back" id="sex" name="sex"
+                                    async="true" has_null="1"
+                                    select_text="itemValue" select_value="itemKey" 
+                                    srv_url="li/sex">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>bloodGroup</label>
+                            <select class="form-control apd-form-select-back" id="bloodGroup" name="bloodGroup"
+                                    async="true" select_text="itemValue" select_value="itemKey" 
+                                    has_null="1"
+                                    srv_url="li/bloodGroup">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>rhFactor</label>
+                            <select class="form-control apd-form-select-back" id="rhFactor" name="rhFactor"
+                                    async="true" has_null="1"
+                                    select_text="itemValue" select_value="itemKey" 
+                                    srv_url="li/rhFactor">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <br>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>mobile1</label>
+                            <input type="text" class="form-control apd-form-input" id="mobile1" 
+                                   name="mobile1" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>mobile2</label>
+                            <input type="text" class="form-control apd-form-input" id="mobile2" 
+                                   name="mobile2" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>telephone1</label>
+                            <input type="text" class="form-control apd-form-input" id="telephone1" 
+                                   name="telephone1" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>telephone2</label>
+                            <input type="text" class="form-control apd-form-input" id="telephone2" 
+                                   name="telephone2" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label qlang>email1</label>
+                            <input type="email" class="form-control apd-form-email" id="email1" 
+                                   name="email1" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label qlang>email2</label>
+                            <input type="email" class="form-control apd-form-email" id="email2" 
+                                   name="email2" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>country</label>
+                            <input type="text" class="form-control apd-form-input" id="country" 
+                                   name="country" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>city</label>
+                            <input type="text" class="form-control apd-form-input" id="city" 
+                                   name="city" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>postIndex</label>
+                            <input type="text" class="form-control apd-form-input" id="postIndex" 
+                                   name="postIndex" placeholder=" ">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label qlang>isActive</label>
+                            <select class="form-control apd-form-select-back" id="isActive" name="isActive"
+                                    async="true" has_null="1"
+                                    select_text="itemValue" select_value="itemKey" 
+                                    srv_url="li/pa">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label qlang>description</label>
+                            <textarea class="form-control apd-form-textarea" id="description" 
+                                      name="description" placeholder=""></textarea>
+                        </div> 
+                        <div class="form-group col-md-6">
+                            <label qlang>addressLine</label>
+                            <textarea class="form-control apd-form-textarea" id="addressLine" 
+                                      name="addressLine" placeholder=""></textarea>
+                        </div>
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="false" qlang>update</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div component_id="serviceCrInsertNewAppointment" id="newSessionWizard"   class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>insertNewWizard</h4>
+                </div>
+                <div class="modal-body-1">
+                    <div  class="col-md-12" id="newSessionDiv"  >
+                        <form id="form_insertNewSession" class="apd-form" method="POST"> 
+                            <div  class="col-md-12  "  >
+                                <div class="form-group col-md-4">
+                                    <label qlang>doctor</label><br> 
+                                    <select class="form-control apd-form-multiselect" 
+                                            multiple
+                                            id="fkDoctorUserId" name="fkDoctorUserId"
+                                            select_separator=" " 
+                                            select_text="userPersonName,userPersonSurname,userPersonMiddlename"   
+                                            select_value="id" 
+                                            srv_url="srv/serviceCrGetDoctorList">
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label qlang>patient</label> 
+                                    <input class="form-control" type="text" dont_clear 
+                                           id="sessionPatientFullname" name="sessionPatientFullname"
+                                           disabled >
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label qlang>purpose</label>
+                                    <select class="form-control apd-form-select-back" 
+                                            select_text="paymentName,price,currencyName" 
+                                            select_value="id"  
+                                            id="fkPriceListId" name="fkPriceListId" 
+                                            filter_text="paymentName"
+                                            select_separator=", "
+                                            onchange="calcPayment(this)"
+                                            srv_url="srv/serviceGfGetPriceListList">
+                                    </select> 
+                                </div>
+
+                                <div class="form-group col-md-12">
+
+                                </div>
+
+                                <div class="form-group col-md-3">
+                                    <label class="float" qlang >appointmentDate</label>
+                                    <div class='input-group date apd-form-date' id="appointmentDate"  >
+                                        <input type="text" class="form-control">
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label qlang>timeFrom</label>
+                                    <input class="form-control   apd-form-time" type="time" id="appointmentTime1"
+                                           name="appointmentTime1"    >
+                                </div>
+                                <div class="form-group col-md-2">
+                                    <label qlang>timeTo</label>
+                                    <input class="form-control   apd-form-time" type="time" id="appointmentTime2"
+                                           name="appointmentTime2"    >
+
+                                </div>
+                                <div class="form-group col-md-1" align="left">
+                                    <label qlang><span style="opacity: 0;">_________________________    </span> </label>
+                                    <input class="apd-form-check" type="checkbox" id="currentTime"
+                                           name="currentTime" onclick="toggleSessionDate(this)"><span qlang>now</span>
+                                </div>
+                                <div class="form-group col-md-2" align=" ">
+                                    <label qlang><span style="opacity: 0;">_________________________    </span> </label>
+                                    <button id='btn_serviceCrInsertNewPatient' type="button" class="btn btn-md task-button apd-task-create apd-task-form" 
+                                            data-toggle="modal"   data-target="#agendaModal" onclick="setTimeout(showAgenda, 1000)" qlang >viewAgenda
+                                    </button>
+                                </div>
+
+                                <div class="form-group col-md-12"></div>
+
+                                <div class="form-group col-md-5">
+                                    <label qlang>patientSender</label>
+                                    <select class="form-control apd-form-select" 
+                                            select_text="senderFulnameFull" 
+                                            select_value="id"  
+                                            id="fkPatientSenderId" name="fkPatientSenderId" 
+                                            srv_url="srv/serviceGfGetPatientSenderList">
+                                    </select> 
+                                </div>
+
+                                <div class="form-group col-md-5">
+                                    <label qlang>discountName</label> <label qlang>(%)</label>
+                                    <select class="form-control apd-form-select" 
+                                            select_text="discountName,discountAmount" 
+                                            select_value="fkDiscountId" 
+                                            dependence_id="fkPatientId"
+                                            select_separator=", "
+                                            onchange="calcPayment(this)"
+                                            id="fkDiscountId" name="fkDiscountId" 
+                                            srv_url="srv/serviceGfGetRelDiscountAndPatientList">
+                                    </select> 
+                                </div>
+
+                                <div class="form-group col-md-2">
+                                    <label qlang>paymentAmount</label>
+                                    <input class="form-control  apd-form-input" type="text" 
+                                           id="paymentAmount"
+                                           name="paymentAmount"
+                                           readonly>
+
+
+
+                                </div>
+
+                                <div class="form-group col-md-12"></div>
+
+                                <div class="form-group col-md-12" align="left">
+                                    <label qlang>description</label>
+                                    <input class="form-control apd-form-check" type="input" id="description"
+                                           name="description"> 
+                                    <br>
+                                </div>
+
+                                <div class="form-group col-md-12"></div>
+
+                                <div class="form-group col-md-12" align="right">
+                                    <br> 
+                                    <input type="checkbox" checked   id="createInvoice">
+                                    <span qlang>createInvoice</span>
+                                    <button type="button" style="color:green;" 
+                                            class="btn btn-default apd-form-btn-add-appointment"  
+                                            qlang onclick="addAppointment(this);">newSession
+                                    </button> 
+                                    <button type="button" class="btn btn-default" data-dismiss="modal" 
+                                            role="button" qlang>close</button>
+                                </div>
+
+                            </div>
+
+                        </form>
+
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="agendaModal"   class="modal fade col-md-12" role="dialog">
+        <div class="modal-dialog " style="width:90%">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body-1">
+                    <div id='wrap'>
+                        <div id='calendar'></div>
+                        <div style='clear:both'></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $(".youtube").YouTubeModal({autoplay: 0, width: 640, height: 480});
+    });
+
+    $(document).ready(function () {
+        $('[data-toggle="popover"]').popover();
+    });
+
+    $(function () {
+        $('.apd-form-date').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+    });
+
+
+    function generalActionOnPatientFilter() {
+        var val = $("#fkPatientId").attr("pid");
+        console.log("pid on select " + val);
+        if (val) {
+            $('#btn_serviceCrUpdatePatient').show("");
+            $('#btn_newSessionWizard').show("");
+
+        } else {
+//             $('#btn_serviceCrUpdatePatient').attr("disabled", "disabled");
+            $('#btn_serviceCrUpdatePatient').hide("");
+            $('#btn_newSessionWizard').hide("");
+
+        }
+    }
+
+    function calcPayment() {
+        var fkDiscountId = $("#fkDiscountId").val();
+        var fkPriceListId = $("#fkPriceListId").val();
+        var discount = getDiscountAmountById(fkDiscountId);
+        var price = getPriceListAmountById(fkPriceListId);
+        var res = price - (discount * price / 100);
+        $("#paymentAmount").val(res);
+
+
+    }
+</script>

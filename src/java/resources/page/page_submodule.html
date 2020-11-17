@@ -1,0 +1,168 @@
+
+<div class="row apd-page" id="page_submodule">
+    <div  class="col-md-12">
+        <div class="row text-center module-heading">
+            <label qlang>Submodule</label>
+        </div>
+    </div> 
+    <div  class="col-md-12 apd-page-btn"> 
+        <button id='serviceCrGetSubmoduleList' type="button" class="btn btn-md task-button apd-task-load apd-task-page-loader" 
+                onclick="loadTable('tbl_submodule_list')">List
+        </button>
+        <button id='btn_serviceCrInsertNewSubmodule' type="button" class="btn btn-md task-button apd-task-create apd-task-form" 
+                data-toggle="modal" data-target="#insertNewSubmodule">Insert
+        </button>
+        <hr>
+    </div>
+
+    <div  id="listsubmodule" class="col-md-12 apd-page-body"> 
+
+    </div>
+    <!-- Modal -->
+    <div id="insertNewSubmodule" apd-form-reload-button-id='serviceCrGetSubmoduleList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Insert New Submodule</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewSubmodule" class="apd-form" method="POST" 
+                          action="srv/serviceCrInsertNewSubmodule">
+                        
+                        <div class="form-group col-md-5">
+                            <label qlang>name</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="submoduleName" name="submoduleName"  >
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>moduleName</label>
+                            <select class="form-control apd-form-select" select_text="moduleName" 
+                                    select_value="id" id="fkModuleId"
+                                    name="fkModuleId" srv_url="srv/serviceCrGetModuleList">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-3">
+                            <label qlang>submoduleUniqueId</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="submoduleUniqueId" name="submoduleUniqueId" readonly >
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>status</label>
+                            <select class="form-control apd-form-select" select_text="itemValue" 
+                                    select_value="itemKey" id="liSubmoduleStatus" name="liSubmoduleStatus" srv_url="li/pa">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-4">
+                            <label qlang>submoduleType</label>
+                            <select class="form-control apd-form-select" select_text="itemValue" 
+                                    select_value="itemKey" id="submoduleType" name="submoduleType" srv_url="li/submoduleType">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-4">
+                            <label qlang>orderNo</label>
+                            <input  class="form-control apd-form-input" type="number"  
+                                    id="sortBy" name="sortBy"  value="1" dont_clear>
+                        </div>
+                        <div class="form-group col-md-10">
+                            <label qlang class="float">description</label>
+                             <input  class="form-control apd-form-input" type="number"  
+                                    id="submoduleDescription" name="submoduleDescription"  >
+                           
+                        </div >
+                        <div class="form-group col-md-2">
+                            <label qlang>lang</label>
+                            <select class="form-control apd-form-select" select_text="itemValue" 
+                                    select_value="itemKey" id="lang" name="lang" srv_url="li/language">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="true" lang>insert</button>
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal"  role="button" lang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="updateSubmodule" apd-form-reload-button-id='serviceCrGetSubmoduleList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Update Attribute</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_updateSubmodule" class="apd-form" method="POST" action="srv/serviceCrUpdateSubmodule">
+                        <div class="form-group col-md-6 hidden"> 
+                            <label class="float">id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id" placeholder="Attribute Code"  >
+                        </div>
+                         
+                        <div class="form-group col-md-5">
+                            <label qlang>name</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="submoduleName" name="submoduleName"  >
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>moduleName</label>
+                            <select class="form-control apd-form-select" select_text="moduleName" 
+                                    select_value="id" id="fkModuleId"
+                                    name="fkModuleId" srv_url="srv/serviceCrGetModuleList">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-3">
+                            <label qlang>submoduleUniqueId</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="submoduleUniqueId" name="submoduleUniqueId" readonly >
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>status</label>
+                            <select class="form-control apd-form-select" select_text="itemValue" 
+                                    select_value="itemKey" id="liSubmoduleStatus" name="liSubmoduleStatus" srv_url="li/pa">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-4">
+                            <label qlang>submoduleType</label>
+                            <select class="form-control apd-form-select" select_text="itemValue" 
+                                    select_value="itemKey" id="submoduleType" name="submoduleType" srv_url="li/submoduleType">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-4">
+                            <label qlang>orderNo</label>
+                            <input  class="form-control apd-form-input" type="number"  
+                                    id="sortBy" name="sortBy"  >
+                        </div>
+                        <div class="form-group col-md-10">
+                            <label qlang class="float">description</label>
+                             <input  class="form-control apd-form-input" type="number"  
+                                    id="submoduleDescription" name="submoduleDescription"  >
+                           
+                        </div >
+                        <div class="form-group col-md-2">
+                            <label qlang>lang</label>
+                            <select class="form-control apd-form-select" select_text="itemValue" 
+                                    select_value="itemKey" id="lang" name="lang" srv_url="li/language">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="false" qlang>update</button>
+                            <button type="button" class="btn btn-default" 
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

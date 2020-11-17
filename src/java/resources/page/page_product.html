@@ -1,0 +1,298 @@
+<div component_id="page_product" class="row apd-page" id="page_product">
+    <div  class="col-md-12">
+        <div class="row text-center module-heading">
+            <label qlang>product</label>
+        </div>
+    </div> 
+    <div  class="col-md-10 apd-page-btn"> 
+        <button component_id="serviceGfGetProductAllList"  id='serviceGfGetProductList' type="button" 
+                class="btn btn-md task-button apd-task-load apd-task-page-loader" 
+                onclick="loadTable('tbl_product_list')" qlang> list
+        </button>
+        <button component_id="serviceGfInsertNewProduct"   id='btn_serviceGfInsertNewProduct' type="button" 
+                class="btn btn-md task-button apd-task-create apd-task-form" 
+                data-toggle="modal" data-target="#insertNewProduct" qlang>new
+        </button>
+
+        <hr>
+    </div>
+
+    <div  id= "productlist" class="col-md-12 apd-page-body"> 
+
+    </div>
+    <!-- Modal -->
+    <div  component_id="serviceGfInsertNewProduct" id="insertNewProduct" apd-form-reload-button-id='serviceGfGetProductAllList' 
+          class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>new</h4>
+                </div>
+                <div class="modal-body-1  ">
+                    <form id="form_insertNewProduct" class="apd-form" method="POST" 
+                          action="srv/serviceGfInsertNewProduct">
+
+                        <div class="form-group col-md-12"></div>
+
+                        <div class="form-group col-md-5">
+                            <label qlang>productName</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="productName" name="productName"    > 
+                        </div>
+
+                        <div class="form-group col-md-5">
+                            <label qlang>productCode</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="productCode" name="productCode"  > 
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label qlang>unit</label>
+                            <select class="form-control apd-form-select" 
+                                    id="unit" name="unit" select_separator=" " 
+                                    select_text="itemValue"  select_value="itemKey" 
+                                    srv_url="li/unit">
+                            </select>
+                        </div> 
+                        
+                        <div class="form-group1 col-md-4" >
+                            <label qlang>country</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="country" name="country"  >
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>company</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="company" name="company"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>productType</label>
+                            <select class="form-control apd-form-select" id="productType" 
+                                    name="productType" select_separator=" " 
+                                    select_text="itemValue"  select_value="itemKey" 
+                                    srv_url="li/productType">
+                            </select>
+                        </div> 
+
+                        <div class="form-group col-md-12"></div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>packadakiSay</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="packadakiSay" name="packadakiSay"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>qram</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="qram" name="qram"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>doza</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="doza" name="doza"  >
+                        </div> 
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>howToUse</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="howToUse" name="howToUse" >
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>param1</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param1" name="param1"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>param2</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param2" name="param2"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>param3</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param3" name="param3"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>param4</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param4" name="param4"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>param5</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param5" name="param5"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>param6</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param6" name="param6"  >
+                        </div> 
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div component_id="serviceGfUpdateProduct" id="updateProduct" apd-form-reload-button-id='serviceGfGetProductList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>update</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_updateProduct" class="apd-form" method="POST" action="srv/serviceGfUpdateProduct">
+                        <div class="form-group col-md-6 hidden"> 
+                            <label class="float">id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id">
+                        </div>
+                        <div class="form-group col-md-12"></div>
+
+                        <div class="form-group col-md-5">
+                            <label qlang>productName</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="productName" name="productName"    > 
+                        </div>
+
+                        <div class="form-group col-md-5">
+                            <label qlang>productCode</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="productCode" name="productCode"  > 
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label qlang>unit</label>
+                            <select class="form-control apd-form-select" 
+                                    id="unit" name="unit" select_separator=" " 
+                                    select_text="itemValue"  select_value="itemKey" 
+                                    srv_url="li/unit">
+                            </select>
+                        </div>
+
+                        <div class="form-group1 col-md-4" >
+                            <label qlang>country</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="country" name="country"  >
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>company</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="company" name="company"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>productType</label>
+                            <select class="form-control apd-form-select" id="productType" 
+                                    name="productType" select_separator=" " 
+                                    select_text="itemValue"  select_value="itemKey" 
+                                    srv_url="li/productType">
+                            </select>
+                        </div> 
+
+                        <div class="form-group col-md-12"></div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>packadakiSay</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="packadakiSay" name="packadakiSay"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>qram</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="qram" name="qram"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>doza</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="doza" name="doza"  >
+                        </div> 
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>howToUse</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="howToUse" name="howToUse" >
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>param1</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param1" name="param1"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>param2</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param2" name="param2"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>param3</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param3" name="param3"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>param4</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param4" name="param4"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>param5</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param5" name="param5"  >
+                        </div> 
+
+                        <div class="form-group col-md-4">
+                            <label qlang>param6</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param6" name="param6"  >
+                        </div> 
+                        
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="false" qlang>update</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,220 @@
+
+cud4ProductUsage	cud_4_Product_Usage	AZE
+r4ProductUsage	r_4_Product_Usage	AZE
+cud4AnbarProductOrder	cud_4_Anbar_Product_Order	AZE
+r4AnbarProductOrder	r_4_Anbar_Product_Order	AZE
+cud4AnbarHereket	cud_4_Anbar_Hereket	AZE
+r4AnbarHereket	r_4_Anbar_Hereket	AZE
+addProductRemain	add_Product_Remain	AZE
+getProductRemainList	get_Product_Remain_List	AZE
+curd4ProductPurchase	curd_4_Product_Purchase	AZE
+cud4ProductPurchase	cud_4_Product_Purchase	AZE
+r4ProductPurchase	r_4_Product_Purchase	AZE
+cud4ProductPriceList	cud_4_Product_Price_List	AZE
+r4ProductPriceList	r_4_Product_Price_List	AZE
+r4PriceLIstRatioByPatientSender	r_4_Price_L_Ist_Ratio_By_Patient_Sender	AZE
+cud4PriceLIstRatioByPatientSender	cud_4_Price_L_Ist_Ratio_By_Patient_Sender	AZE
+cud4PriceLIstRatioByDoctor	cud_4_Price_L_Ist_Ratio_By_Doctor	AZE
+r4PriceLIstRatioByDoctor	r_4_Price_L_Ist_Ratio_By_Doctor	AZE
+cud4PatientSender	cud_4_Patient_Sender	AZE
+r4PatientSender	r_4_Patient_Sender	AZE
+patientCode	patient_Code	ENG
+Occupation (Other)	Occupation_ _(_Other_)	AZE
+<span style="opacity: 0;">_________________________ </span>	<span_ style_=_"opacity_:_ _0_;_"_>__________________________ _<_/span_>	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Statistics	Statistics	AZE
+Data	Data	AZE
+Basic Statistics	Basic_ _Statistics	AZE
+Figure	Figure	AZE
+Field	Field	AZE
+Statistic Result	Statistic_ _Result	AZE
+Confidence Interval Approximations, If sampling distribution of the mean follows normal distribution	Confidence_ _Interval_ _Approximations_,_ _If_ sampling_ distribution_ of_ the_ mean_ follows_ normal_ distribution	AZE
+Field for Y axis	Field_ for_ _Y_ axis	AZE
+Field for X axis	Field_ for_ _X_ axis	AZE
+Draw Line	Draw_ _Line	AZE
+Draw Bar	Draw_ _Bar	AZE
+Draw Pie	Draw_ _Pie	AZE
+Command	Command	AZE
+Result	Result	AZE
+insertNewPermission	insert_New_Permission	ENG
+rules	rules	ENG
+insertNewRule	insert_New_Rule	ENG
+isPublic	is_Public	ENG
+assignRule2Permission	assign_Rule_2_Permission	ENG
+permission	permission	ENG
+ddd	ddd	ENG
+serviceCrGetReportLineList4PrintPayment	service_Cr_Get_Report_Line_List_4_Print_Payment	ENG
+dddd	dddd	ENG
+mandatoryRulesForCompanies	mandatory_Rules_For_Companies	ENG
+reportAppointmentListWithExpenselist	report_Appointment_List_With_Expenselist	ENG
+companyAndRule	company_And_Rule	ENG
+assignRule2Company	assign_Rule_2_Company	ENG
+Price List Ratio By Patient Sender	Price_ _List_ _Ratio_ _By_ _Patient_ _Sender	ENG
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+usertable	usertable	ENG
+role	role	ENG
+paymentTypeAndRule	payment_Type_And_Rule	ENG
+companyPayment	company_Payment	ENG
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+userShortId	user_Short_Id	ENG
+all	all	ENG
+companyList	company_List	ENG
+r4Discount	r_4_Discount	ENG
+cud4Discount	cud_4_Discount	ENG
+discount	discount	ENG
+discountName	discount_Name	ENG
+discountAmount	discount_Amount	ENG
+validDate	valid_Date	ENG
+r4RelDiscountAndPatient	r_4_Rel_Discount_And_Patient	ENG
+cud4RelDiscountAndPatient	cud_4_Rel_Discount_And_Patient	ENG
+discountAndPatient	discount_And_Patient	ENG
+discountandpatient	discountandpatient	ENG
+discountandpatientName	discountandpatient_Name	ENG
+discountandpatientAmount	discountandpatient_Amount	ENG
+(%)	(_%_)	ENG
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Submodule	Submodule	ENG
+submoduleUniqueId	submodule_Unique_Id	ENG
+status	status	ENG
+submoduleType	submodule_Type	ENG
+lang	lang	ENG
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+tasknetwork	tasknetwork	ENG
+generalUserInterface	general_User_Interface	ENG
+networkName	network_Name	ENG
+networkStatus	network_Status	ENG
+projectDescription	project_Description	ENG
+assignRule2PaymentType	assign_Rule_2_Payment_Type	ENG
+owner	owner	ENG
+r4Network	r_4_Network	ENG
+crud4Network	crud_4_Network	ENG
+networkList	network_List	ENG
+r4TaskType	r_4_Task_Type	ENG
+crud4TaskType	crud_4_Task_Type	ENG
+configuration	configuration	ENG
+tasktype	tasktype	ENG
+tasktypeList	tasktype_List	ENG
+typeName	type_Name	ENG
+taskType	task_Type	ENG
+r4Project	r_4_Project	ENG
+crud4Poject	crud_4_Poject	ENG
+crud4Project	crud_4_Project	ENG
+projectList	project_List	ENG
+projectName	project_Name	ENG
+startDate	start_Date	ENG
+endDate	end_Date	ENG
+crud4Progress	crud_4_Progress	ENG
+r4Progress	r_4_Progress	ENG
+progress	progress	ENG
+progressList	progress_List	ENG
+progressCode	progress_Code	ENG
+progressName	progress_Name	ENG
+r4TaskStatus	r_4_Task_Status	ENG
+crud4TaskStatus	crud_4_Task_Status	ENG
+taskstatus	taskstatus	ENG
+taskstatusList	taskstatus_List	ENG
+statusCode	status_Code	ENG
+statusName	status_Name	ENG
+r4TaskPriority	r_4_Task_Priority	ENG
+crud4TaskPriority	crud_4_Task_Priority	ENG
+taskpriority	taskpriority	ENG
+taskpriorityList	taskpriority_List	ENG
+priorityCode	priority_Code	ENG
+priorityName	priority_Name	ENG
+r4TaskCategory	r_4_Task_Category	ENG
+crud4TaskCategory	crud_4_Task_Category	ENG
+taskcategory	taskcategory	ENG
+taskcategoryList	taskcategory_List	ENG
+categoryCode	category_Code	ENG
+categoryName	category_Name	ENG
+taskList	task_List	ENG
+assignee	assignee	ENG
+reporter	reporter	ENG
+commonTaskUser	common_Task_User	ENG
+finishTask	finish_Task	ENG
+completedDuration	completed_Duration	ENG
+r4ProjectPermission	r_4_Project_Permission	ENG
+crud4ProjectPermission	crud_4_Project_Permission	ENG
+projectpermission	projectpermission	ENG
+projectpermissionList	projectpermission_List	ENG
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+file	file	ENG
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Report Type	Report_ _Type	ENG
+code	code	ENG
+key	key	ENG
+parameter1	parameter_1	ENG
+parameter2	parameter_2	ENG
+parameter3	parameter_3	ENG
+parameter4	parameter_4	ENG
+parameter5	parameter_5	ENG
+companypayment	companypayment	ENG
+newCompanyPayment	new_Company_Payment	ENG
+updateCompanyPayment	update_Company_Payment	ENG
+forward	forward	ENG
+remove	remove	ENG
+addReporter	add_Reporter	ENG
+removeReporter	remove_Reporter	ENG
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+backlog	backlog	AZE
+attributes	attributes	ENG
+insertNewAttribute	insert_New_Attribute	ENG
+attributeCode	attribute_Code	ENG
+attributeUniqueId	attribute_Unique_Id	ENG
+isGeneral	is_General	ENG
+Attribute Code	Attribute_ _Code	ENG
+Attribute Name	Attribute_ _Name	ENG
+Status	Status	ENG
+Is General?	Is_ _General_?	ENG
+backlogName	backlog_Name	ENG
+backlogBecause	backlog_Because	ENG
+insertNewModule	insert_New_Module	ENG
+moduleUniqueId	module_Unique_Id	ENG
+updateModule	update_Module	ENG
+paymenttype	paymenttype	ENG
+newPaymentType	new_Payment_Type	ENG
+paymentTypeName	payment_Type_Name	ENG
+paymentTypeShortname	payment_Type_Shortname	ENG
+defaultPrice	default_Price	ENG
+defaultDiscount	default_Discount	ENG
+defaultPaymentPeriod	default_Payment_Period	ENG
+userLisenceCount	user_Lisence_Count	ENG
+userLisenceMonthRange	user_Lisence_Month_Range	ENG
+updatePaymentType	update_Payment_Type	ENG
+PersonalSignup	Personal_Signup	ENG
+allUserTables	all_User_Tables	ENG
+newUserTable	new_User_Table	ENG
+tableName	table_Name	ENG
+(V,T,S)	(_V_,_T_,_S_)	ENG
+seqnum	seqnum	ENG
+tableScript	table_Script	ENG
+updateUserTable	update_User_Table	ENG
+sourced	sourced	ENG
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+Regression	Regression	AZE
+Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
+currentPasswordIsNotCorrect	current_Password_Is_Not_Correct	ENG

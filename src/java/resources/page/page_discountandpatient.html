@@ -1,0 +1,155 @@
+<div component_id="page_discountandpatient" class="row apd-page" id="page_discountandpatient">
+    <div  class="col-md-12">
+        <div class="row text-center module-heading">
+            <label qlang>discountandpatient</label>
+        </div>
+    </div> 
+    <div  class="col-md-10 apd-page-btn"> 
+        <button component_id="serviceGfGetRelDiscountAndPatientList"  id='serviceGfGetRelDiscountAndPatientList' type="button" 
+                class="btn btn-md task-button apd-task-load apd-task-page-loader" 
+                onclick="loadTable('tbl_discountandpatient_list')" qlang> list
+        </button>
+        <button component_id="serviceGfInsertNewRelDiscountAndPatient"   id='btn_serviceGfInsertNewRelDiscountAndPatient' type="button" 
+                class="btn btn-md task-button apd-task-create apd-task-form" 
+                data-toggle="modal" data-target="#insertNewRelDiscountAndPatient" qlang>new
+        </button>
+
+        <hr>
+    </div>
+
+    <div  id= "discountandpatientlist" class="col-md-12 apd-page-body"> 
+
+    </div>
+    <!-- Modal -->
+    <div  component_id="serviceGfInsertNewRelDiscountAndPatient" id="insertNewRelDiscountAndPatient" apd-form-reload-button-id='serviceGfGetRelDiscountAndPatientList' 
+          class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>new</h4>
+                </div>
+                <div class="modal-body-1  ">
+                    <form id="form_insertNewRelDiscountAndPatient" class="apd-form" method="POST" 
+                          action="srv/serviceGfInsertNewRelDiscountAndPatient">
+
+
+                        <div class="form-group col-md-6">
+                            <label qlang>discount</label>
+                            <select class="form-control apd-form-select" 
+                                    id="fkDiscountId" name="fkDiscountId" 
+                                    select_separator=" " 
+                                    select_text="discountName" 
+                                    select_value="id" 
+                                    srv_url="srv/serviceGfGetDiscountList4Combo">
+                            </select> 
+                        </div >
+
+                        <div class="form-group col-md-6">
+                            <label qlang>patientFullname</label>
+                            <select class="form-control apd-form-custom-select" 
+                                    id="fkPatientId" name="fkPatientId" 
+                                    select_separator=" " 
+                                    select_text="patientName" 
+                                    select_value="id" 
+                                    onchange="findPatientOnPayment(this)"
+                                    srv_url="srv/serviceCrGetPatientFullnameById">
+                            </select> 
+                        </div >
+
+                        <div class="form-group col-md-12">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+
+
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div component_id="serviceGfUpdateRelDiscountAndPatient" id="updateRelDiscountAndPatient" apd-form-reload-button-id='serviceGfGetRelDiscountAndPatientList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>update</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_updateRelDiscountAndPatient" class="apd-form" method="POST" action="srv/serviceGfUpdateRelDiscountAndPatient">
+                        <div class="form-group col-md-6 hidden"> 
+                            <label class="float">id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id">
+                        </div>
+                        <div class="form-group col-md-7">
+                            <label qlang>discountandpatientName</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="discountandpatientName" name="discountandpatientName"    > 
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label qlang>discountandpatientAmount</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="discountandpatientAmount" name="discountandpatientAmount"  > 
+                        </div>
+
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang  qlang >validDate</label>
+                            <div class='input-group date apd-form-date' id="validDate"  >
+                                <input type="text" class="form-control ">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group1 col-md-6" >
+                            <label qlang>param1</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param1" name="param1"  >
+                        </div>
+
+                        <div class="form-group1 col-md-6" >
+                            <label qlang>param2</label>
+                            <input  class="form-control apd-form-input" type="text"
+                                    id="param2" name="param2"  >
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="false" qlang>update</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.apd-form-date').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+    });
+</script>

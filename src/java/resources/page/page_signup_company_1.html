@@ -1,0 +1,111 @@
+<h3 qlang>singUpCompany</h3>
+<br>
+<form id="form_signupCompany" class="apd-form" method="POST"
+      action="nasrv/serviceCrSignupCompany">
+
+    <div class="form-group col-md-offset-4 col-md-4">
+        <label qlang>companyName</label><span style="color: red">*</span>
+        <input class="form-control apd-form-input" type="text" id="companyName" name="companyName">
+    </div>
+    <div class="form-group col-md-offset-4 col-md-4">
+        <label qlang>companyDomain</label><span style="color: red">*</span>
+        <input class="form-control apd-form-input" type="text" id="companyDomain" 
+               name="companyDomain"  >
+    </div>
+    <div class="form-group col-md-offset-4 col-md-4">
+        <label qlang>country</label><span style="color: red">*</span>
+        <select id="companyCountry" class="form-control apd-form-select-back selectpicker" has_null="var"
+                name="companyCountry" select_text="itemValue" select_value="itemKey" 
+                srv_url="nali/country" has_other>
+        </select>
+    </div>
+    <div class="form-group col-md-offset-4 col-md-4">
+        <label qlang>address</label>              
+        <input class="form-control apd-form-input" type="text" id="address" 
+               name="companyAddress"     >
+        <hr>
+    </div>
+
+    <div class="form-group col-md-offset-4 col-md-4">
+        <label qlang>userPersonName</label><span style="color: red">*</span>
+        <input id="userPersonName" type="text" class="form-control apd-form-input" 
+               name="userPersonName"  >
+    </div>
+    <div class="form-group col-md-offset-4 col-md-4">
+        <label qlang>userPersonSurname</label><span style="color: red">*</span>
+        <input id="userPersonSurname" type="text" class="form-control apd-form-input"
+               name="userPersonSurname">
+
+    </div>
+    <div class="form-group col-md-offset-4 col-md-4">
+        <label qlang>userPersonMiddlename</label> 
+        <input id="userPersonMiddlename" type="text" class="form-control apd-form-input"
+               name="userPersonMiddlename">
+    </div>
+    <div class="form-group col-md-offset-4 col-md-4">
+        <label qlang>sex</label><span style="color: red">*</span>
+        <select class="form-control apd-form-select-back selectpicker" id="sex" name="sex" 
+                has_null="true" select_text="itemValue"  
+                select_value="itemKey" srv_url="nali/sex"  >
+        </select>
+    </div>
+
+    <div class="form-group col-md-offset-4 col-md-4">
+        <label qlang>username</label><span style="color: red">*</span>
+        <input id="username" type="text" class="form-control apd-form-input" 
+               name="username"   />
+    </div>
+
+    <div class="form-group col-md-offset-4 col-md-4">
+        <label qlang>password</label><span style="color: red">*</span>
+        <input id="password" type="password" class="form-control apd-form-input"
+               name="password" "Password" aria-describedby="passwordHelpText"/>
+    </div>
+    <div class="form-group col-md-offset-4 col-md-4">
+        <label qlang>confirmPassword</label><span style="color: red">*</span>
+        <input id="password2" type="password" class="form-control apd-form-input" 
+               name="password2"   />
+    </div>
+    <div class="form-group col-md-offset-4 col-md-4">
+        <label qlang>email</label><span style="color: red">*</span>
+        <input id="email1" type="email" class="form-control apd-form-email" 
+               name="email1"   />
+    </div>
+    <div class="form-group col-md-offset-4 col-md-4">
+        <label qlang>mobile1</label><span style="color: red">*</span>
+        <input type="text" class="form-control apd-form-input" id="mobile1"   
+               name="mobile1"  >
+
+    </div>
+    
+    
+     
+    <div class="form-group col-md-offset-4 col-md-4">
+        <label qlang>module</label><span style="color: red">*</span>
+        <select class="form-control apd-form-select-back selectpicker" id="fkModuleId" name="fkModuleId" 
+                has_null="true" select_text="name"  
+                select_value="id" srv_url="nasrv/serviceCrGetModuleList4ComboNali"  >
+        </select>
+    </div>
+
+   
+    
+    <div class="form-group col-md-offset-4 col-md-4">
+        <button id="btnSignup" class="button expanded apd-form-btn" type="button" 
+                apd-clear-form-data="true" qlang>signUp</button> 
+    </div>
+
+
+</form>
+<script>
+    $('.selectpicker').selectpicker('refresh');
+</script>
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,330 @@
+<div component_id="page_anbarhereket" class="row apd-page" id="page_anbarhereket">
+    <div  class="col-md-12">
+        <div class="row text-center module-heading">
+            <label qlang>anbarHereket</label>
+        </div>
+    </div> 
+    <div  class="col-md-12 apd-page-btn"> 
+        <button   component_id="serviceGfGetAnbarHereketList"  id='serviceGfGetAnbarHereketList' type="button" 
+                  class="btn btn-md task-button apd-task-load apd-task-page-loader" 
+                  onclick="loadTable('tbl_anbarhereket_list')" qlang>list
+        </button>
+        <button  component_id="serviceGfInsertNewAnbarHereket"  id='btn_serviceGfInsertNewAnbarHereket' type="button"
+                 class="btn btn-md task-button apd-task-create apd-task-form" 
+                 data-toggle="modal" data-target="#insertNewAnbarHereket" qlang>new
+        </button>
+        <hr>
+    </div>
+
+    <div  id= "anbarhereketlist" class="col-md-12 apd-page-body"> 
+
+    </div>
+
+    <!-- Modal -->
+    <div component_id="serviceGfInsertNewAnbarHereket"  id="insertNewAnbarHereket" apd-form-reload-button-id='serviceGfGetAnbarHereketList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>new</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewAttribute" class="apd-form" method="POST" 
+                          action="srv/serviceGfInsertNewAnbarHereket">
+                        <div class="form-group col-md-4">
+                            <label qlang>sourceAnbar</label>
+                            <select class="form-control apd-form-select" 
+                                    select_text="anbarName" 
+                                    select_value="id" 
+                                    id="fkSourceAnbarId" name="fkSourceAnbarId" 
+                                    srv_url="srv/serviceGfGetAnbarList">
+                            </select> 
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>destinationAnbar</label>
+                            <select class="form-control apd-form-select" 
+                                    select_text="anbarName" 
+                                    select_value="id" 
+                                     id="fkDestinationAnbarId" name="fkDestinationAnbarId" 
+                                    srv_url="srv/serviceGfGetAnbarList">
+                            </select> 
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>product</label>
+                            <select class="form-control apd-form-custom-man-select" 
+                                    id="fkProductId" name="fkProductId"
+                                    select_text="productCode,productName" select_value="id" 
+                                    filter_text="productName"
+                                    select_separator=", "
+                                    srv_url="srv/serviceGfGetProductAllList"
+                                     onchange="fillCustomSelectCombo(this)">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-12"> </div>
+                        
+                        <div class="form-group col-md-4">
+                            <label qlang>patientFullname</label>
+                            <select class="form-control apd-form-custom-man-select" 
+                                    id="fkPatientId" name="fkPatientId" 
+                                    select_separator=" " 
+                                    select_text="patientId,patientName,patientMiddleName,patientSurname" 
+                                    filter_text="patientName"
+                                    select_value="id" 
+                                    onchange="fillCustomSelectCombo(this)"
+                                    onselect_func="patientSelectAction"
+                                    srv_url="srv/serviceCrGetPatientList">
+                            </select> 
+                        </div>
+                        
+                        
+                        <div class="form-group col-md-4">
+                            <label qlang>operationType</label>
+                            <select class="form-control apd-form-select" 
+                                    select_text="itemValue" select_value="itemKey" 
+                                    id="operationType" name="operationType" 
+                                    srv_url="li/hereketOperationType">
+                            </select> 
+                        </div>
+                        
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>documentNo</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="documentNo" name="documentNo" >
+                        </div>
+
+                         <div class="form-group col-md-12"> </div>
+                         
+                         
+                        <div class="form-group col-md-2">
+                            <label class="float" qlang>amount</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="amount" name="amount" >
+                        </div>
+
+                        <div class="form-group col-md-10">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+                        
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div component_id="serviceGfUpdateAnbarHereket"  id="updateAnbarHereket" apd-form-reload-button-id='serviceGfGetAnbarHereketList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>update</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_updateAnbarHereket" class="apd-form" method="POST" action="srv/serviceGfUpdateAnbarHereket">
+                        <div class="form-group col-md-6 hidden"> 
+                            <label class="float">id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id"    >
+                        </div>
+                         
+                        <div class="form-group col-md-4">
+                            <label qlang>sourceAnbar</label>
+                            <select class="form-control apd-form-select" 
+                                    select_text="anbarName" 
+                                    select_value="id" 
+                                    id="fkSourceAnbarId" name="fkSourceAnbarId" 
+                                    srv_url="srv/serviceGfGetAnbarList">
+                            </select> 
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>destinationAnbar</label>
+                            <select class="form-control apd-form-select" 
+                                    select_text="anbarName" 
+                                    select_value="id" 
+                                     id="fkDestinationAnbarId" name="fkDestinationAnbarId" 
+                                    srv_url="srv/serviceGfGetAnbarList">
+                            </select> 
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>product</label>
+                            <select class="form-control apd-form-custom-man-select" 
+                                    id="fkProductId" name="fkProductId"
+                                    select_text="productCode,productName" select_value="id" 
+                                    filter_text="productName"
+                                    select_separator=", "
+                                    srv_url="srv/serviceGfGetProductAllList"
+                                     onchange="fillCustomSelectCombo(this)">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-12"> </div>
+                        
+                        <div class="form-group col-md-4">
+                            <label qlang>patientFullname</label>
+                            <select class="form-control apd-form-custom-man-select" 
+                                    id="fkPatientId" name="fkPatientId" 
+                                    select_separator=" " 
+                                    select_text="patientId,patientName,patientMiddleName,patientSurname" 
+                                    filter_text="patientName"
+                                    select_value="id" 
+                                    onchange="fillCustomSelectCombo(this)"
+                                    onselect_func="patientSelectAction"
+                                    srv_url="srv/serviceCrGetPatientList">
+                            </select> 
+                        </div>
+                        
+                        
+                        <div class="form-group col-md-4">
+                            <label qlang>operationType</label>
+                            <select class="form-control apd-form-select" 
+                                    select_text="itemValue" select_value="itemKey" 
+                                    id="operationType" name="operationType" 
+                                    srv_url="li/hereketOperationType">
+                            </select> 
+                        </div>
+                        
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>documentNo</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="documentNo" name="documentNo" >
+                        </div>
+
+                         <div class="form-group col-md-12"> </div>
+                         
+                         
+                        <div class="form-group col-md-2">
+                            <label class="float" qlang>amount</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="amount" name="amount" >
+                        </div>
+
+                        <div class="form-group col-md-10">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+                        
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="assignSubmodule" apd-form-reload-button-id='serviceGfGetRelAnbarHereketAndSubmoduleList' 
+         class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>assignSubmodule</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewRule" class="apd-form" method="POST" action="srv/serviceGfInsertNewRelAnbarHereketAndSubmodule">
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>paymentName</label>
+                            <select class="form-control apd-form-select" 
+                                    id="fkAnbarHereketId" name="fkAnbarHereketId"
+                                    select_text="paymentName" select_value="id" 
+                                    srv_url="srv/serviceGfGetAnbarHereketList">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>submodule</label>
+                            <select class="form-control apd-form-multiselect" 
+                                    multiple 
+                                    id="fkSubmoduleId" name="fkSubmoduleId"
+                                    select_text="submoduleName" select_value="id" 
+                                    dependence_id="fkAnbarHereketId"
+                                    srv_url="srv/serviceGfGetSubmoduleListByAnbarHereket">
+                            </select>
+                        </div>
+
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="false" qlang>insert</button>
+                            <button type="button" class="btn btn-default" 
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function findProduct(e, hideCombo) {
+        var el = $(e);
+        var div = el.closest("div");
+//    console.log(div.find("label").first().html())
+
+        div.find('.es-list').empty();
+        var id = el.attr("id");
+        var val = el.val();
+
+        json = {kv: {}};
+        json.kv.productName = val;
+        var data = JSON.stringify(json);
+        $.ajax({
+            url: "api/post/srv/serviceGfGetProductAllList",
+            type: "POST",
+            data: data,
+            contentType: "application/json",
+            crossDomain: true,
+            async: false,
+            success: function (res) {
+                isResultRedirect(JSON.stringify(res));
+                var obj = res.tbl;
+//                    for (var i = 0; i < obj.length; i++) {
+                if (obj.length == 0) {
+                    return;
+                }
+                var objChild = obj[0]['r'];
+                for (var j = 0; j < objChild.length; j++) {
+                    var v = objChild[j]['id'];
+                    var t = objChild[j]['productName'] + " (" + objChild[j]['productCode'] + ")" + ", "
+                            + objChild[j]['unitName'];
+                    div.find('.es-list')
+                            .append($("<li/>")
+                                    .text(t)
+                                    .attr("class", "es-visible apd-editable-combo-li")
+                                    .attr("pid", v)
+                                    );
+                }
+                if (hideCombo == true) {
+                    div.find('.es-list').hide();
+                } else {
+                    div.find('.es-list').show();
+                }
+            },
+            error: function (res, status) {
+//            alert(getMessage('somethingww'));
+            }
+        });
+    }
+</script>

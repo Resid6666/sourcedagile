@@ -1,0 +1,253 @@
+<div component_id="page_productusage" class="row apd-page" id="page_productusage">
+    <div  class="col-md-12">
+        <div class="row text-center module-heading">
+            <label qlang>productUsage</label>
+        </div>
+    </div> 
+    <div  class="col-md-12 apd-page-btn"> 
+        <button   component_id="serviceGfGetProductUsageList"  id='serviceGfGetProductUsageList' type="button" 
+                  class="btn btn-md task-button apd-task-load apd-task-page-loader" 
+                  onclick="loadTable('tbl_productusage_list')" qlang>list
+        </button>
+        <button  component_id="serviceGfInsertNewProductUsage"  id='btn_serviceGfInsertNewProductUsage' type="button"
+                 class="btn btn-md task-button apd-task-create apd-task-form" 
+                 data-toggle="modal" data-target="#insertNewProductUsage" qlang>new
+        </button>
+
+        <hr>
+    </div>
+
+    <div  id= "productusagelist" class="col-md-12 apd-page-body"> 
+
+    </div>
+
+    <!-- Modal -->
+    <div component_id="serviceGfInsertNewProductUsage"  id="insertNewProductUsage" apd-form-reload-button-id='serviceGfGetProductUsageList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>new</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewAttribute" class="apd-form" method="POST" 
+                          action="srv/serviceGfInsertNewProductUsage">
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>product</label>
+                            <select class="form-control apd-form-custom-man-select" 
+                                    id="fkProductId" name="fkProductId"
+                                    select_text="productName,productCode,anbarName,remainAmount" select_value="id" 
+                                    filter_text="productName"
+                                    select_separator=","
+                                    onchange="fillCustomSelectCombo(this)"
+                                    srv_url="srv/serviceGfGetProductRemainListWithPermission">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label class="float" qlang>amount</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="amount" name="amount">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>usagePurpose</label>
+                            <select class="form-control apd-form-select" 
+                                    id="usagePurpose" name="usagePurpose"
+                                    select_text="itemValue" 
+                                    select_value="itemKey" 
+                                    srv_url="li/productUsagePurpose">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-12"></div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>patientFullname</label>
+                            <select class="form-control apd-form-custom-man-select" 
+                                    id="fkPatientId" name="fkPatientId" 
+                                    has_null=1"
+                                    select_separator=" " 
+                                    select_text="patientName,patientMiddleName,patientSurname,birthDate" 
+                                    filter_text="patientName"
+                                    select_value="id" 
+                                    onchange="fillCustomSelectCombo(this)"
+                                    onselect_func="patientSelectAction"
+                                    srv_url="srv/serviceCrGetPatientList">
+                            </select> 
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label class="float" qlang>documentNo</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="documentNo" name="documentNo" >
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+
+
+
+                        <div class="form-group col-md-12" align="right">
+<!--                            <input type="checkbox" dont_clear class="apd-form-input" 
+                                   checked  onchange="countAsSaleFunc(this)" id="countAsSale">
+                            <span qlang>countAsSale</span>-->
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div component_id="serviceGfUpdateProductUsage"  id="updateProductUsage" apd-form-reload-button-id='serviceGfGetProductUsageList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>new</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_updateProductUsage" class="apd-form" method="POST" action="srv/serviceGfUpdateProductUsage">
+                        <div class="form-group col-md-6 hidden"> 
+                            <label class="float">id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id"    >
+                        </div>
+                         
+                        
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>product</label>
+                            <select class="form-control apd-form-custom-man-select" 
+                                    id="fkProductId" name="fkProductId"
+                                    select_text="productName,productCode,anbarName,remainAmount" select_value="id" 
+                                    filter_text="productName"
+                                    select_separator=","
+                                    onchange="fillCustomSelectCombo(this)"
+                                    srv_url="srv/serviceGfGetProductRemainListWithPermission">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label class="float" qlang>amount</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="amount" name="amount">
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>usagePurpose</label>
+                            <select class="form-control apd-form-select" 
+                                    id="usagePurpose" name="usagePurpose"
+                                    select_text="itemValue" 
+                                    select_value="itemKey" 
+                                    srv_url="li/productUsagePurpose">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-12"></div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>patientFullname</label>
+                            <select class="form-control apd-form-custom-man-select" 
+                                    id="fkPatientId" name="fkPatientId" 
+                                    has_null=1"
+                                    select_separator=" " 
+                                    select_text="patientName,patientMiddleName,patientSurname,birthDate" 
+                                    filter_text="patientName"
+                                    select_value="id" 
+                                    onchange="fillCustomSelectCombo(this)"
+                                    onselect_func="patientSelectAction"
+                                    srv_url="srv/serviceCrGetPatientList">
+                            </select> 
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label class="float" qlang>documentNo</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="documentNo" name="documentNo" >
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+                        
+                        
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="false" qlang>update</button>
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+</div>
+
+<script>
+    $(function () {
+        $('.apd-form-date').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+    });
+
+    function confirmOrder(e) {
+        var r = confirm(getLabel("areYouSureToProceed"));
+        if (r == false) {
+            return;
+        }
+
+        var el = $(e).closest('form');
+
+        var res = getTableSelectedItemsWithComma($('#tbl_productusage_list'));
+        console.log("res=" + res);
+
+
+
+        var json = {kv: {}};
+        json.kv.id = res;
+        var data = JSON.stringify(json);
+        $.ajax({
+            url: "api/post/srv/serviceGfConfirmProductUsage",
+            type: "POST",
+            data: data,
+            contentType: "application/json",
+            crossDomain: true,
+            async: false,
+            success: function (res) {
+                isResultRedirect(JSON.stringify(res));
+                alert(getMessage('successOperation'));
+
+            },
+            error: function (res, status) {
+//                alert(getMessage('somethingww'));
+            }
+        });
+        loadTable('tbl_productusage_list');
+    }
+
+    function countAsSaleFunc(e) {
+        console.log($(e).is(':checked'))
+        if ($(e).is(':checked')) {
+            $(e).val("1");
+        } else {
+            $(e).val("0");
+        }
+    }
+
+</script>

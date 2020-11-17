@@ -1,0 +1,1054 @@
+<div component_id="page_task" class="row apd-page" id="page_task">
+    <div class="col-md-12"><hr></div> 
+    <div  class="col-md-12 apd-page-btn"> 
+        <div class="col-md-4  text-left ">
+            <button component_id="serviceTmGetTaskList" id='serviceTmGetTaskList' qlang type="button" 
+                    class="btn btn-md task-button apd-task-load apd-task-page-loader" 
+                    onclick=" new ApdTable().loadTable('tbl_task_list')">taskList
+            </button>
+            <button component_id="serviceTmInsertNewTask" id='btn_serviceTmInsertNewTask' type="button" class="btn btn-md task-button apd-task-create apd-task-form" 
+                    data-toggle="modal" data-target="#insertNewTask" qlang>insert
+            </button> 
+            <button component_id="serviceTmFinishTask" id='btn_serviceTmFinishTask' 
+                    type="button" 
+                    dependent-table="tbl_task_list"
+                    class="  btn btn-md task-button apd-task-create apd-task-form-fill" 
+                    data-toggle="modal" data-target="#finishTask" qlang>finishTask
+            </button> 
+        </div>
+    </div>
+    <div class="col-md-12"><hr>
+    </div>
+    <div class="col-md-12 apd-submodule-button-list" id="apd-submodule-button-list-id">
+    </div>
+
+    <div  id= "taskmainbody" class="col-md-12 apd-page-body"> 
+
+        <div  id= "tasklist" class="col-md-12 apd-page-body"> 
+        </div>
+
+        <div  id= "taskdetail" class="apd-page-body" style="background-color:#ffffdd;border: 
+              1px solid red; min-height: 100%; height: 100vh; overflow-y: scroll; display: none;" > 
+            <div class="row">
+                <div  id= "tasklist1" class="col-md-8" > 
+
+                </div>
+                <div  id= "tasklist2" class="col-md-2" align="right"> 
+                    <a href="#"  
+                       class="apd-task-form-fill" dependent-table="tbl_task_list" 
+                       data-toggle="modal" data-target="#forwardTask" qlang>
+                        forward
+                    </a>
+                </div>
+                <div  id= "tasklist3" class="col-md-2 apd-page-body" align="right"> 
+                    <a href="#" onclick="Operation.Task.hideDetailPanel()" qlang>close</a>
+                </div>
+                <br>
+            </div>
+
+
+            <form id="form_taskdetail" apd-form-fill-kv="t=2" apd-form-fill-url='srv/serviceTmGetTaskList'
+                  data-target='#form_taskdetail'  class="apd-form" 
+                  method="POST" action="srv/serviceTmUpdateTask">
+                <div class="form-group col-md-6 hidden"> 
+                    <label qlang>id</label>
+                    <input class="form-control apd-form-input" type="type" id="id" name="id" placeholder="Task Code"  >
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label qlang>project</label>
+                    <select class="form-control apd-form-select"
+                            select_text="projectName" select_value="id"
+                            id="fkProjectId" name="fkProjectId" 
+                            has_null
+                            onchange="Operation.Task.singleUpdate(this)"
+                            srv_url="srv/serviceTmGetProjectList">
+                    </select> 
+                </div >
+                <div class="form-group col-md-8">
+                    <label qlang>name</label>
+                    <input class="form-control apd-form-input" type="text" 
+                           autofocus
+                           id="name" name="name" placeholder=" " 
+                           onchange="Operation.Task.singleUpdate(this)">
+                </div>
+
+                <div class="form-group col-md-12"> </div>
+
+                <div class="form-group col-md-6">
+                    <label qlang>taskType</label>
+                    <select class="form-control apd-form-select"
+                            select_text="typeName" select_value="id"
+                            id="fkTaskTypeId" name="fkTaskTypeId" 
+                            async
+                            onchange="Operation.Task.singleUpdate(this)"
+                            srv_url="srv/serviceTmGetTaskTypeList">
+                    </select> 
+                </div >
+                <div class="form-group col-md-6">
+                    <label qlang>assignee</label><br> 
+                    <input class="form-control apd-form-input" type="text" 
+                           readonly disable
+                           id="assigneeName" name="assigneeName" placeholder=" "  >
+                </div>
+
+
+
+
+                <div class="form-group col-md-12"> </div>
+
+
+
+
+                <div class="form-group col-md-6">
+                    <label class="float" qlang >startDate</label>
+                    <div class='input-group date apd-form-date' id="startDate"  >
+                        <input type="text" class="form-control apd-form-date" 
+                               onchange="Operation.Task.singleUpdate(this)">
+                        <span class="input-group-addon">
+
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="float" qlang >endDate</label>
+                    <div class='input-group date apd-form-date' id="endDate">
+                        <input type="text" class="form-control apd-form-date"
+                               onchange="Operation.Task.singleUpdate(this)">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-12"> </div>
+
+                <div class="form-group col-md-6">
+                    <label qlang>priority</label>
+                    <select class="form-control apd-form-select"
+                            select_text="priorityName" select_value="id"
+                            async
+                            onchange="Operation.Task.singleUpdate(this)"
+                            id="fkPriorityId" name="fkPriorityId" 
+                            srv_url="srv/serviceTmGetTaskPriorityList">
+                    </select> 
+                </div >
+                <div class="form-group col-md-6">
+                    <label qlang>status</label>
+                    <select class="form-control apd-form-select"
+                            select_text="statusName" select_value="id"
+                            id="fkTaskStatusId" name="fkTaskStatusId" 
+                            async
+                            onchange="Operation.Task.singleUpdate(this)"
+                            srv_url="srv/serviceTmGetTaskStatusList">
+                    </select> 
+                </div >
+
+
+                <div class="form-group col-md-12"><br></div>
+
+                <div class="form-group col-md-6">
+                    <label qlang>progress</label>
+                    <select class="form-control apd-form-select"
+                            select_text="progressName" select_value="id"
+                            async
+                            onchange="Operation.Task.singleUpdate(this)"
+                            id="fkProgressId" name="fkProgressId" 
+                            srv_url="srv/serviceTmGetProgressList">
+                    </select> 
+                </div >
+                <div class="form-group col-md-6">
+                    <label qlang>category</label>
+                    <select class="form-control apd-form-select"
+                            select_text="categoryName" select_value="id"
+                            async
+                            onchange="Operation.Task.singleUpdate(this)"
+                            id="fkTaskCategoryId" name="fkTaskCategoryId" 
+                            srv_url="srv/serviceTmGetTaskCategoryList">
+                    </select> 
+                </div >  
+
+                <div class="form-group col-md-12"><br> </div>
+
+                <div class="form-group col-md-10">
+                    <label qlang>reporter</label>  
+                    <textarea   class="form-control apd-form-textarea" 
+                                id="reporterName"  readonly disable
+                                name="reporterName" placeholder=""></textarea>
+                </div>
+                <div class="form-group col-md-2">
+                    <br> 
+                    <a href="#"  
+                       class="apd-task-form-fill" dependent-table="tbl_task_list" 
+                       data-toggle="modal" data-target="#addreporter" qlang>
+                        addReporter
+                    </a>
+                    <a href="#"  
+                       class="apd-task-form-fill" dependent-table="tbl_task_list" 
+                       data-toggle="modal" data-target="#removereporter" qlang>
+                        removeReporter
+                    </a>
+                </div>
+
+
+                <div class="form-group col-md-12"></div>
+
+                <div class="form-group col-md-12">
+                    <label qlang>description</label>
+                    <textarea rows="4" class="form-control apd-form-textarea" id="description" 
+                              name="description" placeholder="" 
+                              onchange="Operation.Task.singleUpdate(this)"></textarea>
+                </div>
+
+                <div class="form-group col-md-12"></div>
+
+                <div class="form-group col-md-6">
+
+                    <div class="fileuploader">
+                        <div class="col-md-11 hidden">
+                            <input id="fileUrl1" name="fileUrl1" 
+                                   class="form-control apd-form-input-file" 
+                                   type="file" file_type="general" value="">
+                        </div>
+
+                        <div class="col-md-12" download>
+                            <a href="" class="dw"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <div class="fileuploader">
+                        <div class="col-md-11 hidden">
+                            <input id="fileUrl2" name="fileUrl2" 
+                                   class="form-control apd-form-input-file" 
+                                   type="file" file_type="general" value="">
+                        </div>
+
+                        <div class="col-md-12" download>
+                            <a href="" class="dw"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <div class="fileuploader">
+                        <div class="col-md-11 hidden">
+                            <input id="fileUrl3" name="fileUrl3" 
+                                   class="form-control apd-form-input-file" 
+                                   type="file" file_type="general" value="">
+                        </div>
+
+                        <div class="col-md-12" download>
+                            <a href="" class="dw"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <div class="fileuploader">
+                        <div class="col-md-11 hidden">
+                            <input id="fileUrl4" name="fileUrl4" 
+                                   class="form-control apd-form-input-file" 
+                                   type="file" file_type="general" value="">
+                        </div>
+
+                        <div class="col-md-12" download>
+                            <a href="" class="dw"></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-12" align="right">
+                    <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="false" qlang>update</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+
+    <!-- Modal -->
+    <div component_id="serviceTmInsertNewTask" id="insertNewTask" apd-form-reload-button-id='serviceTmGetTaskList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>new</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewTask" offline class="apd-form" method="POST" action="srv/serviceTmInsertNewTask">
+
+                        <div class="form-group col-md-4">
+                            <label qlang>project</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="projectName" select_value="id"
+                                    id="fkProjectId" name="fkProjectId" 
+
+                                    has_null
+                                    srv_url="srv/serviceTmGetProjectList">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-8">
+                            <label qlang>name</label>
+                            <input class="form-control apd-form-input" type="text" 
+                                   autofocus
+                                   id="name" name="name" placeholder=" "  >
+                        </div>
+
+                        <div class="form-group col-md-12"> </div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>taskType</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="typeName" select_value="id"
+                                    id="fkTaskTypeId" name="fkTaskTypeId" 
+                                    async
+                                    srv_url="srv/serviceTmGetTaskTypeList">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-4">
+                            <label qlang>assignee</label><br> 
+                            <select class="form-control apd-form-select" 
+                                    id="fkTaskAssigneeId" name="fkTaskAssigneeId"
+                                    select_separator=" " 
+                                    dependence_id="fkProjectId"
+                                    select_text="userPersonName,userPersonSurname,userPersonMiddlename"   
+                                    select_value="id" 
+                                    srv_url="srv/serviceTmGetAssigneeByProjectId">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>priority</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="priorityName" select_value="id"
+                                    async
+                                    id="fkPriorityId" name="fkPriorityId" 
+                                    srv_url="srv/serviceTmGetTaskPriorityList">
+                            </select> 
+                        </div >
+
+
+
+                        <div class="form-group col-md-12"><br></div>
+
+
+
+
+                        <div class="form-group col-md-2">
+                            <label class="float" qlang >startDate</label>
+                            <div class='input-group date apd-form-date' id="startDate"  >
+                                <input type="text" class="form-control apd-form-date">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label class="float" qlang >endDate</label>
+                            <div class='input-group date apd-form-date' id="endDate"  >
+                                <input type="text" class="form-control apd-form-date">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>status</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="statusName" select_value="id"
+                                    id="fkTaskStatusId" name="fkTaskStatusId" 
+                                    async
+                                    srv_url="srv/serviceTmGetTaskStatusList">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-4">
+                            <label qlang>progress</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="progressName" select_value="id"
+                                    async
+                                    id="fkProgressId" name="fkProgressId" 
+                                    srv_url="srv/serviceTmGetProgressList">
+                            </select> 
+                        </div >
+
+                        <div class="form-group col-md-12"><br></div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>category</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="categoryName" select_value="id"
+                                    async
+                                    id="fkTaskCategoryId" name="fkTaskCategoryId" 
+                                    srv_url="srv/serviceTmGetTaskCategoryList">
+                            </select> 
+                        </div >   
+                        <div class="form-group col-md-4">
+                            <label qlang>backlog</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="backlogName" select_value="id"
+                                    async
+                                    id="fkBacklogId" name="fkBacklogId" 
+                                    srv_url="srv/serviceTmGetBacklogList">
+                            </select> 
+                        </div >     
+                        
+                        <div class="form-group col-md-4">
+                            <label qlang>reporter</label><br> 
+                            <select class="form-control apd-form-multiselect" 
+                                    multiple
+                                    id="fkTaskReporterId" name="fkTaskReporterId"
+                                    dependence_id="fkProjectId"
+                                    select_separator=" " 
+                                    select_text="userPersonName,userPersonSurname,userPersonMiddlename"   
+                                    select_value="id" r
+                                    srv_url="srv/serviceTmGetReporterByProjectId">
+                            </select>
+                        </div>
+
+
+
+                        <div class="form-group col-md-12"><br></div>
+
+                        <div class="form-group col-md-12">
+                            <label qlang>description</label>
+                            <textarea rows="4" class="form-control apd-form-textarea" id="description" 
+                                      name="description" placeholder=""></textarea>
+                        </div>
+
+                        <div class="form-group col-md-12"></div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>file</label>
+                            <div class="fileuploader">
+                                <div class="col-md-11">
+                                    <input id="fileUrl1" name="fileUrl1" 
+                                           class="form-control apd-form-input-file" 
+                                           type="file" file_type="general" value="">
+                                </div>
+                                <i class="apd-image-trigger fa  fa-picture-o"
+                                   style="font-size:14px;color:#00b289;display: none" 
+                                   id="logoInput"
+                                   apd_image_alt="insValue" data-toggle="modal" 
+                                   data-target="#apdImageViewer" aria-hidden="true" v_id="sa_201707091117240999">
+                                </i>
+                                <div class="col-md-1">
+                                    <img style="display: none; " class="  apd-image-spinner" src="resources/upload/spinner.gif" height="20px" width="20px">
+                                    <img style="display: none; " class="  apd-image-uploaded" src="resources/upload/uploaded.png" height="20px" width="20px">
+                                    <i style="font-size:22px;color:red;display: none; " class="fa fa-warning apd-image-upload-error"></i>
+                                    <i class="apd-image-trigger fa  fa-picture-o  " style="font-size:14px;color:#00b289;display: none" apd_image_url="resources/upload/" apd_image_alt="insValue" data-toggle="modal" data-target="#apdImageViewer" aria-hidden="true" v_id="sa_201707081543050682"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>file</label>
+                            <div class="fileuploader">
+                                <div class="col-md-11">
+                                    <input id="fileUrl2" name="fileUrl2" 
+                                           class="form-control apd-form-input-file" 
+                                           type="file" file_type="general" value="">
+                                </div>
+                                <i class="apd-image-trigger fa  fa-picture-o"
+                                   style="font-size:14px;color:#00b289;display: none" 
+                                   id="logoInput"
+                                   apd_image_alt="insValue" data-toggle="modal" 
+                                   data-target="#apdImageViewer" aria-hidden="true" v_id="sa_201707091117240999">
+                                </i>
+                                <div class="col-md-1">
+                                    <img style="display: none; " class="  apd-image-spinner" src="resources/upload/spinner.gif" height="20px" width="20px">
+                                    <img style="display: none; " class="  apd-image-uploaded" src="resources/upload/uploaded.png" height="20px" width="20px">
+                                    <i style="font-size:22px;color:red;display: none; " class="fa fa-warning apd-image-upload-error"></i>
+                                    <i class="apd-image-trigger fa  fa-picture-o  " style="font-size:14px;color:#00b289;display: none" apd_image_url="resources/upload/" apd_image_alt="insValue" data-toggle="modal" data-target="#apdImageViewer" aria-hidden="true" v_id="sa_201707081543050682"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>file</label>
+                            <div class="fileuploader">
+                                <div class="col-md-11">
+                                    <input id="fileUrl3" name="fileUrl3" 
+                                           class="form-control apd-form-input-file" 
+                                           type="file" file_type="general" value="">
+                                </div>
+                                <i class="apd-image-trigger fa  fa-picture-o"
+                                   style="font-size:14px;color:#00b289;display: none" 
+                                   id="logoInput"
+                                   apd_image_alt="insValue" data-toggle="modal" 
+                                   data-target="#apdImageViewer" aria-hidden="true" v_id="sa_201707091117240999">
+                                </i>
+                                <div class="col-md-1">
+                                    <img style="display: none; " class="  apd-image-spinner" src="resources/upload/spinner.gif" height="20px" width="20px">
+                                    <img style="display: none; " class="  apd-image-uploaded" src="resources/upload/uploaded.png" height="20px" width="20px">
+                                    <i style="font-size:22px;color:red;display: none; " class="fa fa-warning apd-image-upload-error"></i>
+                                    <i class="apd-image-trigger fa  fa-picture-o  " style="font-size:14px;color:#00b289;display: none" apd_image_url="resources/upload/" apd_image_alt="insValue" data-toggle="modal" data-target="#apdImageViewer" aria-hidden="true" v_id="sa_201707081543050682"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>file</label>
+                            <div class="fileuploader">
+                                <div class="col-md-11">
+                                    <input id="fileUrl4" name="fileUrl4" 
+                                           class="form-control apd-form-input-file" 
+                                           type="file" file_type="general" value="">
+                                </div>
+                                <i class="apd-image-trigger fa  fa-picture-o"
+                                   style="font-size:14px;color:#00b289;display: none" 
+                                   id="logoInput"
+                                   apd_image_alt="insValue" data-toggle="modal" 
+                                   data-target="#apdImageViewer" aria-hidden="true" v_id="sa_201707091117240999">
+                                </i>
+                                <div class="col-md-1">
+                                    <img style="display: none; " class="  apd-image-spinner" src="resources/upload/spinner.gif" height="20px" width="20px">
+                                    <img style="display: none; " class="  apd-image-uploaded" src="resources/upload/uploaded.png" height="20px" width="20px">
+                                    <i style="font-size:22px;color:red;display: none; " class="fa fa-warning apd-image-upload-error"></i>
+                                    <i class="apd-image-trigger fa  fa-picture-o  " style="font-size:14px;color:#00b289;display: none" apd_image_url="resources/upload/" apd_image_alt="insValue" data-toggle="modal" data-target="#apdImageViewer" aria-hidden="true" v_id="sa_201707081543050682"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-12"><br></div>
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div> 
+
+    <div component_id="serviceTmUpdateTask" id="updateTask" apd-form-reload-button-id='serviceTmGetTaskList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Update Task</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_updateTask" class="apd-form" method="POST" action="srv/serviceTmUpdateTask">
+                        <div class="form-group col-md-6 hidden"> 
+                            <label qlang>id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id" placeholder="Task Code"  >
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label qlang>name</label>
+                            <input class="form-control apd-form-input" type="text" 
+                                   autofocus
+                                   id="name" name="name" placeholder=" "  >
+                        </div>
+
+                        <div class="form-group col-md-12"> </div>
+
+                        <div class="form-group col-md-8">
+                            <label qlang>project</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="projectName" select_value="id"
+                                    id="fkProjectId" name="fkProjectId" 
+
+                                    has_null
+                                    srv_url="srv/serviceTmGetProjectList">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-4">
+                            <label qlang>taskType</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="typeName" select_value="id"
+                                    id="fkTaskTypeId" name="fkTaskTypeId" 
+                                    async
+                                    srv_url="srv/serviceTmGetTaskTypeList">
+                            </select> 
+                        </div >
+
+                        <div class="form-group col-md-12"><br></div>
+
+
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang >startDate</label>
+                            <div class='input-group date apd-form-date' id="startDate"  >
+                                <input type="text" class="form-control apd-form-date">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang >endDate</label>
+                            <div class='input-group date apd-form-date' id="endDate"  >
+                                <input type="text" class="form-control apd-form-date">
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>status</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="statusName" select_value="id"
+                                    id="fkTaskStatusId" name="fkTaskStatusId" 
+                                    async
+                                    srv_url="srv/serviceTmGetTaskStatusList">
+                            </select> 
+                        </div >
+
+                        <div class="form-group col-md-12"><br></div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>priority</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="priorityName" select_value="id"
+                                    async
+                                    id="fkPriorityId" name="fkPriorityId" 
+                                    srv_url="srv/serviceTmGetTaskPriorityList">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-4">
+                            <label qlang>progress</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="progressName" select_value="id"
+                                    async
+                                    id="fkProgressId" name="fkProgressId" 
+                                    srv_url="srv/serviceTmGetProgressList">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-4">
+                            <label qlang>category</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="categoryName" select_value="id"
+                                    async
+                                    id="fkTaskCategoryId" name="fkTaskCategoryId" 
+                                    srv_url="srv/serviceTmGetTaskCategoryList">
+                            </select> 
+                        </div >
+
+                        <div class="form-group col-md-12"><br></div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>assignee</label><br> 
+                            <select class="form-control apd-form-select" 
+                                    id="fkTaskAssigneeId" name="fkTaskAssigneeId"
+                                    select_separator=" " 
+                                    dependence_id="fkProjectId"
+                                    select_text="userPersonName,userPersonSurname,userPersonMiddlename"   
+                                    select_value="id" 
+                                    srv_url="srv/serviceTmGetAssigneeByProjectId">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-8">
+                            <label qlang>reporter</label><br> 
+                            <select class="form-control apd-form-multiselect" 
+                                    multiple
+                                    id="fkTaskReporterId" name="fkTaskReporterId"
+                                    dependence_id="fkProjectId"
+                                    select_separator=" " 
+                                    select_text="userPersonName,userPersonSurname,userPersonMiddlename"   
+                                    select_value="id" r
+                                    srv_url="srv/serviceTmGetReporterByProjectId">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-12"><br></div>
+
+                        <div class="form-group col-md-4">
+                            <label class="float" qlang>userImage</label>
+                            <div class="fileuploader">
+                                <div class="col-md-11">
+                                    <input id="fileUrl" name="fileUrl" 
+                                           class="form-control apd-form-input-file" 
+                                           type="file" file_type="general" value="">
+                                </div>
+                                <i class="apd-image-trigger fa  fa-picture-o"
+                                   style="font-size:14px;color:#00b289;display: none" 
+                                   id="logoInput"
+                                   apd_image_alt="insValue" data-toggle="modal" 
+                                   data-target="#apdImageViewer" aria-hidden="true" v_id="sa_201707091117240999">
+                                </i>
+                                <div class="col-md-1">
+                                    <img style="display: none; " class="  apd-image-spinner" src="resources/upload/spinner.gif" height="20px" width="20px">
+                                    <img style="display: none; " class="  apd-image-uploaded" src="resources/upload/uploaded.png" height="20px" width="20px">
+                                    <i style="font-size:22px;color:red;display: none; " class="fa fa-warning apd-image-upload-error"></i>
+                                    <i class="apd-image-trigger fa  fa-picture-o  " style="font-size:14px;color:#00b289;display: none" apd_image_url="resources/upload/" apd_image_alt="insValue" data-toggle="modal" data-target="#apdImageViewer" aria-hidden="true" v_id="sa_201707081543050682"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-12"><br></div>
+
+                        <div class="form-group col-md-12">
+                            <label qlang>description</label>
+                            <textarea class="form-control apd-form-textarea" id="description" 
+                                      name="description" placeholder=""></textarea>
+                        </div>
+
+
+
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="false" qlang>update</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div component_id="serviceTmFinishTask" id="finishTask" apd-form-reload-button-id='serviceTmGetTaskList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content  col-md-6 center">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>finishTask</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewTask" class="apd-form" method="POST" action="srv/serviceTmFinishTask">
+
+                        <div class="form-group col-md-6 hidden"> 
+                            <label qlang>id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id" placeholder="Task Code"  >
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>project</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="projectName" select_value="id"
+                                    id="fkProjectId" name="fkProjectId" 
+
+                                    has_null
+                                    srv_url="srv/serviceTmGetProjectList">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-8">
+                            <label qlang>name</label>
+                            <input class="form-control apd-form-input" type="text" 
+                                   autofocus
+                                   id="name" name="name" placeholder=" "  >
+                        </div>
+
+                        <div class="form-group col-md-12"> </div>
+
+                        <div class="form-group col-md-4">
+                            <label qlang>taskType</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="typeName" select_value="id"
+                                    id="fkTaskTypeId" name="fkTaskTypeId" 
+                                    async
+                                    srv_url="srv/serviceTmGetTaskTypeList">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-4">
+                            <label qlang>assignee</label><br> 
+                            <select class="form-control apd-form-select" 
+                                    id="fkTaskAssigneeId" name="fkTaskAssigneeId"
+                                    select_separator=" " 
+                                    dependence_id="fkProjectId"
+                                    select_text="userPersonName,userPersonSurname,userPersonMiddlename"   
+                                    select_value="id" 
+                                    srv_url="srv/serviceTmGetAssigneeByProjectId">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label qlang>priority</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="priorityName" select_value="id"
+                                    async
+                                    id="fkPriorityId" name="fkPriorityId" 
+                                    srv_url="srv/serviceTmGetTaskPriorityList">
+                            </select> 
+                        </div >
+
+                        <div class="form-group col-md-12"><hr></div>
+
+
+                        <div class="form-group col-md-12">
+                            <label qlang>completedDuration</label>
+                            <input class="form-control apd-form-input" type="number" 
+                                   min="0" max="60" step="0.01"
+                                   setfocus
+                                   id="completedDuration" completedDuration="name" placeholder=" "  >
+                        </div>
+
+
+
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="true" qlang>finish</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div> 
+
+
+    <div id="apdImageViewer"   class="modal fade col-md-12" role="dialog">
+        <div class="modal-dialog ">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"  qlang >imageViewer</h4>
+                </div>
+                <div class="modal-body-1">
+                    <div id="myCarousel211" class="carousel slide" data-ride="carousel">
+                        <ol class="carousel-indicators" >
+                        </ol>
+                        <div class="carousel-inner">
+                        </div>
+                        <a class="left carousel-control" href="#myCarousel211" data-slide="prev">
+                            <span class="glyphicon glyphicon-chevron-left"></span>
+                            <span class="sr-only"  qlang >previous</span>
+                        </a>
+                        <a class="right carousel-control" href="#myCarousel211" data-slide="next">
+                            <span class="glyphicon glyphicon-chevron-right"></span>
+                            <span class="sr-only"  qlang >next</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div component_id="serviceTmForwardTask" id="forwardTask" apd-form-reload-button-id='serviceTmGetTaskList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>forward</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_forwardTask"  class="apd-form" method="POST" action="srv/serviceTmForwardTask">
+
+                        <div class="form-group col-md-8 hidden">
+                            <label qlang>id</label>
+                            <input class="form-control apd-form-input" type="hide" 
+
+                                   id="id" name="id" placeholder=" "  >
+                        </div>
+
+                        <div class="form-group col-md-4 hidden">
+                            <label qlang>project</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="projectName" select_value="id"
+                                    id="fkProjectId" name="fkProjectId" 
+
+                                    has_null
+                                    srv_url="srv/serviceTmGetProjectList">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-8 hidden">
+                            <label qlang>name</label>
+                            <input class="form-control apd-form-input" type="text" 
+                                   autofocus
+                                   id="name" name="name" placeholder=" "  >
+                        </div>
+
+
+
+                        <div class="form-group col-md-12">
+                            <label qlang>assignee</label><br> 
+                            <select class="form-control apd-form-select" 
+                                    id="fkTaskAssigneeId" name="fkTaskAssigneeId"
+                                    select_separator=" " 
+                                    dependence_id="fkProjectId"
+                                    select_text="userPersonName,userPersonSurname,userPersonMiddlename"   
+                                    select_value="id" 
+                                    srv_url="srv/serviceTmGetAssigneeByProjectId">
+                            </select>
+                        </div>
+
+
+
+
+                        <div class="form-group col-md-12"><br></div>
+
+                        <div class="form-group col-md-12">
+                            <label qlang>description</label>
+                            <textarea rows="4" class="form-control apd-form-textarea" id="reason" 
+                                      name="reason" placeholder=""></textarea>
+                        </div>
+
+
+                        <div class="form-group col-md-12"><br></div>
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="true" qlang>forward</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div> 
+
+    <div component_id="serviceTmAddReporter" id="addreporter" apd-form-reload-button-id='serviceTmGetTaskList' 
+         class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>addReporter</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_forwardTask"  class="apd-form" method="POST" action="srv/serviceTmAddReporter">
+                        <div class="form-group col-md-8 hidden">
+                            <label qlang>id</label>
+                            <input class="form-control apd-form-input" type="hide" 
+
+                                   id="id" name="id" placeholder=" "  >
+                        </div>
+
+                        <div class="form-group col-md-4 hidden">
+                            <label qlang>project</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="projectName" select_value="id"
+                                    id="fkProjectId" name="fkProjectId" 
+
+                                    has_null
+                                    srv_url="srv/serviceTmGetProjectList">
+                            </select> 
+                        </div >
+                        <div class="form-group col-md-8 hidden">
+                            <label qlang>name</label>
+                            <input class="form-control apd-form-input" type="text" 
+                                   autofocus
+                                   id="name" name="name" placeholder=" "  >
+                        </div>
+
+
+
+                        <div class="form-group col-md-12">
+                            <label qlang>reporter</label><br> 
+                            <select class="form-control apd-form-select" 
+                                    id="fkTaskReporterId" name="fkTaskReporterId"
+                                    select_separator=" " 
+                                    dependence_id="fkProjectId"
+                                    select_text="userPersonName,userPersonSurname,userPersonMiddlename"   
+                                    select_value="id" 
+                                    srv_url="srv/serviceTmGetReporterByProjectId">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-12"><br></div>
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="true" qlang>forward</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div> 
+
+    <div component_id="serviceTmRemoveReporter" id="removereporter" apd-form-reload-button-id='serviceTmGetTaskList' 
+         class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>removeReporter</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_removereporter"  class="apd-form" method="POST" action="srv/serviceTmRemoveReporter">
+
+                        <div class="form-group col-md-8 hidden">
+                            <label qlang>id</label>
+                            <input class="form-control apd-form-input" type="hide" 
+
+                                   id="id" name="id" placeholder=" "  >
+                        </div>
+
+                        <div class="form-group col-md-4 hidden">
+                            <label qlang>project</label>
+                            <select class="form-control apd-form-select"
+                                    select_text="projectName" select_value="id"
+                                    id="fkProjectId" name="fkProjectId" 
+
+                                    has_null
+                                    srv_url="srv/serviceTmGetProjectList">
+                            </select> 
+                        </div >
+
+                        <div class="form-group col-md-12">
+                            <label qlang>reporter</label><br> 
+                            <select class="form-control apd-form-multiselect" 
+                                    multiple
+                                    dependence_id="fkProjectId"
+                                    id="fkTaskReporterId" name="fkTaskReporterId"
+                                    select_separator=" " 
+                                    select_text="userPersonName,userPersonSurname,userPersonMiddlename"   
+                                    select_value="id"  
+                                    srv_url="srv/serviceTmGetReporterByTasktId">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-12"><br></div>
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" apd-clear-form-data="true" qlang>forward</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div> 
+
+
+</div>
+<script>
+    $(function () {
+        $(".youtube").YouTubeModal({autoplay: 0, width: 640, height: 480});
+    });
+
+    $('.selectpicker').selectpicker('refresh');
+
+    $(function () {
+        $('.apd-form-date').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+    });
+
+
+    const f = new ApdForm('update');
+    f.setFormId('form_taskdetail');
+    f.fillURL("srv/serviceTmGetTaskList");
+    f.fillAllComponents();
+
+    const f1 = new ApdForm('update');
+    f1.setFormId('form_insertNewTask');
+    f1.fillURL("srv/serviceTmGetTaskList");
+    f1.activateManualAction();
+    f1.fillAllComponents();
+
+    shortcut.add("Ctrl+i", function () {
+        $('#btn_serviceTmInsertNewTask').click();
+
+    });
+
+</script>

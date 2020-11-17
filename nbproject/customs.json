@@ -1,0 +1,11 @@
+{
+    "elements": {},
+    "attributes": {
+        "qlang": {
+            "context": "button"
+        },
+        "pid": {
+            "context": "a"
+        }
+    }
+}

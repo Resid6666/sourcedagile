@@ -1,0 +1,241 @@
+<div component_id="page_anbarproductorder" class="row apd-page" id="page_anbarproductorder">
+    <div  class="col-md-12">
+        <div class="row text-center module-heading">
+            <label qlang>anbarProductOrder</label>
+        </div>
+    </div> 
+    <div  class="col-md-12 apd-page-btn"> 
+        <button   component_id="serviceGfGetAnbarProductOrderList"  id='serviceGfGetAnbarProductOrderList' type="button" 
+                  class="btn btn-md task-button apd-task-load apd-task-page-loader" 
+                  onclick="loadTable('tbl_anbarproductorder_list')" qlang>list
+        </button>
+        <button  component_id="serviceGfInsertNewAnbarProductOrder"  id='btn_serviceGfInsertNewAnbarProductOrder' type="button"
+                 class="btn btn-md task-button apd-task-create apd-task-form" 
+                 data-toggle="modal" data-target="#insertNewAnbarProductOrder" qlang>new
+        </button>
+        <button  component_id="serviceGfConfirmAnbarProductOrder"  id='btn_serviceGfConfirmAnbarProductOrder' 
+                 type="button" class="btn btn-md task-button  " 
+                 onclick="confirmOrder(this)"
+                 qlang>confirm
+        </button>
+        <hr>
+    </div>
+
+    <div  id= "anbarproductorderlist" class="col-md-12 apd-page-body"> 
+
+    </div>
+
+    <!-- Modal -->
+    <div component_id="serviceGfInsertNewAnbarProductOrder"  id="insertNewAnbarProductOrder" apd-form-reload-button-id='serviceGfGetAnbarProductOrderList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>new</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewAttribute" class="apd-form" method="POST" 
+                          action="srv/serviceGfInsertNewAnbarProductOrder">
+
+                        <div class="form-group col-md-5">
+                            <label class="float" qlang>anbar</label>
+                            <select class="form-control apd-form-select" 
+                                    id="fkSourceAnbarId" name="fkSourceAnbarId"
+                                    select_text="anbarName" select_value="id" 
+                                    srv_url="srv/serviceGfGetAnbarListWithPermission">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-5">
+                            <label class="float" qlang>product</label>
+                            <select class="form-control apd-form-custom-man-select" 
+                                    id="fkProductId" name="fkProductId"
+                                    select_text="productName,productCode,anbarName,remainAmount" select_value="id" 
+                                    filter_text="productName"
+                                    select_separator=","
+                                    onchange="fillCustomSelectCombo(this)"
+                                    srv_url="srv/serviceGfGetProductRemainListWithPermission">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label class="float" qlang>amount</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="amount" name="amount">
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+
+
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div component_id="serviceGfUpdateAnbarProductOrder"  id="updateAnbarProductOrder" apd-form-reload-button-id='serviceGfGetAnbarProductOrderList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>update</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_updateAnbarProductOrder" class="apd-form" method="POST" action="srv/serviceGfUpdateAnbarProductOrder">
+                        <div class="form-group col-md-6 hidden"> 
+                            <label class="float">id</label>
+                            <input class="form-control apd-form-input" type="type" id="id" name="id"    >
+                        </div>
+                       <div class="form-group col-md-5">
+                            <label class="float" qlang>anbar</label>
+                            <select class="form-control apd-form-select" 
+                                    id="fkSourceAnbarId" name="fkSourceAnbarId"
+                                    select_text="anbarName" select_value="id" 
+                                    srv_url="srv/serviceGfGetAnbarListWithPermission">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-5">
+                            <label class="float" qlang>product</label>
+                            <select class="form-control apd-form-custom-man-select" 
+                                    id="fkProductId" name="fkProductId"
+                                    select_text="productName,productCode,anbarName,remainAmount" select_value="id" 
+                                    filter_text="productName"
+                                    select_separator=","
+                                    onchange="fillCustomSelectCombo(this)"
+                                    srv_url="srv/serviceGfGetProductRemainListWithPermission">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-2">
+                            <label class="float" qlang>amount</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="amount" name="amount">
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label class="float" qlang>description</label>
+                            <input  class="form-control apd-form-input" type="text" 
+                                    id="description" name="description" >
+                        </div>
+
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="assignSubmodule" apd-form-reload-button-id='serviceGfGetRelAnbarProductOrderAndSubmoduleList' 
+         class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>showSelectedSubmodules</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewRule" class="apd-form" method="POST" action="srv/serviceGfInsertNewRelAnbarProductOrderAndSubmodule">
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>paymentName</label>
+                            <select class="form-control apd-form-select" 
+                                    id="fkAnbarProductOrderId" name="fkAnbarProductOrderId"
+                                    select_text="paymentName" select_value="id" 
+                                    srv_url="srv/serviceGfGetAnbarProductOrderList">
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="float" qlang>submodule</label>
+                            <select class="form-control apd-form-multiselect" 
+                                    multiple 
+                                    id="fkSubmoduleId" name="fkSubmoduleId"
+                                    select_text="submoduleName" select_value="id" 
+                                    dependence_id="fkAnbarProductOrderId"
+                                    srv_url="srv/serviceGfGetSubmoduleListByAnbarProductOrder">
+                            </select>
+                        </div>
+
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="false" qlang>insert</button>
+                            <button type="button" class="btn btn-default" 
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.apd-form-date').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+    });
+
+    function confirmOrder(e) {
+        var r = confirm(getLabel("areYouSureToProceed"));
+        if (r == false) {
+            return;
+        }
+
+        var el = $(e).closest('form');
+
+        var res = getTableSelectedItemsWithComma($('#tbl_anbarproductorder_list'));
+        console.log("res=" + res);
+
+
+
+        var json = {kv: {}};
+        json.kv.id = res;
+        var data = JSON.stringify(json);
+        $.ajax({
+            url: "api/post/srv/serviceGfConfirmAnbarProductOrder",
+            type: "POST",
+            data: data,
+            contentType: "application/json",
+            crossDomain: true,
+            async: false,
+            success: function (res) {
+                isResultRedirect(JSON.stringify(res));
+                alert(getMessage('successOperation'));
+
+            },
+            error: function (res, status) {
+//                alert(getMessage('somethingww'));
+            }
+        });
+        loadTable('tbl_anbarproductorder_list');
+    }
+
+
+</script>

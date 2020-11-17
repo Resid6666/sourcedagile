@@ -1,0 +1,161 @@
+<div component_id="page_productremain" class="row apd-page" id="page_productremain">
+    <div  class="col-md-12">
+        <div class="row text-center module-heading">
+            <label qlang>productRemain</label>
+        </div>
+    </div> 
+    <div  class="col-md-12 apd-page-btn"> 
+        <button   component_id="serviceGfGetProductRemainList"  id='serviceGfGetProductRemainList' type="button" 
+                  class="btn btn-md task-button apd-task-load apd-task-page-loader" 
+                  onclick="loadTable('tbl_productremain_list')" qlang>list
+        </button>
+        <button  component_id="serviceGfInsertNewProductRemain"  id='btn_serviceGfInsertNewProductRemain' type="button"
+                 class="btn btn-md task-button apd-task-create apd-task-form" 
+                 data-toggle="modal" data-target="#insertNewProductRemain" qlang>new
+        </button>
+        <hr>
+    </div>
+
+    <div  id= "productremainlist" class="col-md-12 apd-page-body"> 
+
+    </div>
+
+    <!-- Modal -->
+    <div component_id="serviceGfInsertNewProductRemain"  id="insertNewProductRemain" apd-form-reload-button-id='serviceGfGetProductRemainList' class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" qlang>new</h4>
+                </div>
+                <div class="modal-body-1">
+                    <form id="form_insertNewAttribute" class="apd-form" method="POST" 
+                          action="srv/serviceGfInsertNewProductRemain">
+
+                        <div class="form-group col-md-6">
+                            <label qlang>product</label>
+                            <select class="form-control apd-form-custom-select" 
+                                    id="fkProductId" name="fkProductId" 
+                                    select_separator="-" 
+                                    select_text="productCode,productName,unitName" 
+                                    select_value="id" 
+                                    dont_clear
+                                    onchange="findProduct(this)"
+                                    srv_url="srv/serviceGfGetProductAllList">
+                            </select> 
+                        </div >
+<!---->
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>anbar</label>
+                            <select class="form-control apd-form-select" 
+                                    id="fkAnbarId" name="fkAnbarId"
+                                    select_text="anbarName" select_value="id" 
+                                    srv_url="srv/serviceGfGetAnbarList">
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="float" qlang>remainAmount</label>
+                             <input  class="form-control apd-form-input" type="text" 
+                                    id="remainAmount" name="remainAmount">
+                        </div>
+
+                         
+
+                         
+                         
+
+                       
+
+                        <div class="form-group col-md-12" align="right">
+                            <button type="button" class="btn btn-default apd-form-btn" 
+                                    apd-clear-form-data="true" qlang>insert</button>
+                            <button type="button" class="btn btn-default"
+                                    data-dismiss="modal"  role="button" qlang>close</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+   
+  
+</div>
+
+<script>
+    $(function () {
+        $('.apd-form-date').datetimepicker({
+            format: 'DD-MM-YYYY'
+        });
+    });
+
+    function calcTotalPrice(e) {
+        var el = $(e).closest('form');
+
+        var purchaseAmount = el.find("#purchaseAmount").val();
+        var purchasePrice = el.find("#purchasePrice").val();
+        var purchaseDiscount = el.find("#purchaseDiscount").val();
+
+        var purchaseTotalPayment = purchaseAmount * purchasePrice;
+        purchaseTotalPayment = purchaseTotalPayment - purchaseTotalPayment * purchaseDiscount / 100;
+        console.log('purchaseTotalPayment==' + purchaseTotalPayment);
+        el.find("#purchaseTotalAmount").val(purchaseTotalPayment);
+
+
+    }
+
+
+    function findProduct(e, hideCombo) {
+        var el = $(e);
+        var div = el.closest("div");
+//    console.log(div.find("label").first().html())
+
+        div.find('.es-list').empty();
+        var id = el.attr("id");
+        var val = el.val();
+
+        json = {kv: {}};
+        json.kv.productName = val;
+        var data = JSON.stringify(json);
+        $.ajax({
+            url: "api/post/srv/serviceGfGetProductAllList",
+            type: "POST",
+            data: data,
+            contentType: "application/json",
+            crossDomain: true,
+            async: false,
+            success: function (res) {
+                isResultRedirect(JSON.stringify(res));
+                var obj = res.tbl;
+//                    for (var i = 0; i < obj.length; i++) {
+                if (obj.length == 0) {
+                    return;
+                }
+                var objChild = obj[0]['r'];
+                for (var j = 0; j < objChild.length; j++) {
+                    var v = objChild[j]['id'];
+                    var t = objChild[j]['productName']+ " ("+objChild[j]['productCode']+")"+", "
+                            +objChild[j]['unitName'];
+                    div.find('.es-list')
+                            .append($("<li/>")
+                                    .text(t)
+                                    .attr("class", "es-visible apd-editable-combo-li")
+                                    .attr("pid", v)
+                                    );
+                }
+                if (hideCombo == true) {
+                    div.find('.es-list').hide();
+                } else {
+                    div.find('.es-list').show();
+                }
+            },
+            error: function (res, status) {
+//            alert(getMessage('somethingww'));
+            }
+        });
+    }
+</script>
