@@ -81,7 +81,8 @@ public class AcnisUrlFilter implements Filter {
 //            System.out.println(url + "--> forward to index.html......");
 // System.out.println("ok 3 - 2"+"  "+url);
             response.sendRedirect(request.getContextPath() + "/index.html");
-        } else if (!url.contains("resource")
+        } else if (!SessionHandler.checkSession(token)
+                && !url.contains("resource")
                 && !url.contains("login")
                 && !url.contains("register")
                 && !url.contains("/bview.html")
@@ -97,7 +98,7 @@ public class AcnisUrlFilter implements Filter {
                 && !url.contains("/filed/")
                 && !url.contains("/nasrv/")
                 && !url.contains("/activation")
-                && !SessionHandler.checkSession(token)) {
+                  ) {
 //            System.out.println("Redirected to "+request.getContextPath() + "/login.html")
 // System.out.println("ok 3 - 3"+"  "+url);;
             System.out.println(url + "--> forward to login.html......");

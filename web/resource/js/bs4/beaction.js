@@ -36,7 +36,10 @@ var be = {
             data = {};
         }
 
-        var res = this.ExecAPI.CallContainerServices(apiId, data);
+        var inputList = be.ExecAPI.GetInputsByAPI(apiId);
+        var pureData = be.ExecAPI.SetInputValuesOnStoryCard(inputList, data);
+
+        var res = this.ExecAPI.CallContainerServices(apiId, pureData);
         return res;
     },
 
@@ -44,24 +47,37 @@ var be = {
         if (!data) {
             data = {};
         }
+
+        var inputList = be.ExecAPI.GetInputsByAPI(apiId);
+        var pureData = be.ExecAPI.SetInputValuesOnStoryCard(inputList, data);
+
         var innerData = this.ExecAPI.SetInsertObjects(apiId);
-        var res = this.ExecAPI.CallInsertServices(apiId, data, innerData);
+        var res = this.ExecAPI.CallInsertServices(apiId, pureData, innerData);
         return res;
     },
     callUpdateAPI: function (apiId, data) {
         if (!data) {
             data = {};
         }
+
+        var inputList = be.ExecAPI.GetInputsByAPI(apiId);
+        var pureData = be.ExecAPI.SetInputValuesOnStoryCard(inputList, data);
+
+
         var innerData = this.ExecAPI.SetUpdateObjects(apiId);
-        var res = this.ExecAPI.CallUpdateServices(apiId, data, innerData);
+        var res = this.ExecAPI.CallUpdateServices(apiId, pureData, innerData);
         return res;
     },
     callDeleteAPI: function (apiId, data) {
         if (!data) {
             data = {};
         }
+
+        var inputList = be.ExecAPI.GetInputsByAPI(apiId);
+        var pureData = be.ExecAPI.SetInputValuesOnStoryCard(inputList, data);
+
         var innerData = this.ExecAPI.SetDeleteObjects(apiId);
-        var res = this.ExecAPI.CallDeleteServices(apiId, data, innerData);
+        var res = this.ExecAPI.CallDeleteServices(apiId, pureData, innerData);
         return res;
     },
 
@@ -69,8 +85,12 @@ var be = {
         if (!data) {
             data = {};
         }
+
+        var inputList = be.ExecAPI.GetInputsByAPI(apiId);
+        var pureData = be.ExecAPI.SetInputValuesOnStoryCard(inputList, data);
+
         var innerData = this.ExecAPI.SetSelectObjects(apiId);
-        var res = this.ExecAPI.CallSelectServices(apiId, data, innerData);
+        var res = this.ExecAPI.CallSelectServices(apiId, pureData, innerData);
         return res;
     },
     GetGUIDataByStoryCard: function (storyCardId) {
@@ -109,6 +129,9 @@ var be = {
                             var tableName = SAEntity.GetTableDetails(inputObj.selectFromTableId, "tableName");
                             var fieldName = SAEntity.GetFieldDetails(inputObj.selectFromFieldId, "fieldName");
 
+                            fieldName = fieldName.replace(/_/g, ' ');
+                            fieldName = firstLetterToLowercase(fieldName);
+
                             SELECT_OBJ_PAIR[fieldName] = inputObj.inputName;
 
                             try {
@@ -142,6 +165,7 @@ var be = {
             var innerData = {};
             var INSERT_OBJ = {};
             var INSERT_OBJ_PAIR = {};
+            var INSERT_OBJ_DEFAULT_VALUE = {};
             var outputList = SACore.GetBacklogDetails(apiId, "inputIds").split(',');
             for (var i in outputList) {
                 try {
@@ -154,7 +178,11 @@ var be = {
                             var tableName = SAEntity.GetTableDetails(inputObj.sendToTableId, "tableName");
                             var entityName = SAEntity.GetFieldDetails(inputObj.sendToFieldId, "fieldName");
 
+                            entityName = entityName.replace(/_/g, ' ');
+                            entityName = firstLetterToLowercase(entityName);
+
                             INSERT_OBJ_PAIR[inputObj.inputName] = entityName;
+                            INSERT_OBJ_DEFAULT_VALUE[inputObj.inputName] = be.ExecAPI.GetInputDefaultValue(inputObj.id);
 
                             try {
                                 if (!INSERT_OBJ[dbname]) {
@@ -182,12 +210,29 @@ var be = {
             }
             innerData.INSERT_OBJ = INSERT_OBJ;
             innerData.INSERT_OBJ_PAIR = INSERT_OBJ_PAIR;
+            innerData.INSERT_OBJ_DEFAULT_VALUE = INSERT_OBJ_DEFAULT_VALUE;
             return innerData;
+        },
+        GetInputDefaultValue: function (inputId) {
+            var rs = '';
+            try {
+                var descIds = SAInput.getInputDetails(inputId, 'inputDescriptionIds').split(',');
+                for (var i = 0; i < descIds.length; i++) {
+                    var desc = SAInputDesc.GetDetails(descIds[i]);
+                    if (desc.includes('fn_(Defaultvalueis)')) {
+                        var res = getParamFromFnline(desc, 'fn_(Defaultvalueis)', 'defaultval');
+                        rs = res;
+                    }
+                }
+            } catch (err) {
+            }
+            return rs;
         },
         SetUpdateObjects: function (apiId) {
             var innerData = {};
             var UPDATE_OBJ = {};
             var UPDATE_OBJ_PAIR = {};
+            var UPDATE_OBJ_DEFAULT_VALUE = {};
             var outputList = SACore.GetBacklogDetails(apiId, "inputIds").split(',');
             for (var i in outputList) {
                 try {
@@ -200,7 +245,12 @@ var be = {
                             var tableName = SAEntity.GetTableDetails(inputObj.sendToTableId, "tableName");
                             var entityName = SAEntity.GetFieldDetails(inputObj.sendToFieldId, "fieldName");
 
+                            entityName = entityName.replace(/_/g, ' ');
+                            entityName = firstLetterToLowercase(entityName);
+
                             UPDATE_OBJ_PAIR[inputObj.inputName] = entityName;
+                            UPDATE_OBJ_DEFAULT_VALUE[inputObj.inputName] = be.ExecAPI.GetInputDefaultValue(inputObj.id);
+
 
                             try {
                                 if (!UPDATE_OBJ[dbname]) {
@@ -229,6 +279,7 @@ var be = {
 
             innerData.UPDATE_OBJ = UPDATE_OBJ;
             innerData.UPDATE_OBJ_PAIR = UPDATE_OBJ_PAIR;
+            innerData.UPDATE_OBJ_DEFAULT_VALUE = UPDATE_OBJ_DEFAULT_VALUE;
             return innerData;
         },
         SetDeleteObjects: function (apiId) {
@@ -246,6 +297,9 @@ var be = {
                             var dbname = SAEntity.GetDBDetails(inputObj.sendToDbId, "dbName");
                             var tableName = SAEntity.GetTableDetails(inputObj.sendToTableId, "tableName");
                             var entityName = SAEntity.GetFieldDetails(inputObj.sendToFieldId, "fieldName");
+
+                            entityName = entityName.replace(/_/g, ' ');
+                            entityName = firstLetterToLowercase(entityName);
 
                             DELETE_OBJ_PAIR[inputObj.inputName] = entityName;
 
@@ -294,6 +348,10 @@ var be = {
             inputKV = t;
 
             //////////////////////
+            ////valicadate the inputs before deyerlerin deyishdirilmesi
+            be.ValidateApi(apiId, inputKV);
+
+            //////////////////////
 
             var syncType = (SACore.GetBacklogDetails(apiId, 'apiSyncRequest'));
             var isAsync = (syncType === 'sync') ? true : false;
@@ -324,7 +382,7 @@ var be = {
                         var out = {};
                         out = be.ExecAPI.SetKeysAsAlians4Select(output.kv, SELECT_OBJ_PAIR);
                         try {
-                            
+
                             var rc = (output.tbl[0].r && output.tbl[0].r.length > 0)
                                     ? output.tbl[0].r.length
                                     : 0;
@@ -336,14 +394,19 @@ var be = {
                                 rsOut.push(kv2)
                             }
                             output.tbl[0].r = rsOut;
-                            
+
                             out['_table'] = output.tbl[0];
                         } catch (err) {
                         }
 
                         var b = $.extend(res, out);
                         res = b;
-                        console.log(JSON.stringify(output));
+                        try {
+                            if (output.err.length > 0) {
+                                be.AJAXCallFeedback(output.err);
+                            }
+                        } catch (e) {
+                        }
                     } catch (err) {
                         console.log(err)
                     }
@@ -431,7 +494,6 @@ var be = {
             }
             return res;
         },
-
         SetInputValuesOnStoryCard(inputList, data) {
             var res = {};
             for (var i in inputList) {
@@ -440,9 +502,19 @@ var be = {
                     res[inputName] = (data[inputName]) ? data[inputName] : "";
                 }
             }
-
-
             return res;
+        },
+        SetInputValuesOnStoryCard4Object(inputList, data) {
+            var res = {};
+            var key = Object.keys(inputList);
+            for (var i in key) {
+                var inputKey = key[i];
+                var val = inputList[inputKey];
+                if (data[inputKey]) {
+                    inputList[inputKey] = data[inputKey];
+                }
+            }
+            return inputList;
         },
         CallContainerServices: function (apiId, data) {
 
@@ -460,13 +532,14 @@ var be = {
             var res = {};
             var INSERT_OBJ = innerData.INSERT_OBJ;
             var INSERT_OBJ_PAIR = innerData.INSERT_OBJ_PAIR;
+            var INSERT_OBJ_DEFAULT_VALUE = innerData.INSERT_OBJ_DEFAULT_VALUE;
 
 //            var inputList = be.ExecAPI.GetInputsByAPI(apiId);
 
             //create initial variable as output of the API for insert
             var outputList = Object.keys(INSERT_OBJ_PAIR);
-            //set values to outputlist
-            var outputKV = be.ExecAPI.SetInputValuesOnStoryCard(outputList, data);
+            var outputKV = be.ExecAPI.SetInputValuesOnStoryCard(outputList, INSERT_OBJ_DEFAULT_VALUE);
+            outputKV = be.ExecAPI.SetInputValuesOnStoryCard4Object(outputKV, data);
             outputKV = $.extend(outputKV, data);
 
             //call External Api
@@ -475,11 +548,11 @@ var be = {
             outputKV = t;
 
             //////////////////////
+            ////valicadate the inputs before deyerlerin deyishdirilmesi
+            be.ValidateApi(apiId, outputKV);
+
             //add alians to output keys data
             var outputKVFinal = be.ExecAPI.SetKeysAsAlians4Insert(outputKV, INSERT_OBJ_PAIR);
-
-
-
             //call services
             var resEndup = be.ExecAPI.CallInsertServicesEndup(outputKVFinal, INSERT_OBJ, apiId);
 
@@ -492,7 +565,7 @@ var be = {
             var syncType = (SACore.GetBacklogDetails(apiId, 'apiSyncRequest'));
             var isAsync = (syncType === 'sync') ? true : false;
 
-            var res = '';
+            var res = {};
             var dbList = Object.keys(INSERT_OBJ);
             for (var i in dbList) {
                 var dbName = dbList[i];
@@ -507,15 +580,23 @@ var be = {
                     json.kv.entity = tableName;
                     try {
                         var output = be.ExecAPI.CallInsertService(json, isAsync);
-                        var b = $.extend(res, output.kv);
-                        res = b;
-                        console.log(JSON.stringify(output));
+//                        var b = $.extend(res, output.kv);
+
+                        res['id'] = output.kv.id;
+                        try {
+                            if (output.err.length > 0) {
+                                be.AJAXCallFeedback(output.err);
+                            }
+                        } catch (e) {
+                        }
                     } catch (err) {
                         console.log(err)
                     }
                 }
             }
+            return res;
         },
+
         ConvertArrayToStringLine: function (arrayList) {
             var stLine = "";
             for (var i = 0; i < arrayList.length; i++) {
@@ -531,11 +612,14 @@ var be = {
             var res = {};
             var UPDATE_OBJ_PAIR = innerData.UPDATE_OBJ_PAIR;
             var UPDATE_OBJ = innerData.UPDATE_OBJ;
+            var UPDATE_OBJ_DEFAULT_VALUE = innerData.UPDATE_OBJ_DEFAULT_VALUE;
 
 
 //            var inputList = be.ExecAPI.GetInputsByAPI(apiId);
             var outputList = Object.keys(UPDATE_OBJ_PAIR);
-            var outputKV = be.ExecAPI.SetInputValuesOnStoryCard(outputList, data);
+            var outputKV = be.ExecAPI.SetInputValuesOnStoryCard(outputList, UPDATE_OBJ_DEFAULT_VALUE);
+            outputKV = be.ExecAPI.SetInputValuesOnStoryCard4Object(outputKV, data);
+            outputKV = $.extend(outputKV, data);
 
 
             //call External Api
@@ -543,6 +627,9 @@ var be = {
             var t = $.extend(outputKV, extData);
             outputKV = t;
 
+            //////////////////////
+            ////valicadate the inputs before deyerlerin deyishdirilmesi
+            be.ValidateApi(apiId, outputKV);
             //////////////////////
             var outputKVFinal = be.ExecAPI.SetKeysAsAlians4Update(outputKV, UPDATE_OBJ_PAIR);
 
@@ -568,7 +655,12 @@ var be = {
                         var output = be.ExecAPI.CallUpdateService(json, isAsync);
                         var b = $.extend(res, output.kv);
                         res = b;
-                        console.log(JSON.stringify(output));
+                        try {
+                            if (output.err.length > 0) {
+                                be.AJAXCallFeedback(output.err);
+                            }
+                        } catch (e) {
+                        }
                     } catch (err) {
                         console.log(err)
                     }
@@ -595,12 +687,20 @@ var be = {
                     if (o.fkRelatedScId) {
                         var fnName = cr_js_list[o.fkRelatedScId].fnCoreName;
                         var res = eval(fnName)(outData);
+                        if (res._table) {
+                            var mergeData = mergeTableData(res._table, outData._table);
+                            res._table = mergeData;
+                        }
                         var out = $.extend(outData, res);
                         outData = out;
                     }
 
                     if (o.fkRelatedApiId) {
                         var res = be.callApi(o.fkRelatedApiId, outData);
+                        if (res._table) {
+                            var mergeData = mergeTableData(res._table, outData._table);
+                            res._table = mergeData;
+                        }
                         var out = $.extend(outData, res);
                         outData = out;
                     }
@@ -631,7 +731,12 @@ var be = {
             var isAsync = (syncType === 'sync') ? true : false;
 
             //////////////////////
+            be.ValidateApi(outputKV, outputKVFinal);
+
             var outputKVFinal = be.ExecAPI.SetKeysAsAlians4Delete(outputKV, DELETE_OBJ_PAIR);
+
+
+
 
             var dbList = Object.keys(DELETE_OBJ);
             for (var i in dbList) {
@@ -649,7 +754,12 @@ var be = {
                         var output = be.ExecAPI.CallDeleteService(json, isAsync);
                         var b = $.extend(res, output.kv);
                         res = b;
-                        console.log(JSON.stringify(output));
+                        try {
+                            if (output.err.length > 0) {
+                                be.AJAXCallFeedback(output.err);
+                            }
+                        } catch (e) {
+                        }
                     } catch (err) {
                         console.log(err)
                     }
@@ -662,6 +772,7 @@ var be = {
             var async = (isAsync === true) ? true : false;
             var rs = "";
             var that = this;
+            delete dataJSON._table;
             var data = JSON.stringify(dataJSON);
             $.ajax({
                 url: urlGl + "api/post/srv/serviceIoCoreInsert",
@@ -681,6 +792,7 @@ var be = {
             var async = (isAsync === true) ? true : false;
             var rs = "";
             var that = this;
+            delete dataJSON._table;
             var data = JSON.stringify(dataJSON);
             $.ajax({
                 url: urlGl + "api/post/srv/serviceIoCoreUpdate",
@@ -700,6 +812,7 @@ var be = {
             var async = (isAsync === true) ? true : false;
             var rs = "";
             var that = this;
+            delete dataJSON._table;
             var data = JSON.stringify(dataJSON);
             $.ajax({
                 url: urlGl + "api/post/srv/serviceIoCoreDelete",
@@ -719,6 +832,7 @@ var be = {
             var async = (isAsync === true) ? true : false;
             var rs = "";
             var that = this;
+            delete dataJSON._table;
             var data = JSON.stringify(dataJSON);
             $.ajax({
                 url: urlGl + "api/post/srv/serviceIoCoreSelect",
@@ -732,6 +846,69 @@ var be = {
                 }
             });
             return rs;
+        }
+    },
+    ValidateApi: function (apiId, data) {
+        var err = [];
+        var outputList = SACore.GetBacklogDetails(apiId, "inputIds").split(',');
+        for (var i in outputList) {
+            try {
+                var oid = outputList[i];
+                oid = oid.trim();
+                var inputObj = SAInput.getInputObject(oid);
+                if (inputObj.inputType === 'OUT') {
+                    var inputDescIds = SAInput.getInputDetails(inputObj.id, 'inputDescriptionIds').split(',');
+                    for (var j in inputDescIds) {
+                        try {
+                            var descId = inputDescIds[j].trim();
+                            var descBody = SAInputDesc.GetDetails(descId);
+                            if (descBody.includes('fn_(ismandatory)')) {
+                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
+                                    var kv = {};
+                                    kv.code = inputObj.inputName;
+                                    kv.val = 'Value is not entered!'
+                                    err.push(kv);
+                                }
+                            }
+                        } catch (err1) {
+
+                        }
+                    }
+                }
+            } catch (err) {
+            }
+        }
+        be.AJAXCallFeedback(err);
+        return err;
+    },
+    ApiValidation: {
+        IsMandatory: function (apiId) {
+
+        }
+    },
+    AJAXCallFeedback: function (err) {
+
+        if ((err.length) && err.length > 0) {
+            //there are/is errors
+            for (var i in err) {
+                if (err[i].code === 'general') {
+                    Toaster.showError(err[i].val);
+                    return;
+                } else {
+                    var f = false;
+                    $('[sa-selectedfield*="' + err[i].code + '"]').each(function () {
+                        f = true;
+                        $(this).closest('div').find('.apd-form-error-msg').remove();
+                        $(this).after('<p class=\'apd-form-error-msg\'>' + err[i].val + '</p>');
+                    })
+
+                    //eyni code-lu component vardir;
+                    if (!f) {
+                        Toaster.showError(err[i].val);
+                    }
+                }
+            }
+            throw 'There is/are error(s)'
         }
     }
 

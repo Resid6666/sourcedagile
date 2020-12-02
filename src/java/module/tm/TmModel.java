@@ -186,6 +186,68 @@ public class TmModel {
     /////////////////////////////////////////
     //// type code here
     ///////////////////////////////////////////////
+     
+       public Carrier showInputTableColumnEntireComponent(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkInputTableId", cp.isKeyExist(carrier, "fkInputTableId"));
+        carrier.addController("fkInputId", cp.isKeyExist(carrier, "fkInputId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+        
+        EntityTmRelTableInput ent = new EntityTmRelTableInput();
+        ent.setFkInputId(carrier.get("fkInputId"));
+        ent.setFkTableId(carrier.get("fkInputTableId"));
+        ent.setEndLimit(0);
+        EntityManager.select(ent);
+
+        String showColumn  = "0";
+        if (ent.getShowColumn ().equals("1")) {
+            showColumn  = "0";
+        } else {
+            showColumn = "1";
+        }
+
+        ent.setShowColumn(showColumn);
+        EntityManager.update(ent);
+        carrier.set("showColumn", showColumn);
+
+        getTableListOfInput(ent.getFkTableId(), ent.getFkProjectId()).copyTo(carrier);
+
+        return carrier;
+    }
+    
+    public Carrier showInputTableColumnItselfComponent(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkInputTableId", cp.isKeyExist(carrier, "fkInputTableId"));
+        carrier.addController("fkInputId", cp.isKeyExist(carrier, "fkInputId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+        
+        EntityTmRelTableInput ent = new EntityTmRelTableInput();
+        ent.setFkInputId(carrier.get("fkInputId"));
+        ent.setFkTableId(carrier.get("fkInputTableId"));
+        ent.setEndLimit(0);
+        EntityManager.select(ent);
+
+        String showColumnName = "0";
+        if (ent.getShowColumnName().equals("1")) {
+            showColumnName = "0";
+        } else {
+            showColumnName = "1";
+        }
+
+        ent.setShowColumnName(showColumnName);
+        EntityManager.update(ent);
+        carrier.set("showColumnName", showColumnName);
+
+        getTableListOfInput(ent.getFkTableId(), ent.getFkProjectId()).copyTo(carrier);
+
+        return carrier;
+    }
+    
+    
     public static Carrier getFunctionNamesByProject(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
@@ -864,8 +926,8 @@ public class TmModel {
 
         try {
 
-            GeneralProperties prop = new GeneralProperties();
-            String filename = prop.getWorkingDir() + "../entity/" + SessionManager.getCurrentDomain() + "/" + db.toLowerCase() + "/" + tn.toLowerCase();
+ 
+            String filename = Config.getProperty("entity.path") +SessionManager.getCurrentDomain() + "/" + db.toLowerCase() + "/" + tn.toLowerCase();
             BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
             bw.append(fileLn);
             bw.close();
@@ -933,7 +995,7 @@ public class TmModel {
             EntityManager.executeUpdateByQuery(ln);
 
             GeneralProperties prop = new GeneralProperties();
-            String filename = prop.getWorkingDir() + "../entity/" + SessionManager.getCurrentDomain() + "/" + db.toLowerCase() + "/" + tn.toLowerCase();
+            String filename = Config.getProperty("entity.path") + SessionManager.getCurrentDomain() + "/" + db.toLowerCase() + "/" + tn.toLowerCase();
             BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
             bw.append(fileLn);
             bw.close();
@@ -953,8 +1015,8 @@ public class TmModel {
             return carrier;
         }
 
-        GeneralProperties prop = new GeneralProperties();
-        String filename = prop.getWorkingDir() + "../entity/" + SessionManager.getCurrentDomain() + "/" + carrier.get("dbname") + "/";
+ 
+        String filename =Config.getProperty("entity.path") + SessionManager.getCurrentDomain() + "/" + carrier.get("dbname") + "/";
         filename = filename.trim().toLowerCase().replaceAll(" ", "");
         File theDir = new File(filename);
         if (!theDir.exists()) {
@@ -3595,9 +3657,9 @@ public class TmModel {
             String ln = "RENAME TABLE " + tnOld + " to " + tnNew + ";";
             EntityManager.executeUpdateByQuery(ln);
 
-            GeneralProperties prop = new GeneralProperties();
-            String filename = prop.getWorkingDir() + "../entity/" + SessionManager.getCurrentDomain() + "/" + entDb.getDbName().toLowerCase() + "/" + oldName.toLowerCase();
-            String filenameNew = prop.getWorkingDir() + "../entity/" + SessionManager.getCurrentDomain() + "/" + entDb.getDbName().toLowerCase() + "/" + ent.getTableName().toLowerCase();
+     
+            String filename = Config.getProperty("entity.path") + SessionManager.getCurrentDomain() + "/" + entDb.getDbName().toLowerCase() + "/" + oldName.toLowerCase();
+            String filenameNew =Config.getProperty("entity.path") + SessionManager.getCurrentDomain() + "/" + entDb.getDbName().toLowerCase() + "/" + ent.getTableName().toLowerCase();
 
             File file = new File(filename);
             File file2 = new File(filenameNew);
@@ -8557,6 +8619,8 @@ public class TmModel {
         Carrier crIn = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.FK_INPUT_ID);
         Carrier crNo = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.ORDER_NO);
         Carrier crComp = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COMPONENT);
+        Carrier crCol = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COLUMN);
+        Carrier crColName = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COLUMN_NAME);
 
         EntityTmInputTableComp ent = new EntityTmInputTableComp();
         ent.setId(fkInputTableId);
@@ -8571,6 +8635,8 @@ public class TmModel {
             crOut.setValue(tn, i, "fkInputId", crIn.get(ent.getId()));
             crOut.setValue(tn, i, "orderNo", crNo.get(ent.getId()));
             crOut.setValue(tn, i, "showComponent", crComp.get(ent.getId()));
+            crOut.setValue(tn, i, "showColumn", crCol.get(ent.getId()));
+            crOut.setValue(tn, i, "showColumnName", crColName.get(ent.getId()));
         }
         crOut.renameTableName(tn, "inputTableCompList");
         return crOut;
@@ -8628,6 +8694,8 @@ public class TmModel {
         Carrier crIn = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.FK_INPUT_ID);
         Carrier crNo = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.ORDER_NO);
         Carrier crComp = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COMPONENT);
+        Carrier crCol = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COLUMN);
+        Carrier crColName = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COLUMN_NAME);
 
         String tn = ent.toTableName();
         int rc = crOut.getTableRowCount(tn);
@@ -8636,6 +8704,8 @@ public class TmModel {
             crOut.setValue(tn, i, "fkInputId", crIn.get(ent.getId()));
             crOut.setValue(tn, i, "orderNo", crNo.get(ent.getId()));
             crOut.setValue(tn, i, "showComponent", crComp.get(ent.getId()));
+            crOut.setValue(tn, i, "showColumn", crCol.get(ent.getId()));
+            crOut.setValue(tn, i, "showColumnName", crColName.get(ent.getId()));
         }
         crOut.renameTableName(tn, "inputTableCompList");
         return crOut;

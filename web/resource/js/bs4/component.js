@@ -276,6 +276,11 @@ var Component = {
                     var res = getParamFromFnline(comp.pureDescription, 'fn_(Placeholderis)', 'Placeholderis');
                     el.prop("placeholder", res);
                 }
+
+                if (comp.pureDescription.includes('fn_(Defaultvalueis)')) {
+                    var res = getParamFromFnline(comp.pureDescription, 'fn_(Defaultvalueis)', 'defaultval');
+                    el.attr('value', res);
+                }
             } catch (err) {
 
             }
@@ -332,15 +337,13 @@ var Component = {
             comp.cellNo = 12;
         }
         var div = $('<div></div>')
-                .attr('ondragover', 'allowDrop(event)')
-                .attr('ondragstart', 'drag(event)')
-                .attr('ondrop', 'drop(event)')
+
                 .attr('data-toggle', 'tooltip') //muveqqeti baglayaq
                 .attr("orderNo", comp.orderNo)
                 .attr('style', Component.ReplaceCSS(comp.containerCSS))
                 .attr('id', comp.id)
                 .attr('pid', comp.id)
-                .attr('draggable', 'true')
+
                 .addClass(global_var.current_modal === 'loadLivePrototype' ? 'draggable' : '')
                 .addClass(global_var.current_modal === 'loadLivePrototype' ? 'resize1' : "")
                 .addClass('popup')
@@ -348,6 +351,13 @@ var Component = {
                 .addClass('component-class')
                 .addClass('component-container-dashed')
                 .addClass('col-' + comp.cellNo);
+
+        if (global_var.current_modal === 'loadLivePrototype') {
+            div.attr('ondragover', 'allowDrop(event)')
+                    .attr('ondragstart', 'drag(event)')
+                    .attr('ondrop', 'drop(event)')
+                    .attr('draggable', 'true')
+        }
 
         //add classes to container
         try {
@@ -398,9 +408,9 @@ var Component = {
 
 
 
-        div.append(global_var.current_modal === 'loadLivePrototype' && comp.showProperties
-                ? $('<button type="button" class="btn fa fa-ellipsis-h popup-btn" data-toggle="modal" data-target="#exampleModal" id="popup-btn' + comp.id + '" ></button>')
-                : "")
+//        div.append(global_var.current_modal === 'loadLivePrototype' && comp.showProperties
+//                ? $('<button type="button" class="btn fa fa-ellipsis-h popup-btn" data-toggle="modal" data-target="#exampleModal" id="popup-btn' + comp.id + '" ></button>')
+//                : "")
 
         if (comp.hasOnClickEvent) {
             div.attr('onclick', 'new UserStory().setInputByGUIComponent(\'' + comp.id + '\')')
@@ -475,10 +485,11 @@ var Component = {
             $(el).parent().parent().find('tbody').html(body.html());
             updateRowCountInputTable(tid, rc);
         },
-        RegenTableBodyDetails: function (tableId, rowCount, backlogId) {
+        RegenTableBodyDetails: function (tableId, rowCount, backlogId, startLimit) {
+            var sLimit = (startLimit) ? startLimit : "0";
             var tid = tableId;
             var rc = rowCount;
-            var body = this.GenInputTableBodyHtml(tid, rc, backlogId);
+            var body = this.GenInputTableBodyHtml(tid, rc, backlogId, sLimit);
             $('.component-table-class-for-zad-' + tid).find('tbody').html(body.html());
         },
         GenRowCount: function (comp) {
@@ -535,9 +546,16 @@ var Component = {
         GenInputTableHeaderHtml: function (tableId, comp) {
             var thead = $("<thead>");
             var col = SAInput.Tables[tableId].fkInputId.split(",");
-            var showComponent = SAInput.Tables[tableId].showComponent.split(",");
 
+            var showComponent = SAInput.Tables[tableId].showComponent.split(",");
             var pair = this.MatchShowComponentAndId(col, showComponent);
+
+            var showColumn = SAInput.Tables[tableId].showColumn.split(",");
+            var pairShowColumn = this.MatchShowComponentAndId(col, showColumn);
+
+            var showColumnName = SAInput.Tables[tableId].showColumnName.split(",");
+            var pairShowColumnName = this.MatchShowComponentAndId(col, showColumnName);
+
             col = this.SetColumnsOrder(col);
 
             var tr = $("<tr>").append($("<th>").append(""));
@@ -545,8 +563,16 @@ var Component = {
                 var inputId = col[i].trim();
                 if (inputId.length === 0)
                     continue;
+
+                if (global_var.current_modal !== 'loadLivePrototype' &&
+                        pairShowColumn[inputId].trim() === '1') {
+                    continue;
+                }
+
                 var inputName = SAInput.GetInputName(inputId);
-                var a = $('<a href="#">')
+                var a = (pairShowColumnName[inputId].trim() === '1')
+                        ? ""
+                        :$('<a href="#">')
                         .addClass('component-class')
                         .attr('id', inputId)
                         .attr('pid', inputId)
@@ -557,6 +583,10 @@ var Component = {
                         .append(replaceTags(inputName))
 
                 var color = pair[inputId].trim() === '1' ? "#2196F3" : "#d5d6da";
+                var colorColumn = pairShowColumn[inputId].trim() === '1' ? "#2196F3" : "#d5d6da";
+                var colorColumnName = pairShowColumnName[inputId].trim() === '1' ? "#2196F3" : "#d5d6da";
+
+
                 var showComp = (global_var.current_modal === 'loadLivePrototype')
                         ? $('<i class="fa fa-list-alt" aria-hidden="true">')
                         .css("cursor", "pointer")
@@ -564,10 +594,29 @@ var Component = {
                         .css("color", color)
                         .attr("onclick", "showInputTableColumnComponent(this,'" + tableId + "','" + inputId + "')")
                         : "";
+
+                var showColumn = (global_var.current_modal === 'loadLivePrototype')
+                        ? $('<i class="fa fa-eye" aria-hidden="true">')
+                        .css("cursor", "pointer")
+                        .css('font-size', '8px')
+                        .css("color", colorColumn)
+                        .attr("onclick", "showInputTableColumnEntireComponent(this,'" + tableId + "','" + inputId + "')")
+                        : "";
+
+                var showColumnName = (global_var.current_modal === 'loadLivePrototype')
+                        ? $('<i class="fa fa-cubes" aria-hidden="true">')
+                        .css("cursor", "pointer")
+                        .css('font-size', '8px')
+                        .css("color", colorColumnName)
+                        .attr("onclick", "showInputTableColumnItselfComponent(this,'" + tableId + "','" + inputId + "')")
+                        : "";
+
                 tr.append($("<th>")
                         .css("min-width", "70px;")
                         .append(a)
-                        .append(showComp)
+                        .append(showComp, ' ')
+                        .append(showColumn, ' ')
+                        .append(showColumnName)
                         );
             }
             thead.append(tr);
@@ -626,13 +675,20 @@ var Component = {
             }
             return res;
         },
-        GenInputTableBodyHtml: function (tableId, rowCount, backlogId) {
+        GenInputTableBodyHtml: function (tableId, rowCount, backlogId, startLimit) {
 
+            var sLimit = (startLimit) ? startLimit : '0';
             var tbody = $('<tbody>');
             var col = SAInput.Tables[tableId].fkInputId.split(",");
+
             var showComponent = SAInput.Tables[tableId].showComponent.split(",");
+            var showColumn = SAInput.Tables[tableId].showColumn.split(",");
+            var showColumnName = SAInput.Tables[tableId].showColumnName.split(",");
 
             var pair = this.MatchShowComponentAndId(col, showComponent);
+            var pairShowColumn = this.MatchShowComponentAndId(col, showColumn);
+            var pairShowColumnName = this.MatchShowComponentAndId(col, showColumnName);
+
             col = this.SetColumnsOrder(col);
 
             var idx = 0;
@@ -640,13 +696,22 @@ var Component = {
                 var tr = $("<tr>")
                         .addClass('redirectClass')
                         .attr("bid", backlogId)
-                        .append($("<td>").append(j));
+                        .append($("<td>").append((j + parseInt(sLimit))));
                 for (var i = 0; i < col.length; i++) {
                     var inputId = col[i].trim();
                     if (inputId.length === 0)
                         continue;
+
+                    if (global_var.current_modal !== 'loadLivePrototype' &&
+                            pairShowColumn[inputId].trim() === '1') {
+                        continue;
+                    }
+
                     idx++;
                     var val = this.GetTableCellValue(tableId, inputId, j - 1);
+
+
+
                     if (pair[inputId].trim() === '1') {
                         var comp = new ComponentInfo();
                         Component.FillComponentInfo(comp, SAInput.Inputs[inputId]);
@@ -662,7 +727,7 @@ var Component = {
                         val = Component.GetComponentHtmlNew(comp);
                     }
 
-//                    var selectedField = ()?SAInput.getInputDetails())
+
 
                     tr.append($("<td>")
                             .css("min-width", "70px")
@@ -738,6 +803,7 @@ var Component = {
 
         div.append(el);
         div.addClass("table-responsive")
+
         return  $('<div></div>').append(div).html();
     },
     InputTab: function (comp) {
@@ -1036,6 +1102,20 @@ var Component = {
         div.append(el);
         return  $('<div></div>').append(div).html();
     },
+    Hidden: function (comp) {
+        comp.content = (comp.isFromTableNew === true) ? comp.secondContent : comp.content;
+        var star = Component.AddMandatoryStar(comp);
+        var el = $('<input></input>')
+                .addClass("form-control")
+                .attr('style', gui_component.defaultCSS.EditBox + Component.ReplaceCSS(comp.css))
+                .attr('type', 'hidden')
+                .attr('value', comp.content);
+        Component.ComponentEvent.Init(el, comp);
+        var div = Component.ContainerDiv(comp);
+         
+        div.append(el);
+        return  $('<div></div>').append(div).html();
+    },
     InnerEditBox: function (comp) {
         comp.content = (comp.isFromTableNew === true) ? comp.secondContent : comp.content;
         var div = Component.ContainerDiv(comp);
@@ -1176,11 +1256,18 @@ var Component = {
         if (comp.withLabel === true) {
             div.append($('<span></span>')
                     .append(comp.label)
-                    .append(star
-                            ));
+                    .append(star));
             div.append(comp.isLabelInTop ? "<br>" : "");
         }
 
+        //fill auto fill by select from API
+        var inputId = comp.id;
+        var selectFromBacmkogId = SAInput.getInputDetails(inputId, "selectFromBacklogId");
+        var selectFromInputId = SAInput.getInputDetails(inputId, "selectFromInputId");
+        if (selectFromBacmkogId) {
+            var selectedField = SAInput.GetInputName(selectFromInputId)
+            triggerAPI2Fill(select, selectFromBacmkogId, selectedField);
+        }
 
         div.append(select);
         return  $('<div></div>').append(div).html();
@@ -1354,13 +1441,7 @@ var Component = {
                         .append('<br>'));
         return  $('<div></div>').append(div).html();
     },
-    Hidden: function (comp) {
-        var div = Component.ContainerDiv(comp);
-        div.append($('<input></input>')
-                .attr('style', gui_component.defaultCSS.Hidden + Component.ReplaceCSS(comp.css))
-                .attr('type', 'hidden'));
-        return  $('<div></div>').append(div).html();
-    },
+     
     InnerCheckBox: function (comp) {
         comp.content = (comp.isFromTableNew === true) ? comp.secondContent : comp.content;
         var star = Component.AddMandatoryStar(comp);
@@ -1459,14 +1540,21 @@ var Component = {
         comp.hasOnClickEvent = true;
 //        comp.showProperties = false;
         var div = Component.ContainerDiv(comp);
+
         div.append(this.SectionAction.GetPropertiesSection(comp));
-        div.append(innerHTML);
+        div.append($('<div class="row">')
+                .addClass("component-section-row")
+                .append(innerHTML));
+
+//        div.append(innerHTML);
         return  $('<div></div>').append(div).html();
     },
     SectionAction: {
         GetPropertiesSection: function (comp) {
             var elDiv = (global_var.current_modal === 'loadLivePrototype' && comp.showProperties)
                     ? $('<div class="col-12 text-right">')
+                    .addClass("live-prototype-component-properties")
+                    .css("display", "none")
                     .attr("id", "comp_id_" + comp.id)
                     .css("padding-top", "15px")
                     .append(" &nbsp;")

@@ -4758,6 +4758,7 @@ public class CrModel {
         EntityManager.executeUpdateByQuery(query);
 
         EntityManager.executeUpdateByQuery(" use " + companyDb);
+        SessionManager.setDomain(SessionManager.getCurrentThreadId(), companyDb);
         createTableOnActivation(companyDb);
         createViewOnActivation(companyDb);
 

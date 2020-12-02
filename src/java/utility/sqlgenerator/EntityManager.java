@@ -99,7 +99,7 @@ public class EntityManager {
         crin.set("status", "A");
         setReferenceValue(crin);
         addDateToInsert(crin);
-        String methodNames[] = getEntityFields(entityDb, entityName);
+        String methodNames[] = getEntityFields(entityDb, entityName,false);
         String[] values = getEntityFieldValues(crin, methodNames);
         String query = SQLGenerator.insertGenerator(entityFullname, crin, methodNames);
 
@@ -221,20 +221,23 @@ public class EntityManager {
         return carrier;
     }
 
-    public static String[] getEntityFields(String entityDb, String entityName) throws Exception {
+    public static String[] getEntityFields(String entityDb, String entityName,boolean withAutoIncreament) throws Exception {
         List<String> array = new ArrayList<String>();
 
         if (entityName.trim().length() == 0) {
             return new String[]{};
         }
 
-        GeneralProperties prop = new GeneralProperties();
-        String filename = prop.getWorkingDir() + "../entity/" + SessionManager.getCurrentDomain() + "/" + entityDb + "/" + entityName;
+        String filename = Config.getProperty("entity.path") + SessionManager.getCurrentDomain() + "/" + entityDb + "/" + entityName;
 
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String ln = "";
             while ((ln = br.readLine()) != null) {
 
+                if (!withAutoIncreament && ln.toLowerCase().contains("auto_increment") ){
+                    continue;
+                }
+                
                 if (ln.trim().length() == 0) {
                     continue;
                 }
@@ -248,6 +251,12 @@ public class EntityManager {
         arrStr = array.toArray(arrStr);
 
         return arrStr;
+    }
+    
+    public static String[] getEntityFields(String entityDb, String entityName) throws Exception {
+         
+
+        return  getEntityFields(entityDb,entityName,true);
     }
 
     public static String[] getEntityFieldValues(Carrier carrier, String fields[]) throws QException {

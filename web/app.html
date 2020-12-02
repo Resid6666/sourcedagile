@@ -5098,6 +5098,156 @@
 </div>
 
 
+<div class="modal fade" id="addStoryCardInputsAsModal" tabindex="-1"  style="z-index: 50000" role="dialog" aria-labelledby="" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width: 70%;max-width: 70%" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="selectFromDbModal-title">Add Story Card Inputs as</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <!--<div class='col-12'>-->
+                    <input type="hidden" id="addStoryCardInputsAsModal-triggertype">
+
+                    <br>
+
+                    <div class="form-group col-9" style="font-size:14px;">
+
+
+                        <span style="width: 100%;">Story Card<span style="color:red">*</span></span>
+                        <br>
+                        <select id="addStoryCardInputsAsModal-backlogid" class='form-control' style="width:100%;padding:1px;  "
+                                onchange="getInputList4Code(this)">
+                        </select>
+
+                        <br>
+                    </div>
+
+
+                    <div class='col-3'>
+                        <span style="width: 100%;">Action Type<span style="color:red">*</span></span><br>
+                        <select id="addStoryCardInputsAsModal-actiontype" class='form-control' style="width:100%;padding:1px;  ">
+                            <option value='select'>Select Data from Story Card/API</option>
+                            <option value='send'>Send Data to Story Card/API</option>
+
+
+                        </select>
+                    </div>
+
+                    <div class='col-12'>
+                        <br>
+                        <span style="width: 100%;">Inputs/Outputs<span style="color:red">*</span></span><br>
+                    </div>
+
+                    <div class='col-12'>
+                        <div class='row' style="margin:0px;" id="addStoryCardInputsAsModal-inputlist">
+
+                        </div>
+                    </div>
+                    <div class="form-group col-12 text-right" >
+                        <br>
+                        <button type="button" class="btn btn-primary" 
+                                onclick="addStoryCardInputsAsAction()"  >Apply</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+
+
+                </div>
+                <!--</div>-->
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="addFieldsOfTableAsInputModal" tabindex="-1"  style="z-index: 50000" role="dialog" aria-labelledby="" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width: 70%;max-width: 70%" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="selectFromDbModal-title">Add Fields of Table as Input</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <!--<div class='col-12'>-->
+
+                    <br>
+
+                    <div class="form-group col-12" style="font-size:14px;">
+                        <input type="hidden" id="addFieldsOfTableAsInputModal-triggertype">
+
+
+                        <span style="width: 100%;">Database<span style="color:red">*</span></span>
+                        <br>
+                        <select id="addFieldsOfTableAsInputModal-dbid" class='form-control' style="width:100%;padding:1px;  "
+                                onchange="getDbTablesList4Code(this)">
+                        </select>
+
+                        <br>
+
+
+
+                    </div>
+
+                    <div class='col-9'>
+                        <span style="width: 100%;">Table<span style="color:red">*</span></span><br>
+                        <select id="addFieldsOfTableAsInputModal-tableid" class='form-control' style="width:100%;padding:1px;  "
+                                onchange="getDbFiledList(this)">
+                        </select>
+
+                    </div>
+
+                    <div class='col-3'>
+                        <span style="width: 100%;">Action Type<span style="color:red">*</span></span><br>
+                        <select id="addFieldsOfTableAsInputModal-actiontype" class='form-control' style="width:100%;padding:1px;  ">
+                            <option value='select'>Select Data from Database</option>
+                            <option value='send'>Save to Database</option>
+
+
+                        </select>
+                    </div>
+
+                    <div class='col-12'>
+
+                        <br>                           <span style="width: 100%;">Fields<span style="color:red">*</span></span><br>
+                    </div>
+
+                    <div class='col-12'>
+                        <div class='row' style="margin:0px;" id="addFieldsOfTableAsInputModal-fieldid">
+
+                        </div>
+                    </div>
+                    <div class="form-group col-12 text-right" >
+                        <br>
+                        <button type="button" class="btn btn-primary" 
+                                onclick="addFieldsOfTableAsInputAction()"  >Apply</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+
+
+                </div>
+                <!--</div>-->
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
 <div class="modal fade" id="selectFromDbModal" tabindex="-1"  style="z-index: 50000" role="dialog" aria-labelledby="" aria-hidden="true">
     <div class="modal-dialog modal-lg" style="width: 50%;max-width: 50%" role="document">
         <div class="modal-content">
@@ -6335,9 +6485,9 @@
         </div>
     </div>
 </div>
-    
-    
-    
+
+
+
 <div class="modal fade" id="addRelatedApiModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document" style="min-width1: 60%">
         <div class="modal-content">

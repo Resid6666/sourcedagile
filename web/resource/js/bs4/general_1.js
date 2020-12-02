@@ -10,8 +10,8 @@ var urlGl = ""
 
 var gui_component = {
     "defaultCSS": {
-        "InputTable":"",
-        "InputTab":"",
+        "InputTable": "",
+        "InputTab": "",
         "EditBox": "",
         "TextArea": "",
         "SelectBox": "",
@@ -21,11 +21,11 @@ var gui_component = {
         "Date": "",
         "Time": "",
         "Label": "",
-        "InnerRadioButton":"",
-        "InnerCheckBox":"",
-        "InnerEditBox":"",
+        "InnerRadioButton": "",
+        "InnerCheckBox": "",
+        "InnerEditBox": "",
         "InnerLine": "",
-        "Button":"background-color:#4CAF50;color:white; ",
+        "Button": "background-color:#4CAF50;color:white; ",
         "Hidden": "",
         "Section": "width:100%;border: 1px solid #D2691E;border-radius:4px; padding: 5px;",
         "Icon": "",
@@ -182,12 +182,37 @@ function init() {
         new User().showUserDetails(this);
         $(this).toggleClass("active");
     });
+
+
     $(document).on('click', '.us-ipo-input-tr', function (evt) {
         $('.us-ipo-input-tr').removeClass("active");
         new UserStory().showIPOInputDetails(this);
         $(this).toggleClass("active");
-//        $('#us-ipo-inputdescription').focus();
+
+        //show properties
+//        var pid = $(this).attr('pid');
+//        $('.live-prototype-component-properties').hide();
+//        $('#'+pid).find('.live-prototype-component-properties').show();
+
     });
+
+
+//    $(document).on('mouseover', '.active-inputs-selected', function (evt) {
+//        //show properties
+//        var pid = $(this).attr('pid');
+//        $('.live-prototype-component-properties').hide();
+//        $('#' + pid).find('.live-prototype-component-properties').show();
+//
+//    });
+//
+//
+//    $(document).on('mouseout', '.active-inputs-selected', function (evt) {
+//        //show properties
+//        var pid = $(this).attr('pid');
+//        $('#' + pid).find('.live-prototype-component-properties').hide();
+//
+//    });
+
 
     $(document).on('click', '.chek', function (e) {
         checkedCount();

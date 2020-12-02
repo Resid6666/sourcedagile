@@ -8448,7 +8448,7 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
 //        this.updateInputOnChangeDynamic("param3", $('#gui_input_css_style').val());
 //        this.updateInputOnChangeDynamic("param2", $('#gui_input_css_style_container').val());
 //        this.updateInputOnChangeDynamic("param4", this.getInputCSS());
-        this.updateInputOnChangeAndRefresh();
+
 
         var json = {kv: {}};
         try {
@@ -8480,6 +8480,8 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
                     After refresh it effect will be disappear.');
             }
         });
+
+        this.updateInputOnChangeAndRefresh();
     },
     getInputCSS: function () {
 
@@ -8508,7 +8510,7 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
         }
 
 //        this.updateInputOnChangeDynamic("param1", $(el).val());
-        this.updateInputOnChangeAndRefresh();
+
 
 
         var json = {kv: {}};
@@ -8535,6 +8537,8 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
                 that.genGUIDesign();
             }
         });
+
+        this.updateInputOnChangeAndRefresh();
     },
     setGUIComponentRelSUSInSection: function (el) {
         if (global_var.current_us_input_id.length === 0) {
@@ -8682,7 +8686,7 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
 
 
 //        this.updateAllInputOnChange();
-        this.updateInputOnChangeAndRefresh();
+
 
         var json = {kv: {}};
         try {
@@ -8705,6 +8709,7 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
                 SACore.updateBacklogByRes(res);
 
                 //refresh GUI component 
+
                 that.genGUIDesign();
             },
             error: function () {
@@ -8712,6 +8717,7 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
                     After refresh it effect will be disappear.');
             }
         });
+        this.updateInputOnChangeAndRefresh();
     },
     setGUIComponentOrderNoByDrugDrop: function (inputId, index) {
 
@@ -8764,8 +8770,7 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
         }
 
 
-        this.updateInputOnChangeDynamic("cellNo", $('#us-gui-component-cell-no').val());
-        this.updateInputOnChangeAndRefresh();
+
 
         var json = {kv: {}};
         try {
@@ -8795,7 +8800,9 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
                     After refresh it effect will be disappear.');
             }
         });
-        dragResize()
+        dragResize();
+        this.updateInputOnChangeDynamic("cellNo", $('#us-gui-component-cell-no').val());
+        this.updateInputOnChangeAndRefresh();
     },
     setGUIComponentAction: function (e) {
         this.toggleSectionAndRelUS();
@@ -8810,7 +8817,7 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
 
 
 //        this.updateInputOnChangeDynamic("action", $(e).val());
-        this.updateInputOnChangeAndRefresh();
+
 
         var json = {kv: {}};
         try {
@@ -8837,6 +8844,7 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
 
             }
         });
+        this.updateInputOnChangeAndRefresh();
     },
 
     toggleComponentEventDetails: function () {
@@ -8862,7 +8870,7 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
         }
 
 //        this.updateInputOnChangeDynamic("section", $(e).val());
-        this.updateInputOnChangeAndRefresh();
+
 
         var json = {kv: {}};
         try {
@@ -8889,6 +8897,8 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
                 that.genGUIDesign();
             }
         });
+
+        this.updateInputOnChangeAndRefresh();
     },
     setGUIComponentEvent: function (e) {
         var s = $(e).val();
@@ -8932,9 +8942,7 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
             return;
         }
 
-        this.updateInputOnChangeDynamic("componentType", $('#us-gui-component-id').val());
-        this.updateInputOnChangeAndRefresh();
-        this.toggleGUIComponentSelection();
+
 
         var json = {kv: {}};
         try {
@@ -8963,6 +8971,10 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
                     After refresh it effect will be disappear.');
             }
         });
+
+        this.updateInputOnChangeDynamic("componentType", $('#us-gui-component-id').val());
+        this.updateInputOnChangeAndRefresh();
+        this.toggleGUIComponentSelection();
     },
     updateInputOnChange: function () {
         var id = global_var.current_us_input_id;
@@ -9963,6 +9975,7 @@ class="us-ipo-input-table-tr"  pid="' + id + '" itable="' + replaceTags(Replace2
         $('#generalview_SUS_GUI_header').text(SAInput.GetCurrentBacklogname);
         var st = this.getGUIDesignHTML(res);
         $('#' + gui).html(st);
+        initOnloadActionOnGUIDesign();
         this.setGeneralGUIDesign(st);
 
         $('.tooltip').removeClass('show');
@@ -10171,20 +10184,8 @@ class="us-ipo-input-table-tr"  pid="' + id + '" itable="' + replaceTags(Replace2
             }
 
             var data = {};
-           
-            var data = getGUIDataByStoryCardList(el,selectedFieldsByApiList);
 
-//            var tiggerDataClassName = $(el).attr('sa-triggerdataclass');
-//            var data = {};
-//            if (tiggerDataClassName) {
-//                $(el).closest('.redirectClass').find('.' + tiggerDataClassName).each(function () {
-//                    var fieldName = ($(this).attr("sa-triggerfield"))
-//                            ? $(this).attr("sa-triggerfield")
-//                            : "id";
-//                    data[fieldName] = $(this).val();
-//                })
-//            }
-
+            var data = getGUIDataByStoryCardList(el, selectedFieldsByApiList);
             var tempEl = $('#' + padeId).find('.redirectClass').find('div').first();
             $(tempEl).attr('sa-triggersetvalue', '1');
             triggerAPI(tempEl, $(el).attr("onclick_trigger_id"), data);
@@ -10214,13 +10215,22 @@ class="us-ipo-input-table-tr"  pid="' + id + '" itable="' + replaceTags(Replace2
     setGUIComponentFillGUIModal: function (el, id, sectionId) {
         closeModal('userstory-gui-input-component-res-sus-analytic');
         var html = this.genGUIDesignHtmlById(id);
-        $(el).closest('div.redirectClass').find('#' + sectionId).html(html);
+        $(el).closest('div.redirectClass').find('#' + sectionId).find('.component-section-row').first().html(html);
 //        generatePopupModalNew(html, canvasCSS);
 //        $('[data-toggle="tooltip"]').tooltip({html: true});
     },
 
     setGUIComponentSaveGUIModal: function (el, e) {
         e.stopPropagation();
+
+        if ($(el).attr("onclick_trigger_id")) {
+            var apiId = $(el).attr("onclick_trigger_id");
+            triggerAPI(el, apiId);
+            initOnloadActionOnGUIDesign();
+            $(el).closest('div.modal').first().modal('hide');
+        }
+
+
         var triggerId = $(el).closest("form")
                 .find('input[id=popupTrigger]').first().attr('pid');
         var json = {"kv": {}};
@@ -10250,12 +10260,16 @@ class="us-ipo-input-table-tr"  pid="' + id + '" itable="' + replaceTags(Replace2
                     var backlodId = bel.attr('bid');
                     var html = that.genGUIDesignHtmlById(backlodId);
                     bel.html(html);
+
                 } else {
                     var bel = $(el).closest('div.redirectClass').first();
                     var backlodId = bel.attr('bid');
                     var html = that.genGUIDesignHtmlById(backlodId);
                     bel.html(html);
+
                 }
+
+                initOnloadActionOnGUIDesign();
                 $(el).closest('div.modal').first().modal('hide');
             }
         });
@@ -10993,6 +11007,9 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
         $('.active-inputs-selected').each(function () {
             $(this).removeClass('active-inputs-selected');
         });
+
+
+
         $('#' + global_var.current_us_input_id).addClass("active-inputs-selected"); //uygun  komponenting qiraqlarini border line etmek
 
         $('.us-input-list-item-check-box-class').each(function () {
@@ -12038,7 +12055,7 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
             data: data,
             contentType: "application/json",
             crossDomain: true,
-            async: true,
+            async: false,
             beforeSend: function () {
                 showProgress();
             },
@@ -12091,7 +12108,7 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
             data: data,
             contentType: "application/json",
             crossDomain: true,
-            async: true,
+            async: false,
             success: function (res) {
                 SAInput.LoadInput(res);
                 that.load();
@@ -13922,8 +13939,6 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
         global_var.current_backlog_id = id;
         global_var.current_backlog_name = $(e).html();
         Utility.addParamToUrl('current_backlog_id', global_var.current_backlog_id);
-//        Utility.addParamToUrl('current_backlog_name', global_var.current_backlog_name);
-//        if (global_var.current_view === 'detailed') {
 
         $('#container-us-body').find('.pointer').removeClass('us-selected');
 
@@ -13947,16 +13962,31 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
 
         var select = $('#input_event_related_api');
         select.html('');
+        var pushedList = [];
         for (var i in outputList) {
             try {
                 var oid = outputList[i];
                 oid = oid.trim();
                 var inputObj = SAInput.getInputObject(oid);
 
-                if (inputObj.sendToBacklogId) {
+//                if (!pushedList.includes(inputObj.sendToBacklogId))
+//                          pushedList.includes(inputObj.selectFromBacklogId)) {
+//                    continue;
+//                }
+
+                if (inputObj.sendToBacklogId && !pushedList.includes(inputObj.sendToBacklogId)) {
                     select.append($('<option>')
                             .val(inputObj.sendToBacklogId)
                             .text(SACore.GetBacklogname(inputObj.sendToBacklogId)));
+                    pushedList.push(inputObj.sendToBacklogId);
+                }
+
+                if (inputObj.selectFromBacklogId && !pushedList.includes(inputObj.selectFromBacklogId)) {
+                    select.append($('<option>')
+                            .val(inputObj.selectFromBacklogId)
+                            .text(SACore.GetBacklogname(inputObj.selectFromBacklogId)));
+                    pushedList.push(inputObj.selectFromBacklogId);
+
                 }
 
             } catch (err) {
@@ -17096,9 +17126,6 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
         //generate input desc table
         this.setUserStoryInputsInfoOnGeneralViewDetailsPure(res);
         this.setHistoryDatesOnStoryCardLoad(res);
-
-
-
     },
 
     loadStoryCardFileList4Share: function (res) {
@@ -18183,14 +18210,10 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
         $('#SUS_IPO_GUI_Design').html(st);
         $('#SUS_IPO_GUI_Design').attr('bid', SACore.GetCurrentBacklogId());
         $('#SUS_IPO_GUI_Design').attr('bcode', makeId(10));
+        initOnloadActionOnGUIDesign();
 
         //set is API
         try {
-//            if (res.kv.backlogIsApi === '1') {
-//                $('#gui_component_is_api').prop('checked', true);
-//            } else {
-//                $('#gui_component_is_api').prop('checked', false);
-//            }
             if (SACore.GetCurrentBaklogIsApi() === '1') {
                 $('#gui_component_is_api').prop('checked', true);
             } else {
@@ -25523,7 +25546,7 @@ function getParamFromFnline(fnline, fn, param) {
         var res = "";
         var n1 = fnline.indexOf(fn);
         var n2 = fnline.indexOf("fn_(", n1 + 1);
-        n2 = (n2 === 0) ? fnline.length - 1 : n2;
+        n2 = (n2 === 0 || n2 === -1) ? fnline.length : n2;
         var pureLine = fnline.substring(n1, (n2));
         pureLine = pureLine.replace('%IN%', '');
 
@@ -25536,7 +25559,7 @@ function getParamFromFnline(fnline, fn, param) {
                 var key = kv_list[i].split('=')[0];
                 var val = kv_list[i].split('=')[1];
                 if (key.includes(param)) {
-                    res = val;
+                    res = val.trim();
                     return res;
                 }
             }

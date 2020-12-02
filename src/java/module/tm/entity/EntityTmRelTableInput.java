@@ -21,6 +21,28 @@ public class EntityTmRelTableInput extends CoreEntity {
     private String inputStatus = "";
     public static String SHOW_COMPONENT = "showComponent";
     private String showComponent = "";
+    public static String SHOW_COLUMN = "showColumn";
+    private String showColumn = "";
+    public static String SHOW_COLUMN_NAME = "showColumnName";
+    private String showColumnName = "";
+
+    public String getShowColumn() {
+        return showColumn;
+    }
+
+    public void setShowColumn(String showColumn) {
+        this.showColumn = showColumn;
+    }
+
+    public String getShowColumnName() {
+        return showColumnName;
+    }
+
+    public void setShowColumnName(String showColumnName) {
+        this.showColumnName = showColumnName;
+    }
+    
+    
 
     public String getShowComponent() {
         return showComponent;
@@ -29,8 +51,6 @@ public class EntityTmRelTableInput extends CoreEntity {
     public void setShowComponent(String showComponent) {
         this.showComponent = showComponent;
     }
-    
-    
 
     public String getFkProjectId() {
         return fkProjectId;

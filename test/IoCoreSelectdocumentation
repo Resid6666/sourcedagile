@@ -1,7 +1,66 @@
-entity
+entity: 
+-_(underscore) işarə qəbul etmir
+- 
+
 startLimit
 endLimit
 sortByAsc
 sortByField
 selectedField
+updatedField
 distinctField
+
+
+var json = initJSON();
+
+json.kv.entity = "tmBacklog";
+json.kv.startLimit = "2";
+json.kv.endLimit = 10;
+json.kv.backlogName = "%%a%%"
+json.kv.status = 'D';
+json.kv.distinctField = "status,modificationDate,backlogName"
+json.kv.modificationDate = "NE%"
+
+sa-tableselectedfield -> selectedFields in table
+onclick_trigger_id
+sa-triggerdataclass
+sa-triggerfield
+			
+sa-triggersetvalue= 1/0, triggerApi cagiranda istifade edilir.		 
+sa-triggersettable= 1/0 triggerApi cagiranda table set edilir.
+
+data._table = select olanda table "_table" key ile geri qayidir.
+
+.sa-onloadclick class  // onclick action for page load componentingde itifade edilecek.sa-onloadclick
+.sa-onloadchange class  // onclick action for page load componentingde itifade edilecek.sa-onloadclick
+
+display:inline;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

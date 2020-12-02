@@ -2716,3 +2716,13 @@ img.sc-IbsAh.kqHqhS {
 .jscode-row-tr-active{
     background-color:gainsboro;
 }
+
+.component-section-row{
+    margin-left:0px;
+    margin-right: 0px;
+}
+
+.apd-form-error-msg{
+    color:red;
+    font-size:14px;
+}
