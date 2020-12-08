@@ -2726,3 +2726,7 @@ img.sc-IbsAh.kqHqhS {
     color:red;
     font-size:14px;
 }
+
+.task-for-backlog-event{
+    cursor:pointer;
+}

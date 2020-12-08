@@ -221,6 +221,18 @@ $(document).ready(function () {
     })
     $(document).on("click", ".task-card-UserStory-edit-exit", function (e) {
         $(document).find(".TaskStoryCardPanel").css("display", "none")
+
+        global_var.current_issue_is_hide = "1";
+        Utility.addParamToUrl('current_issue_is_hide', global_var.current_issue_is_hide);
+
+        global_var.current_issue_id = "";
+        Utility.addParamToUrl('current_issue_id', global_var.current_issue_id);
+
+        if (global_var.current_modal === 'loadTaskManagement') {
+            genTaskKanbanView();
+        } else if (global_var.current_modal === 'loadBugChange') {
+            getBugList();
+        }
     })
 
 
@@ -637,6 +649,15 @@ function loadTaskCardDetails(taskId) {
 
 
     $('#task-info-modal-status').val(replaceTags(SATask.GetDetails(id, 'taskStatus')));
+    $('.task-info-modal-status').each(function () {
+        $(this).val(replaceTags(SATask.GetDetails(id, 'taskStatus')));
+    })
+
+    $('#task-info-modal-priority').val(replaceTags(SATask.GetDetails(id, 'taskPriority')));
+    $('.task-info-modal-priority').each(function () {
+        $(this).val(replaceTags(SATask.GetDetails(id, 'taskPriority')));
+    })
+
     $('.taskEstimationHoursInput').val(replaceTags(SATask.GetDetails(id, 'estimatedHours')));
     $('.taskSpentHoursInput').val(replaceTags(SATask.GetDetails(id, 'spentHours')));
 
@@ -647,8 +668,22 @@ function loadTaskCardDetails(taskId) {
 
 
     $('#task-info-modal-tasktype').val(replaceTags(SATask.GetDetails(id, 'fkTaskTypeId')));
+    $('.task-info-modal-tasktype').each(function () {
+        $(this).val(replaceTags(SATask.GetDetails(id, 'fkTaskTypeId')));
+    })
+
+
     $('#task-info-modal-nature').val(replaceTags(SATask.GetDetails(id, 'taskNature')));
+    $('.task-info-modal-nature').each(function () {
+        $(this).val(replaceTags(SATask.GetDetails(id, 'taskNature')));
+    })
+
     $('#task-info-modal-description').val(replaceTags(SATask.GetDetails(id, 'taskDescription')));
+    $('.task-info-modal-description').each(function () {
+        $(this).val(replaceTags(SATask.GetDetails(id, 'taskDescription')));
+    })
+
+
     $('.descriptonBody').html(MapTextAreaHtml(replaceTags(SATask.GetDetails(id, 'taskDescription'))));
 
     var userStoryNo = SACore.GetBacklogKey(SATask.GetDetails(id, 'fkBacklogId'), "orderNo");

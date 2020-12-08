@@ -1079,9 +1079,7 @@ function replaceTags(arg) {
 }
 
 function init4Core() {
-    var current_modal = Utility.getParamFromUrl('current_modal').replace("#", '');
-    current_modal = (current_modal) ? current_modal : "loadStoryCard";
-    $('.' + current_modal).click();
+  
 
     $('[data-toggle="tooltip"]').tooltip();
 //    new UserStory().load();
@@ -1729,6 +1727,8 @@ function fnExcelReport(tableId)
 }
 
 var global_var = {
+    current_issue_id:"",
+    current_issue_is_hide:"1",
     projectToggleWithSync: true,
     is_select_from_db_modal_clicked: false,
     active_input_desc_type: "IN",
@@ -1771,6 +1771,7 @@ var global_var = {
     "fileViewerPath": "http://docs.google.com/gview?url=resources/upload/",
     "current_us_submenu": "generalview",
     "current_domain": "",
+    "current_ticker_id":"",
     "ipoTable": {},
     "ipoTableVal": {},
     "data_eliminator": ".",

@@ -4757,6 +4757,8 @@ public class CrModel {
         String query = "CREATE DATABASE IF NOT EXISTS " + companyDb + ";";
         EntityManager.executeUpdateByQuery(query);
 
+        SessionManager.setDomain(SessionManager.getCurrentThreadId(), companyDb);
+        
         EntityManager.executeUpdateByQuery(" use " + companyDb);
         SessionManager.setDomain(SessionManager.getCurrentThreadId(), companyDb);
         createTableOnActivation(companyDb);
@@ -6718,7 +6720,7 @@ public class CrModel {
         c.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
 
         c.removeColoumn(CoreLabel.RESULT_SET, EntityCrUser.PASSWORD);
-        c.removeColoumn(CoreLabel.RESULT_SET, EntityCrUser.ID);
+//        c.removeColoumn(CoreLabel.RESULT_SET, EntityCrUser.ID);
         c.removeColoumn(CoreLabel.RESULT_SET, EntityCrUser.TELEPHONE_1);
         c.removeColoumn(CoreLabel.RESULT_SET, EntityCrUser.TELEPHONE_2);
         c.removeColoumn(CoreLabel.RESULT_SET, EntityCrUser.OCCUPATION);
@@ -6920,7 +6922,8 @@ public class CrModel {
 
     public static Carrier forgetPassword(Carrier carrier) throws QException {
         try {
-            EntityCrCompany entComp = new EntityCrCompany();
+            SessionManager.setDomain(SessionManager.getCurrentThreadId(),"backlog");
+            EntityCrCompany entComp = new EntityCrCompany();            
             entComp.setCompanyDomain(carrier.getValueAsString("domain"));
             EntityManager.select(entComp);
 
@@ -6929,6 +6932,7 @@ public class CrModel {
                 return carrier;
             }
 
+            SessionManager.setDomain(SessionManager.getCurrentThreadId(),entComp.getCompanyDb());
             EntityCrUser entUser = new EntityCrUser();
             entUser.setDbname(entComp.getCompanyDb());
             entUser.setUsername(carrier.getValueAsString("username"));
@@ -7136,6 +7140,7 @@ public class CrModel {
 
     public static Carrier activateCompany(Carrier carrier) throws Exception {
 
+        SessionManager.setDomain(SessionManager.getCurrentThreadId(), "backlog");
         EntityCrTemporaryCompany entCompany = new EntityCrTemporaryCompany();
         entCompany.setActivationId(carrier.getValue("id").toString());
         entCompany.setStatus(EntityCrCompany.CompanyStatus.VERIFY.toString());
@@ -7149,6 +7154,7 @@ public class CrModel {
         createDBOnActivateCompany(entCompany.getCompanyDb().trim());
 
         //insert company information
+        SessionManager.setDomain(SessionManager.getCurrentThreadId(), "backlog");
         EntityCrCompany entTC = new EntityCrCompany();
         entTC.setCompanyDomain(entCompany.getCompanyDomain());
         Carrier cc = EntityManager.select(entTC);
@@ -7167,6 +7173,8 @@ public class CrModel {
         entTUser.setId(entCompany.getFkUserId());
         Carrier c2 = EntityManager.select(entTUser);
 
+        
+        SessionManager.setDomain(SessionManager.getCurrentThreadId(), entTC.getCompanyDb());
         EntityCrUser entUser = new EntityCrUser();
         entUser.setDbname(entTC.getCompanyDb());
         EntityManager.mapCarrierToEntity(c2, entTUser.toTableName(), 0, entUser);

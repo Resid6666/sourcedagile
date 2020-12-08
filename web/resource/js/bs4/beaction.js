@@ -897,9 +897,12 @@ var be = {
                 } else {
                     var f = false;
                     $('[sa-selectedfield*="' + err[i].code + '"]').each(function () {
-                        f = true;
-                        $(this).closest('div').find('.apd-form-error-msg').remove();
-                        $(this).after('<p class=\'apd-form-error-msg\'>' + err[i].val + '</p>');
+                        var fieldList = $(this).attr('sa-selectedfield').split(',');
+                        if (fieldList.includes(err[i].code)) {
+                            f = true;
+                            $(this).closest('div').find('.apd-form-error-msg').remove();
+                            $(this).after('<p class=\'apd-form-error-msg\'>' + err[i].val + '</p>');
+                        }
                     })
 
                     //eyni code-lu component vardir;

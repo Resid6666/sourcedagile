@@ -73,7 +73,7 @@
     </div>
 </div>
 
-<div class="row"   style="padding:20px 10px 0px 10px;">
+<!--<div class="row"   style="padding:20px 10px 0px 10px;">
     <div class="col-lg-4"></div>
     <div class="col-lg-8 col-bug-status updateBugList" style="z-index:1000;visibility: hidden;background-color:white;display1:none;" >
         <div class="addBugModalList addBugModalListUpdate" id="buglist_update" >
@@ -95,7 +95,7 @@
             </div>
         </div>
     </div>
-</div>
+</div>-->
 
 <div class="row" ppp style="padding:20px 10px 0px 10px;">
 
@@ -160,15 +160,37 @@
 
 
 <div class="row">
-    <div class="col-5 flexbox">
+    <div class="col-6 flexbox">
         <div class="search">
             <div> <input data-type='search_text' type="text" class='bug-filter' onchange=""  id='bug_filter_search_text'  placeholder="Search . . ." required="">
             </div>
         </div>
     </div>
 
+    <div class="col-2 text-right" style="padding-top: 7px;">
 
-    <div class="col-6 text-right" style="padding-top: 7px;">
+        <select class="bug-filter-multi  bug-mgmt-filter-select"  
+                data-actions-box="true"
+                multiple  
+                data-type="priority"
+                onchange="callBugFilterMulti(this)"
+                id='bug_filter_priority'  title="Priority">
+            <option value='' >None</option>
+            <option value='1' >1- Lowest</option>
+            <option value='2'>2</option>
+            <option value='3'>3</option>
+            <option value='4'>4</option>
+            <option value='5'>5</option>
+            <option value='6'>6</option>
+            <option value='7'>7</option>
+            <option value='8'>8</option>
+            <option value='9'>9 - Highest</option>  
+
+        </select>
+    </div>
+
+
+    <div class="col-2 text-right" style="padding-top: 7px;">
 
         <select class=" bug-mgmt-filter-select"  
                 data-actions-box="true"
@@ -180,10 +202,11 @@
             <option value='task-name' selected>Description</option>        
             <option value='task-nature' selected>Task Nature</option>        
             <option value='assignee' selected>Assignee</option>        
-            <option value='tasktype'  >Task Type</option>        
+            <option value='tasktype'  selected>Task Type</option>        
+            <option value='priority'   >Priority</option>        
             <option value='story-card' selected>Story Card</option>        
             <option value='project' selected >Project</option>        
-            <option value='created-by'  >Create By</option>        
+            <option value='created-by' selected >Create By</option>        
             <option value='created-date' selected>Create Date</option>        
             <option value='last-update' >Late Update</option>        
             <option value='estimated-hours'  >Estimated Hours</option>        
@@ -196,12 +219,12 @@
         </select>
     </div>
 
-    <div class="col-1 text-right d-flex justify-content-end">
+    <div class="col-2 text-right d-flex justify-content-end">
 
         <!--        <div class="form-group">-->
         <label></label>
         <select data-type='limit' class="bug-filter form-control" 
-                style="width1: 80px;margin-top:10px;" id="bug_filter_limit">
+                style="width : 80px;margin-top:10px;" id="bug_filter_limit">
             <option value='10'>10</option>
             <option value='25'> 25</option>
             <option value='50' selected>50</option>

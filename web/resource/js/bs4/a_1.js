@@ -30,6 +30,28 @@ var cr_project_desc_by_backlog = {};
 var cr_js_list = {};
 
 
+
+$(document).on("click", ".sa-event-relation-trigger-onclick", function (e) {
+    var classId = $(this).attr('sa-event-relation-trigger-class-id');
+    if (classId) {
+        $('.' + classId).click();
+    }
+})
+
+$(document).on("change", ".sa-event-relation-trigger-onchange", function (e) {
+    var classId = $(this).attr('sa-event-relation-trigger-class-id');
+    if (classId) {
+        $('.' + classId).change();
+    }
+})
+
+$(document).on("dblclick", ".sa-event-relation-trigger-ondblclick", function (e) {
+    var classId = $(this).attr('sa-event-relation-trigger-class-id');
+    if (classId) {
+        $('.' + classId).dblclick();
+    }
+})
+
 function initOnloadActionOnGUIDesign() {
     initOnloadActionOnGUIDesign4OnClick();
     initOnloadActionOnGUIDesign4Onchange();
@@ -98,7 +120,7 @@ function getInputList4Code(el) {
             var obj = res.tbl[0].r;
             for (var i = 0; i < obj.length; i++) {
 
-                var div = $('<div class="col-4">');
+                var div = $('<div class="col-6">');
                 div.append($('<input>')
                         .addClass('inputs-as-input')
                         .attr('type', 'checkbox')
@@ -107,6 +129,7 @@ function getInputList4Code(el) {
 
                         .append(' ')
                         .append($('<input>')
+                                .css("border-color", "transparent")
                                 .attr('type', 'text')
                                 .val(obj[i].inputName)
                                 .attr("checked", "true")
@@ -255,7 +278,7 @@ function getDbFiledList(el) {
             var obj = res.tbl[0].r;
             for (var i = 0; i < obj.length; i++) {
 
-                var div = $('<div class="col-4">')
+                var div = $('<div class="col-6">')
                 div.append($('<input>')
                         .addClass('fields-as-input')
                         .attr('type', 'checkbox')
@@ -266,20 +289,19 @@ function getDbFiledList(el) {
 
                         .append($('<input>')
                                 .addClass('fields-as-input')
+                                .css("border-color", "transparent")
                                 .attr('type', 'text')
-                                .val(obj[i].fieldName)
-                                .attr("checked", "true")
+                                .val(firstLetterToLowercase(obj[i].fieldName.replace(/_/g, ' ')))
                                 .attr('pid', obj[i].id))
                         .append(' < ')
                         .append(obj[i].fieldName)
                 elm.append(div);
             }
-
-
         }
     });
-
 }
+
+
 
 function addFieldsOfTableAsInputAction() {
     $('.fields-as-input').each(function () {
@@ -387,7 +409,9 @@ function triggerAPI(el, apiId, data) {
         res = data;
     }
     var initData = getGUIDataByStoryCard(el);
-    var finalRes = $.extend(res, initData);
+    var finalRes = $.extend(initData, res);
+    finalRes = LeftMergeOfObjers(finalRes, res);
+
     var out = be.callApi(apiId, finalRes);
 //    if ($(el).attr('sa-triggersetvalue') === '1') {
     setValueOnCompAfterTriggerApi(el, out);
@@ -400,6 +424,17 @@ function triggerAPI(el, apiId, data) {
     }
 //    }
 
+}
+
+function LeftMergeOfObjers(sourceData, mergedData) {
+    var keys = Object.keys(sourceData);
+    for (var i in keys) {
+        var key = keys[i];
+        if (mergedData[key]) {
+            sourceData[key] = mergedData[key];
+        }
+    }
+    return sourceData;
 }
 
 function updateAttributeBasedOnData(el, data) {
@@ -581,9 +616,13 @@ function setTableValueOnCompAfterTriggerApi(el, apiId, data, startLimit) {
                 var c = cols[i];
                 var val = data._table.r[(j - 1)][c];
                 $(el).closest('.redirectClass').find('[sa-selectedfield*="' + c + '"][row-no="' + j + '"]').each(function () {
-                    $(this).val(val);
-                    $(this).text(val);
-                    updateAttributeBasedOnKey(this, c, val);
+                    var fieldList = $(this).attr('sa-selectedfield').split(',');
+                    if (fieldList.includes(c)) {
+                        $(this).val(val);
+                        $(this).text(val);
+                        updateAttributeBasedOnKey(this, c, val);
+                    }
+
                 })
             }
         }
@@ -4058,6 +4097,71 @@ function showGeneralStatisticsDetailsModalByAssignee(el) {
     });
 }
 
+
+
+
+$(document).on("dblclick", ".task-for-backlog-event", function (e) {
+    showGeneralStatisticsDetailsModalByTask4SC(this);
+})
+
+function showGeneralStatisticsDetailsModalByTask4SC(el) {
+    $('#generalStatisticsDetailsModal-list').html('');
+    $('#generalStatisticsDetailsModal-details').html('');
+
+    $('#storyCardViewManualModal').modal('hide');
+    $('#generalStatisticsDetailsModal').modal("show");
+    var backlogId = global_var.current_backlog_id;
+    var actionType = $(el).attr('action');
+    var statusType = $(el).attr('status')
+
+
+
+    if (!backlogId || !actionType || !statusType) {
+        return;
+    }
+
+    var json = initJSON();
+    json.kv.fkBacklogId = backlogId;
+    json.kv.actionType = actionType;
+    json.kv.statusType = statusType;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetBacklogListByStatsGroupByTask4SC",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            showGeneralStatisticsDetailsModalDetailsByTask4SC(res);
+        }
+    });
+}
+
+function showGeneralStatisticsDetailsModalDetailsByTask4SC(res) {
+    var obj = res.tbl[0].r;
+    var table = $('<table>')
+            .addClass("table table-hover");
+    var idx = 1;
+    for (var i in obj) {
+        var tr = $('<tr>')
+                .addClass("general-statistics-story-card-list")
+                .attr("pid", obj[i].id)
+                .css("cursor", "pointer")
+
+                .append($('<td>').append((idx++)))
+                .append($('<td>').append((obj[i].backlogName)));
+        tr.attr("onclick", "showTaskDetails4Statistic(this)")
+
+        table.append(tr);
+    }
+    $('#generalStatisticsDetailsModal-list').html(table);
+    $('#generalStatisticsDetailsModal-list')
+            .find('.general-statistics-story-card-list').first().click();
+}
+
+
 function showGeneralStatisticsDetailsModalByTask(el) {
     $('#generalStatisticsDetailsModal-list').html('');
     $('#generalStatisticsDetailsModal-details').html('');
@@ -4115,9 +4219,41 @@ function showTaskDetails4Statistic(el) {
 function showTaskCardIn(taskId, divId) {
     var html = $('#taskMgmtModal-body').html();
     $("#" + divId).html(html);
-    $('.card-UserStory-edit-task').remove();
+    $('.card-UserStory-edit-task').hide();
     loadTaskCardDetails(taskId);
 }
+
+function setFilter4IssueMgmtAsAssigne(assigneId) {
+    var el = $('#bug_filter_assignee_id');
+    el.val(assigneId);
+    callBugFilterMulti(el);
+    el.selectpicker('refresh');
+}
+
+function setFilter4IssueMgmtAsCreatedBy(assigneId) {
+    var el = $('#bug_filter_created_by');
+    el.val(assigneId);
+    callBugFilterMulti(el);
+    el.selectpicker('refresh');
+}
+
+function setFilter4IssueMgmtAsProject(assigneId) {
+    var el = $('#bug_filter_project_id');
+    el.val(assigneId);
+    callBugFilterMulti(el);
+    el.selectpicker('refresh');
+}
+
+function setFilter4IssueMgmtAsBacklog(projectId, backlogId) {
+    setFilter4IssueMgmtAsProject(projectId);
+    loadStoryCardByProject(projectId);
+
+    var el = $('#bug_filter_backlog_id');
+    el.val(backlogId);
+    callBugFilterMulti(el);
+    el.selectpicker('refresh');
+}
+
 
 function showBacklogDetails4Statistic(el) {
     var backlogId = $(el).attr("pid");
@@ -4688,6 +4824,38 @@ $(document).on('click', '.loadStoryCardMgmt', function (evt) {
         commmonOnloadAction(this);
     });
 });
+
+$(document).on('click', '.loadBugChange', function (evt) {
+    var f = $(this).data('link');
+    global_var.current_modal = "loadBugChange";
+    Utility.addParamToUrl('current_modal', global_var.current_modal);
+    $.get("resource/child/" + f + ".html", function (html_string)
+    {
+        $('#mainBodyDivForAll').html(html_string);
+        commmonOnloadAction(this);
+        setBugFilterProject();
+        setBugFilterAssignees();
+
+
+        $('.bug-mgmt-filter-select').selectpicker();
+        new Sprint().load4Task();
+        new Label().load4Task();
+
+        getBugList();
+
+        if (global_var.current_issue_is_hide !== '1' &&
+                (global_var.current_issue_id)) {
+            $('.issue_' + global_var.current_issue_id).click();
+            global_var.current_issue_is_hide = "1";
+            global_var.current_issue_id = "";
+        }
+
+        if ((global_var.current_issue_id)) {
+            global_var.current_issue_id = "";
+        }
+    });
+});
+
 $(document).on('click', '.loadUserManual', function (evt) {
     var f = 'usermanual';
     global_var.current_modal = "loadUserManual";
@@ -4808,23 +4976,7 @@ $(document).on('click', '.loadTestCase', function (evt) {
     });
 });
 
-$(document).on('click', '.loadBugChange', function (evt) {
-    var f = $(this).data('link');
-    global_var.current_modal = "loadBugChange";
-    Utility.addParamToUrl('current_modal', global_var.current_modal);
-    $.get("resource/child/" + f + ".html", function (html_string)
-    {
-        $('#mainBodyDivForAll').html(html_string);
-        commmonOnloadAction(this);
-        getBugList();
-        setBugFilterProject();
-        setBugFilterAssignees();
-        $('.bug-mgmt-filter-select').selectpicker();
-        new Sprint().load4Task();
-        new Label().load4Task();
 
-    });
-});
 
 $(document).on('click', '.loadBusinessCase', function (evt) {
     var f = 'bcase';
@@ -4977,16 +5129,8 @@ $(document).on('click', '.inputdiagram', function (evt) {
         ActivityDiagram.showInputDiagram();
     });
 });
-$(document).on('click', '.task-card-UserStory-edit-exit', function (evt) {
-//    $('.StoryCardPanel').modal('hide');
-    if (global_var.current_modal === 'loadTaskManagement') {
-        genTaskKanbanView();
-    } else if (global_var.current_modal === 'loadBugChange') {
-        getBugList();
-    }
 
 
-});
 function setActiveInputDescType(actionType) {
     global_var.active_input_desc_type = actionType;
 }
@@ -6617,6 +6761,10 @@ function changeUserStoryOfTaskModal() {
 }
 
 function showUserStoryOfTaskCardModal(el) {
+    if (global_var.current_modal === 'loadStoryCard') {
+        return;
+    }
+
     var backlogId = $(el).attr("pid");
     if (!backlogId) {
         return;
@@ -7064,11 +7212,7 @@ function addNewDetailedTaskAction() {
         return;
     }
 
-    var json = {kv: {}};
-    try {
-        json.kv.cookie = getToken();
-    } catch (err) {
-    }
+    var json = initJSON();
     json.kv.fkProjectId = $('#addNewDetailedTaskModal_projectid').val();
     json.kv.fkBacklogId = $('#addNewDetailedTaskModal_backlogid').val();
     json.kv.taskName = $('#addNewDetailedTaskModal_description').val();
@@ -7087,6 +7231,8 @@ function addNewDetailedTaskAction() {
         async: true,
         success: function (res) {
             $('#addNewDetailedTaskModal').modal('hide');
+            new UserStory().getBacklogTaskStats();
+
         }
     });
 }

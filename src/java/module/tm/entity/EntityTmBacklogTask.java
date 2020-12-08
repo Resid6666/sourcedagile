@@ -81,6 +81,26 @@ public class EntityTmBacklogTask extends CoreEntity {
     private String spentBudget = "";
     public static String ORDER_NO_SEQ = "orderNoSeq";
     private String orderNoSeq = "";
+    public static String TASK_DUE_DATE = "taskDueDate";
+    private String taskDueDate = "";
+    public static String TASK_PRIORITY = "taskPriority ";
+    private String taskPriority = "";
+
+    public String getTaskDueDate() {
+        return taskDueDate;
+    }
+
+    public void setTaskDueDate(String taskDueDate) {
+        this.taskDueDate = taskDueDate;
+    }
+
+    public String getTaskPriority() {
+        return taskPriority;
+    }
+
+    public void setTaskPriority(String taskPriority) {
+        this.taskPriority = taskPriority;
+    }
 
     public String getOrderNoSeq() {
         return orderNoSeq;
@@ -89,8 +109,6 @@ public class EntityTmBacklogTask extends CoreEntity {
     public void setOrderNoSeq(String orderNoSeq) {
         this.orderNoSeq = orderNoSeq;
     }
-    
-    
 
     public String getEstimatedCounter() {
         return estimatedCounter;

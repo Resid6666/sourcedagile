@@ -10,6 +10,7 @@ var bug_filter = {
     assignee_id: '',
     created_by: '',
     status: '',
+    priority: '',
     nature: '',
     limit: 30,
     page_no: 1,
@@ -316,7 +317,7 @@ function setBugFilterAssignees() {
         data: data,
         contentType: "application/json",
         crossDomain: true,
-        async: true,
+        async: false,
         success: function (res) {
             var select = $('#bug_filter_assignee_id');
             var select2 = $('#bug_filter_created_by');
@@ -330,6 +331,11 @@ function setBugFilterAssignees() {
                 select.append(op);
                 select2.append(op2);
             }
+
+            if (global_var.current_user_type === 'S') {
+                select.val(global_var.current_ticker_id)
+            }
+
             select.selectpicker('refresh');
             select2.selectpicker('refresh');
         },
@@ -570,12 +576,14 @@ function getBugList() {
     json.kv.createdBy = bug_filter.created_by;
     json.kv.fkBackogId = bug_filter.backlog_id;
     json.kv.taskStatus = bug_filter.status;
+    json.kv.priority = bug_filter.priority;
     json.kv.taskNature = bug_filter.nature;
     json.kv.searchText = bug_filter.search_text;
     json.kv.searchLimit = bug_filter.limit;
     json.kv.pageNo = bug_filter.page_no;
     json.kv.sprintId = bug_filter.sprint_id;
     json.kv.labelId = bug_filter.label_id;
+    json.kv.fkTaskId = global_var.current_issue_id;
     var that = this;
     var data = JSON.stringify(json);
     $.ajax({
@@ -660,6 +668,8 @@ function getBugListDetailsHeader() {
                     .addClass('bug-list-column-assignee').append('Assignee'))
             .append($('<th>').addClass('bug-list-column')
                     .addClass('bug-list-column-tasktype').append('Task Type'))
+            .append($('<th>').addClass('bug-list-column')
+                    .addClass('bug-list-column-priority').append('Priority'))
             .append($('<th>').addClass('bug-list-column')
                     .addClass('bug-list-column-story-card').append('Story Card'))
             .append($('<th>').addClass('bug-list-column')
@@ -794,7 +804,7 @@ function getBugListDetails(res) {
                 : fileUrl(new User().getDefaultUserprofileName());
 
         var backlogName = '<a href1="#" onclick="callStoryCard4BugTask(\'' + o.fkProjectId + '\',\'' + o.fkBacklogId + '\',this)" style="cursor:pointer;color: rgb(0, 0, 255);">' + replaceTags(o.backlogName) + '</a>';
-        var taskName = '<a href1="#" onclick="callTaskCard4BugTask(this,\'' + o.fkProjectId + '\',\'' + o.id + '\')" style="cursor:pointer;color: rgb(0, 0, 255);">' + replaceTags(fnline2Text(o.taskName)) + '</a>';
+        var taskName = '<a class="issue_'+o.id+'" href1="#" onclick="callTaskCard4BugTask(this,\'' + o.fkProjectId + '\',\'' + o.id + '\')" style="cursor:pointer;color: rgb(0, 0, 255);">' + replaceTags(fnline2Text(o.taskName)) + '</a>';
         var task_id = getTaskCode(o.id);
 
         var t = $('<tr>')
@@ -809,28 +819,83 @@ function getBugListDetails(res) {
                                 .append(o.taskStatus)))
                 .append($('<td>').addClass('bug-list-column')
                         .addClass('bug-list-column-task-id').append(task_id))
-                .append($('<td>').addClass('bug-list-column')
-                        .addClass('bug-list-column-task-name').css("min-width", '250px').append(taskName))
+                .append($('<td>')
+                        .addClass('bug-list-column')
+                        .addClass('bug-list-column-task-name')
+                        .css("max-width", '400px')
+                        .append(taskName, ' ')
+
+                        )
                 .append($('<td>').addClass('bug-list-column')
                         .addClass('bug-list-column-task-nature').append(getBugListTaskNatureValue(o.taskNature)))
-                .append($('<td>').addClass('bug-list-column')
+                .append($('<td>')
+                        .css('white-space', 'nowrap')
+                        .addClass('bug-list-column')
                         .addClass('bug-list-column-assignee')
                         .append((o.userName) ? $('<img class="Assigne-card-story-select-img">')
                                 .attr('src', img) : "")
                         .append(" ")
-                        .append(replaceTags(o.userName)))
+                        .append(o.userName)
+                        .append($('<i class="fa fa-filter">')
+                                .attr('onclick', 'setFilter4IssueMgmtAsAssigne("' + o.fkAssigneeId + '")')
+                                .css("display", "none")
+                                .addClass("hpYuyept"))
+                        .mouseover(function () {
+                            $(this).find(".hpYuyept").show();
+                        })
+                        .mouseleave(function () {
+                            $(this).find(".hpYuyept").hide();
+                        })
+                        )
                 .append($('<td>').addClass('bug-list-column')
                         .addClass('bug-list-column-tasktype').append(replaceTags(o.taskTypeName)))
                 .append($('<td>').addClass('bug-list-column')
-                        .addClass('bug-list-column-story-card').append(backlogName))
+                        .addClass('bug-list-column-priority').append(replaceTags(o.taskPriority)))
                 .append($('<td>').addClass('bug-list-column')
-                        .addClass('bug-list-column-project').append(replaceTags(o.projectName)))
+                        .addClass('bug-list-column-story-card')
+                        .append(backlogName)
+                        .append($('<i class="fa fa-filter">')
+                                .attr('onclick', 'setFilter4IssueMgmtAsBacklog("' + o.fkProjectId + '","' + o.fkBacklogId + '")')
+                                .css("display", "none")
+                                .addClass("hpYuyept"))
+                        .mouseover(function () {
+                            $(this).find(".hpYuyept").show();
+                        })
+                        .mouseleave(function () {
+                            $(this).find(".hpYuyept").hide();
+                        }))
                 .append($('<td>').addClass('bug-list-column')
+                        .addClass('bug-list-column-project')
+                        .text(replaceTags(o.projectName))
+                        .append($('<i class="fa fa-filter">')
+                                .attr('onclick', 'setFilter4IssueMgmtAsProject("' + o.fkProjectId + '")')
+                                .css("display", "none")
+                                .addClass("hpYuyept"))
+                        .mouseover(function () {
+                            $(this).find(".hpYuyept").show();
+                        })
+                        .mouseleave(function () {
+                            $(this).find(".hpYuyept").hide();
+                        })
+                        )
+                .append($('<td>').addClass('bug-list-column')
+                        .css('white-space', 'nowrap')
                         .addClass('bug-list-column-created-by')
                         .append((o.createByName) ? $('<img class="Assigne-card-story-select-img">')
                                 .attr('src', createdByImg) : "")
                         .append(" ")
-                        .append(o.createByName))
+                        .append(o.createByName)
+                        .append($('<i class="fa fa-filter">')
+                                .attr('onclick', 'setFilter4IssueMgmtAsCreatedBy("' + o.createdBy + '")')
+                                .css("display", "none")
+                                .addClass("hpYuyept"))
+                        .mouseover(function () {
+                            $(this).find(".hpYuyept").show();
+                        })
+                        .mouseleave(function () {
+                            $(this).find(".hpYuyept").hide();
+                        })
+                        )
                 .append($('<td>').addClass('bug-list-column')
                         .addClass('bug-list-column-created-date').append(Utility.convertDate(o.createdDate)))
                 .append($('<td>').addClass('bug-list-column')
@@ -878,6 +943,13 @@ function callTaskCard4BugTask(el, projectId, taskId) {
         return;
     }
 
+
+    global_var.current_issue_id = taskId;
+    Utility.addParamToUrl('current_issue_id', global_var.current_issue_id);
+    global_var.current_issue_is_hide = "0";
+    Utility.addParamToUrl('current_issue_is_hide', global_var.current_issue_is_hide);
+    
+    
 //Task card-da Story Card-linke basanda istifade edilir.
     if (projectId !== global_var.current_project_id) {
         global_var.current_project_id = projectId;
@@ -897,6 +969,7 @@ function callTaskCard4BugTask(el, projectId, taskId) {
     $(".card-UserStory-header-text").append(headerText);
     $(".TaskStoryCardPanel").css("display", "block")
     $('.comment-body').html("")
+    $('.card-UserStory-edit-task').show();
 
 
     loadUsersAsAssignee();
@@ -906,11 +979,13 @@ function callTaskCard4BugTask(el, projectId, taskId) {
 
 
     //add project list to task
-    $('#task-card-project-div-id').remove();
-    $('#task-mgmt-tasktype')
-            .after($('<div class="statusCardStory" id="task-card-project-div-id">')
-                    .append($('<span>').addClass('comment-content-header-history').css('margin-left', '0px').append('Project'))
-                    .append(getProjectList4TaskInfo(projectId)))
+    $('.task-card-project-div-id').remove();
+    $('.task-mgmt-tasktype').each(function () {
+        $(this).after($('<div class="task-card-project-div-id statusCardStory" id="task-card-project-div-id">')
+                .append($('<span>').addClass('comment-content-header-history').css('margin-left', '0px').append('Project'))
+                .append(getProjectList4TaskInfo(projectId)))
+    })
+
 
     //set backlog infos
     if (coreBugKV[taskId].backlogName) {
@@ -918,6 +993,7 @@ function callTaskCard4BugTask(el, projectId, taskId) {
                 .attr('pid', coreBugKV[taskId].fkBacklogId)
                 .html(coreBugKV[taskId].backlogName);
     }
+
 
 //    showAssigneeTaskCardIn(taskId, 'updateBugList-taskinfo');
 
@@ -1151,7 +1227,7 @@ function loadAssigneesByProjectDetails(res) {
         $('#bug_filter_assignee_id').append(opt);
         $('#bug_filter_created_by').append(opt2);
         $('#testcase_createdbyfilter').append(opt3);
-        
+
     }
 
 
@@ -1202,7 +1278,6 @@ function loadStoryCardByProjectDetails(res) {
 
     }
     $('#bug_filter_backlog_id').selectpicker('refresh');
-
 }
 
 

@@ -6131,7 +6131,7 @@
                     <span  class="comment-content-header-history" style="margin-left: 0px;">Status</span>
                     <div class="form-group statusSelectSelect">
 
-                        <select class="form-control" 
+                        <select class="form-control task-info-modal-status" 
                                 style="width:auto"
                                 onchange="updateTask4ShortChange(this, 'taskStatus')"
                                 id="task-info-modal-status">
@@ -6152,14 +6152,24 @@
                 <div class="statusCardStory">
                     <span  class="comment-content-header-history" style="margin-left: 0px;">Task Nature</span>
                     <div class="form-group statusSelectSelect">
-
-                        <select class="form-control" 
+                        <select class="form-control task-info-modal-nature" 
                                 style="width:auto"
                                 onchange="updateTask4ShortChange(this, 'taskNature')"
                                 id="task-info-modal-nature">
                             <option value='new'><span class="us-item-status-new comment-content-header-status" >New Request</span></option>
                             <option value='change'> <span class="us-item-status-ongoing comment-content-header-status" id="">Change Request</span></option>
                             <option value='bug'><span class="us-item-status-closed comment-content-header-status" id="">Bug</span></option>
+                        </select>
+                    </div>
+                </div> 
+
+                <div class="statusCardStory task-mgmt-tasktype" id='task-mgmt-tasktype'  >
+                    <span  class="comment-content-header-history" style="margin-left: 0px;">Task Type</span>
+                    <div class="form-group statusSelectSelect">
+
+                        <select class="form-control task-info-modal-tasktype"  style="width:auto"
+                                onchange="updateTask4ShortChange(this, 'fkTaskTypeId')"
+                                id="task-info-modal-tasktype">
 
 
                         </select>
@@ -6167,23 +6177,24 @@
 
                 </div>
 
-                <div class="statusCardStory" id='task-mgmt-tasktype'>
-                    <span  class="comment-content-header-history" style="margin-left: 0px;">Task Type</span>
+                <div class="statusCardStory">
+                    <span  class="comment-content-header-history" style="margin-left: 0px;">Priority</span>
                     <div class="form-group statusSelectSelect">
-
-                        <select class="form-control"  style="width:auto"
-                                onchange="updateTask4ShortChange(this, 'fkTaskTypeId')"
-                                id="task-info-modal-tasktype">
-                            <option value='new'><span class="us-item-status-new comment-content-header-status" >New</span></option>
-                            <option value='ongoing'> <span class="us-item-status-ongoing comment-content-header-status" id="">Ongoing</span></option>
-                            <option value='closed'><span class="us-item-status-closed comment-content-header-status" id="">Closed</span></option>
-                            <option value='waiting'><span class="us-item-status-waiting comment-content-header-status" id="">Waiting</span></option>
-                            <option value='canceled'><span class="us-item-status-canceled comment-content-header-status" id="">Canceled</span></option>
-                            <option value='rejected'><span class="us-item-status-rejected comment-content-header-status" id="">Rejected</span></option>
-
+                        <select class="form-control task-info-modal-priority" 
+                                style="width:auto"
+                                onchange="updateTask4ShortChange(this, 'taskPriority')"
+                                id="task-info-modal-priority">
+                            <option value='1' selected>1- Lowest</option>
+                            <option value='2'>2</option>
+                            <option value='3'>3</option>
+                            <option value='4'>4</option>
+                            <option value='5'>5</option>
+                            <option value='6'>6</option>
+                            <option value='7'>7</option>
+                            <option value='8'>8</option>
+                            <option value='9'>9 - Highest</option>
                         </select>
                     </div>
-
                 </div>
 
                 <div   class="addEpicTask" style="padding-bottom: 20px;">
@@ -6199,6 +6210,8 @@
                         </span>
                     </div>
                 </div>
+
+
 
 
                 <div class="Assigne-card-story">
@@ -6591,7 +6604,7 @@
 </div>
 
 <div class="modal fade" id="storyCardViewManualModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
-    <div class="modal-dialog" role="document" style="min-width: 70%">
+    <div class="modal-dialog" role="document" style="min-width: 90%">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -7533,6 +7546,10 @@
                                                                         init4Core();
                                                                         new Project().loadMainProjectList();
                                                                         init();
+
+                                                                        var current_modal = Utility.getParamFromUrl('current_modal').replace("#", '');
+                                                                        current_modal = (current_modal) ? current_modal : "loadStoryCard";
+                                                                        $('.' + current_modal).first().click();
                                                                     });
 
                                                                     function clearText() {

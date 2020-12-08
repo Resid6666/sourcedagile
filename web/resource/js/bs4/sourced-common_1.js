@@ -4927,7 +4927,7 @@ UserStory.prototype = {
             data: data,
             contentType: "application/json",
             crossDomain: true,
-            async: true,
+            async: false,
             success: function (res) {
                 that.genUsFilterTaskTypesDetails(res);
             }
@@ -5443,10 +5443,10 @@ UserStory.prototype = {
                                                     .text('Insert New Description')
                                                     .attr("onclick", "ADDtrafter(this,'" + obj[n].id + "')")
                                                     )
-                                            .append($('<button class="dropdown-item firstbut" >')
-                                                    .text('Add to Task')
-                                                    .attr("onclick", "addProcessDescToTask(this,'" + obj[n].id + "')")
-                                                    )
+//                                            .append($('<button class="dropdown-item firstbut" >')
+//                                                    .text('Add to Task')
+//                                                    .attr("onclick", "addProcessDescToTask(this,'" + obj[n].id + "')")
+//                                                    )
                                             .append($('<button class="dropdown-item firstbut" >')
                                                     .text('Delete')
                                                     .attr("onclick", "new UserStory().deleteBacklogDesc(this,'" + obj[n].id + "')")
@@ -11954,7 +11954,7 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
         } else if (global_var.current_modal === 'loadSourceActivity') {
             $('.loadSourceActivity').click();
         } else if (global_var.current_modal === 'loadBugChange') {
-            $('.loadBugChange').click();
+//            $('.loadBugChange').click();
         } else if (global_var.current_modal === 'loadTestCase') {
             $('.loadTestCase').click();
         } else if (global_var.current_modal === 'loadBusinessCase') {
@@ -12061,7 +12061,7 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
             },
             success: function (res) {
                 SACore.LoadBacklog(res);
-                that.load();
+//                that.load();
                 if (global_var.mainview === 'projectpreview') {
                     ProjectPreview.showDetails();
                 }
@@ -12111,8 +12111,8 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
             async: false,
             success: function (res) {
                 SAInput.LoadInput(res);
-                that.load();
-                that.refreshCurrentBacklog();
+//                that.load();
+//                that.refreshCurrentBacklog();
             }
         });
     },
@@ -13953,7 +13953,61 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
         $('#gui_component_main_view').focus();
 
         this.getSendToApiListByStoryCard(id);
+//        this.getBacklogTaskStats();
+    },
 
+    getBacklogTaskStats: function () {
+        $('.xpclear').each(function(){
+            $(this).html('0')
+        });
+        
+        var json = initJSON();
+        json.kv.fkBacklogId = global_var.current_backlog_id;
+        var that = this;
+        var data = JSON.stringify(json);
+        $.ajax({
+            url: urlGl + "api/post/srv/serviceTmGetGeneralStatisticsByUserStory",
+            type: "POST",
+            data: data,
+            contentType: "application/json",
+            crossDomain: true,
+            async: true,
+            success: function (res) {
+                var indOveral = getIndexOfTable(res, 'overall');
+                if (indOveral >= 0) {
+                    $('#backlog-task-stat-overall').text(res.tbl[indOveral].r[0].overall);
+                    $('#backlog-task-stat-overall-new').text(res.tbl[indOveral].r[0].statusNew);
+                    $('#backlog-task-stat-overall-ongoing').text(res.tbl[indOveral].r[0].statusOngoing);
+                    $('#backlog-task-stat-overall-closed').text(res.tbl[indOveral].r[0].statusClosed);
+                }
+
+                indOveral = getIndexOfTable(res, 'bugs');
+                if (indOveral >= 0) {
+                    $('#backlog-task-stat-bug').text(res.tbl[indOveral].r[0].overall);
+                    $('#backlog-task-stat-bug-new').text(res.tbl[indOveral].r[0].statusNew);
+                    $('#backlog-task-stat-bug-ongoing').text(res.tbl[indOveral].r[0].statusOngoing);
+                    $('#backlog-task-stat-bug-closed').text(res.tbl[indOveral].r[0].statusClosed);
+                }
+
+                indOveral = getIndexOfTable(res, 'changes');
+                if (indOveral >= 0) {
+                    $('#backlog-task-stat-change').text(res.tbl[indOveral].r[0].overall);
+                    $('#backlog-task-stat-change-new').text(res.tbl[indOveral].r[0].statusNew);
+                    $('#backlog-task-stat-change-ongoing').text(res.tbl[indOveral].r[0].statusOngoing);
+                    $('#backlog-task-stat-change-closed').text(res.tbl[indOveral].r[0].statusClosed);
+
+                }
+
+                indOveral = getIndexOfTable(res, 'news');
+                if (indOveral >= 0) {
+                    $('#backlog-task-stat-new').text(res.tbl[indOveral].r[0].overall);
+                    $('#backlog-task-stat-new-new').text(res.tbl[indOveral].r[0].statusNew);
+                    $('#backlog-task-stat-new-ongoing').text(res.tbl[indOveral].r[0].statusOngoing);
+                    $('#backlog-task-stat-new-closed').text(res.tbl[indOveral].r[0].statusClosed);
+
+                }
+            }
+        });
     },
 
     getSendToApiListByStoryCard: function (storyCardId) {
@@ -17835,6 +17889,8 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
         } catch (e) {
 //            this.setUserStoryInforOnGeneralView();
         }
+
+        this.getBacklogTaskStats();
 
     },
     loadStoryCardFileList: function () {
@@ -22424,6 +22480,7 @@ User.prototype = {
                 $('#userprofile_main_id').html(replaceTags(res.tbl[0].r[0].userPersonName));
                 $('#userprofile_main_domain').html(res.kv.currentDomain);
                 global_var.current_domain = res.kv.currentDomain;
+                global_var.current_ticker_id = res.tbl[0].r[0].id;
                 global_var.current_user_type = res.tbl[0].r[0].liUserPermissionCode;
                 Utility.addParamToUrl('current_user_type', global_var.current_user_type);
                 that.removeTagsByPermission();

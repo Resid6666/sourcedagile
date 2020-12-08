@@ -346,7 +346,7 @@ var Component = {
 
                 .addClass(global_var.current_modal === 'loadLivePrototype' ? 'draggable' : '')
                 .addClass(global_var.current_modal === 'loadLivePrototype' ? 'resize1' : "")
-                .addClass('popup')
+//                .addClass('popup')
                 .addClass(comp.addTooltip ? 'tooltipMan' : "") //muveqqeti baglayaq
                 .addClass('component-class')
                 .addClass('component-container-dashed')
@@ -413,7 +413,9 @@ var Component = {
 //                : "")
 
         if (comp.hasOnClickEvent) {
-            div.attr('onclick', 'new UserStory().setInputByGUIComponent(\'' + comp.id + '\')')
+            div.attr('onclick', (global_var.current_modal === 'loadLivePrototype')
+                    ? 'new UserStory().setInputByGUIComponent(\'' + comp.id + '\')'
+                    : "")
         }
 
         return div;
@@ -572,14 +574,16 @@ var Component = {
                 var inputName = SAInput.GetInputName(inputId);
                 var a = (pairShowColumnName[inputId].trim() === '1')
                         ? ""
-                        :$('<a href="#">')
+                        :$('<label href="#">')
                         .addClass('component-class')
                         .attr('id', inputId)
                         .attr('pid', inputId)
                         .attr('orderNo', SAInput.getInputDetails(inputId, "orderNo"))
                         .attr('draggable', 'true')
                         .addClass(global_var.current_modal === 'loadLivePrototype' ? 'draggable' : '')
-                        .attr('onclick', "new UserStory().setInputByGUIComponent('" + inputId + "')")
+                        .attr('onclick', (global_var.current_modal === 'loadLivePrototype') ?
+                                "new UserStory().setInputByGUIComponent('" + inputId + "')"
+                                : "")
                         .append(replaceTags(inputName))
 
                 var color = pair[inputId].trim() === '1' ? "#2196F3" : "#d5d6da";
@@ -612,6 +616,7 @@ var Component = {
                         : "";
 
                 tr.append($("<th>")
+                        .addClass("text-center")
                         .css("min-width", "70px;")
                         .append(a)
                         .append(showComp, ' ')
@@ -987,7 +992,9 @@ var Component = {
                 var inputName = SAInput.GetInputName(inputId);
                 var a = $('<a href="#">')
                         .addClass('component-class')
-                        .attr('onclick', "new UserStory().setInputByGUIComponent('" + inputId + "')")
+                        .attr('onclick', (global_var.current_modal === 'loadLivePrototype')
+                                ? "new UserStory().setInputByGUIComponent('" + inputId + "')"
+                                : "")
                         .append(replaceTags(inputName))
 
                 var color = showComponent[i].trim() === '1' ? "#2196F3" : "#d5d6da";
@@ -1112,7 +1119,7 @@ var Component = {
                 .attr('value', comp.content);
         Component.ComponentEvent.Init(el, comp);
         var div = Component.ContainerDiv(comp);
-         
+
         div.append(el);
         return  $('<div></div>').append(div).html();
     },
@@ -1441,7 +1448,7 @@ var Component = {
                         .append('<br>'));
         return  $('<div></div>').append(div).html();
     },
-     
+
     InnerCheckBox: function (comp) {
         comp.content = (comp.isFromTableNew === true) ? comp.secondContent : comp.content;
         var star = Component.AddMandatoryStar(comp);
@@ -1510,7 +1517,6 @@ var Component = {
     FreeComponent: function (comp) {
         comp.content = (comp.isFromTableNew === true) ? comp.secondContent : comp.content;
         var star = Component.AddMandatoryStar(comp);
-
         var el = $("<div>");
 
         if (comp.content.length > 1) {

@@ -73,7 +73,7 @@ public class EntityTmBacklogTaskList extends CoreEntity {
     private String startTime = "";
     public static String START_TYPE = "startType";
     private String startType = "";
-     public static String JIRA_ISSUE_ID = "jiraIssueId";
+    public static String JIRA_ISSUE_ID = "jiraIssueId";
     private String jiraIssueId = "";
     public static String JIRA_ISSUE_KEY = "jiraIssueKey";
     private String jiraIssueKey = "";
@@ -85,6 +85,26 @@ public class EntityTmBacklogTaskList extends CoreEntity {
     private String estimatedBudget = "";
     public static String SPENT_BUDGET = "spentBudget";
     private String spentBudget = "";
+    public static String TASK_DUE_DATE = "taskDueDate";
+    private String taskDueDate = "";
+    public static String TASK_PRIORITY = "taskPriority ";
+    private String taskPriority = "";
+
+    public String getTaskDueDate() {
+        return taskDueDate;
+    }
+
+    public void setTaskDueDate(String taskDueDate) {
+        this.taskDueDate = taskDueDate;
+    }
+
+    public String getTaskPriority() {
+        return taskPriority;
+    }
+
+    public void setTaskPriority(String taskPriority) {
+        this.taskPriority = taskPriority;
+    }
 
     public String getEstimatedCounter() {
         return estimatedCounter;
@@ -117,10 +137,7 @@ public class EntityTmBacklogTaskList extends CoreEntity {
     public void setSpentBudget(String spentBudget) {
         this.spentBudget = spentBudget;
     }
-    
-    
-    
-    
+
     public String getJiraIssueId() {
         return jiraIssueId;
     }
@@ -136,8 +153,6 @@ public class EntityTmBacklogTaskList extends CoreEntity {
     public void setJiraIssueKey(String jiraIssueKey) {
         this.jiraIssueKey = jiraIssueKey;
     }
-
-    
 
     public String getStartDate() {
         return startDate;

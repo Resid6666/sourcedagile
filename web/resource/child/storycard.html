@@ -147,6 +147,57 @@
         </div>
     </div>
 
+    <div class="col-12">
+        <br>
+
+        <span  style="font-size: 12px;color: rgb(23, 43, 77);  font-weight: 600;">Related Issue(s)</span>
+        <br>
+
+
+        <b pid="20112612464604063033"  
+           class="task-for-backlog-event stat_group_title" 
+           action='overall' status='total'
+           style="cursor: pointer;">Total-<span id="backlog-task-stat-overall" class="xpclear" >0</span></b>
+        <div style="font-size:12px;">
+            <span class="task-for-backlog-event us-item-status-new"   action='overall' status='new'>new</span>-<span id="backlog-task-stat-overall-new" class="xpclear" >0</span> &nbsp;
+            <span class="task-for-backlog-event   us-item-status-ongoing"   action='overall' status='ongoing'>ongoing</span>-<span id="backlog-task-stat-overall-ongoing" class="xpclear" >0</span> &nbsp;
+            <span class="task-for-backlog-event us-item-status-closed"   action='overall' status='closed'>closed</span>-<span id="backlog-task-stat-overall-closed" class="xpclear" >0</span>
+        </div>
+
+        <b pid="20112612464604063033"  class="task-for-backlog-event stat_group_title" 
+            action='bug' status='total'
+           style="cursor: pointer;">Bug-<span id="backlog-task-stat-bug" class="xpclear" ></span></b>
+        <div style="font-size:12px;">
+            <span class="task-for-backlog-event us-item-status-new"   action='bug' status='new'>new  </span>-<span  id="backlog-task-stat-bug-new" class="xpclear" >8</span> &nbsp;
+            <span class="task-for-backlog-event   us-item-status-ongoing"   action='bug' status='ongoing'>ongoing</span >-<span  id="backlog-task-stat-bug-ongoing" class="xpclear" >0</span> &nbsp;
+            <span class="task-for-backlog-event us-item-status-closed"   action='bug' status='closed'>closed</span>-<span id="backlog-task-stat-bug-closed" class="xpclear" >0</span>
+        </div>
+
+        <b pid="20112612464604063033"  
+             action='new' status='total'
+           class="task-for-backlog-event stat_group_title" 
+           style="cursor: pointer;">New Request-<span id="backlog-task-stat-new" class="xpclear" ></span></b>
+        <div style="font-size:12px;">
+            <span class="task-for-backlog-event us-item-status-new" action='new' status='new'>new</span>-<span  id="backlog-task-stat-new-new" class="xpclear" >8</span> &nbsp;
+            <span class="task-for-backlog-event   us-item-status-ongoing" action='new' status='ongoing'>ongoing</span>-<span  id="backlog-task-stat-new-ongoing" class="xpclear" >0</span> &nbsp;
+            <span class="task-for-backlog-event us-item-status-closed" action='new' status='closed' >closed</span>-<span  id="backlog-task-stat-new-closed" class="xpclear" >0</span>
+        </div>
+
+        <b pid="20112612464604063033"  
+           class="task-for-backlog-event stat_group_title" 
+           action='change' status='total'
+           style="cursor: pointer;">Change Request-<span  class="xpclear" id="backlog-task-stat-change"></span></b>
+        <div style="font-size:12px;">
+            <span class="task-for-backlog-event us-item-status-new" action='change' status='new'>new</span>-<span class="xpclear"   id="backlog-task-stat-change-new">8</span> &nbsp;
+            <span class="task-for-backlog-event   us-item-status-ongoing" action='change' status='ongoing'>ongoing</span>-<span  class="xpclear"  id="backlog-task-stat-change-ongoing">0</span> &nbsp;
+            <span class="task-for-backlog-event us-item-status-closed" action='change' status='closed'>closed</span>-<span  class="xpclear" id="backlog-task-stat-change-closed">0</span>
+        </div>
+
+
+
+
+    </div>
+
     <div class="col-12 is-api-dependence-verse">
         <!-- <span style="font-size: 14px;color: #727d91;" id="generalview_status" class="us-item-status-new"></span> -->
 
@@ -477,7 +528,7 @@
                     <button class="dropdown-item firstbut "     onclick="new UserStory().deleteStoryCardOutputs()">Delete</button>
                     <hr style="margin:3px 0px;">
                     <button class="dropdown-item firstbut "     onclick="addFieldsOfTableAsOutput(this)">Add Fields of Table as Output</button>
-                                        <button class="dropdown-item firstbut "     onclick="addInputOfStoryCardAsOutput(this)">Add Input of Story Card As Output</button>
+                    <button class="dropdown-item firstbut "     onclick="addInputOfStoryCardAsOutput(this)">Add Input of Story Card As Output</button>
 
 
                 </div>

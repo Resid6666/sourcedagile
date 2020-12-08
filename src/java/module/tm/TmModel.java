@@ -131,6 +131,7 @@ import module.tm.entity.EntityTmInputActionRel;
 import module.tm.entity.EntityTmInputAttributes;
 import module.tm.entity.EntityTmInputClassRelation;
 import module.tm.entity.EntityTmJsCode;
+import utility.QUtility;
 import utility.sqlgenerator.SQLConnection;
 import utility.sqlgenerator.SQLGenerator;
 
@@ -186,24 +187,23 @@ public class TmModel {
     /////////////////////////////////////////
     //// type code here
     ///////////////////////////////////////////////
-     
-       public Carrier showInputTableColumnEntireComponent(Carrier carrier) throws QException {
+    public Carrier showInputTableColumnEntireComponent(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkInputTableId", cp.isKeyExist(carrier, "fkInputTableId"));
         carrier.addController("fkInputId", cp.isKeyExist(carrier, "fkInputId"));
         if (carrier.hasError()) {
             return carrier;
         }
-        
+
         EntityTmRelTableInput ent = new EntityTmRelTableInput();
         ent.setFkInputId(carrier.get("fkInputId"));
         ent.setFkTableId(carrier.get("fkInputTableId"));
         ent.setEndLimit(0);
         EntityManager.select(ent);
 
-        String showColumn  = "0";
-        if (ent.getShowColumn ().equals("1")) {
-            showColumn  = "0";
+        String showColumn = "0";
+        if (ent.getShowColumn().equals("1")) {
+            showColumn = "0";
         } else {
             showColumn = "1";
         }
@@ -216,7 +216,7 @@ public class TmModel {
 
         return carrier;
     }
-    
+
     public Carrier showInputTableColumnItselfComponent(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkInputTableId", cp.isKeyExist(carrier, "fkInputTableId"));
@@ -224,7 +224,7 @@ public class TmModel {
         if (carrier.hasError()) {
             return carrier;
         }
-        
+
         EntityTmRelTableInput ent = new EntityTmRelTableInput();
         ent.setFkInputId(carrier.get("fkInputId"));
         ent.setFkTableId(carrier.get("fkInputTableId"));
@@ -246,8 +246,7 @@ public class TmModel {
 
         return carrier;
     }
-    
-    
+
     public static Carrier getFunctionNamesByProject(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
@@ -926,8 +925,7 @@ public class TmModel {
 
         try {
 
- 
-            String filename = Config.getProperty("entity.path") +SessionManager.getCurrentDomain() + "/" + db.toLowerCase() + "/" + tn.toLowerCase();
+            String filename = Config.getProperty("entity.path") + SessionManager.getCurrentDomain() + "/" + db.toLowerCase() + "/" + tn.toLowerCase();
             BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
             bw.append(fileLn);
             bw.close();
@@ -1015,8 +1013,7 @@ public class TmModel {
             return carrier;
         }
 
- 
-        String filename =Config.getProperty("entity.path") + SessionManager.getCurrentDomain() + "/" + carrier.get("dbname") + "/";
+        String filename = Config.getProperty("entity.path") + SessionManager.getCurrentDomain() + "/" + carrier.get("dbname") + "/";
         filename = filename.trim().toLowerCase().replaceAll(" ", "");
         File theDir = new File(filename);
         if (!theDir.exists()) {
@@ -1182,6 +1179,8 @@ public class TmModel {
                 }
 
                 setBacklogStatus(ent.getFkBacklogId());
+
+                sendMailNotificationOnCreate(ent.getId(), ent.getFkBacklogId());
             }
         } else {
 
@@ -1215,7 +1214,7 @@ public class TmModel {
             }
 
             setBacklogStatus(ent.getFkBacklogId());
-
+            sendMailNotificationOnCreate(ent.getId(), ent.getFkBacklogId());
         }
 
 //         getTaskList4Short(ent.getId()).copyTo(carrier);
@@ -2942,6 +2941,7 @@ public class TmModel {
     }
 
     private static String getTaskList4TableFilterSection(Carrier carrier) throws QException {
+
         String sprintLine = (carrier.get("sprintId").length() > 5)
                 ? " and  t.id in (select fk_backlog_task_id from " + SessionManager.getCurrentDomain() + ".tm_rel_task_and_sprint k"
                 + " where k.status='A' and k.FK_TASK_SPRINT_ID in  (" + carrier.get("sprintId") + ")) "
@@ -2972,6 +2972,14 @@ public class TmModel {
                 ? " and  t.task_status in (" + carrier.get("taskStatus") + ") "
                 : " ";
 
+        String taskId = (carrier.get("fkTaskId").length() > 1)
+                ? " and  t.id in (" + carrier.get("fkTaskId") + ") "
+                : " ";
+
+        String priority = (carrier.get("priority").length() > 1)
+                ? " and  t.task_priority in (" + carrier.get("priority") + ") "
+                : " ";
+
         String taskNatureLine = (carrier.get("taskNature").length() > 1)
                 ? " and  t.task_nature in (" + carrier.get("taskNature") + ") "
                 : " ";
@@ -2990,6 +2998,8 @@ public class TmModel {
                 + taskNatureLine
                 + sprintLine
                 + labelLine
+                + priority
+                + taskId
                 + searchText;
         return st;
     }
@@ -2998,6 +3008,7 @@ public class TmModel {
         String st = "select\n"
                 + "    t.id,\n"
                 + "    t.order_no_seq,"
+                + "    t.task_priority,"
                 + "    (select p.project_code from  " + SessionManager.getCurrentDomain() + ".tm_project p where p.id = t.fk_project_id and p.status='A') project_code,"
                 + "    t.task_name,\n"
                 + "   (select u.user_image from " + SessionManager.getCurrentDomain() + ".cr_user u where u.id = t.created_by and u.status='A') create_by_image,\n"
@@ -3014,6 +3025,7 @@ public class TmModel {
                 + "    t.fk_backlog_id,\n"
                 + "    (select b.backlog_name from " + SessionManager.getCurrentDomain() + ".tm_backlog b where b.id = t.fk_backlog_id and b.status='A') backlog_name,"
                 + "    t.fk_backlog_id,\n"
+                + "    t.created_by,\n"
                 + "    t.created_date,\n"
                 + "    t.last_updated_date,\n"
                 + "    t.estimated_hours,\n"
@@ -3181,7 +3193,42 @@ public class TmModel {
         }
 
         return cout;
+    }
 
+    public static Carrier getBacklogListByStatsGroupByTask4SC(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
+        carrier.addController("actionType", cp.hasValue(carrier, "actionType"));
+        carrier.addController("statusType", cp.hasValue(carrier, "statusType"));
+
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String backlogId = carrier.get("fkBacklogId");
+        String actionType = carrier.get("actionType");
+        String statusType = carrier.get("statusType");
+
+        Carrier cout = new Carrier();
+
+        if (actionType.equals("overall")) {
+            cout = DashboardStatistics.getProjectSummary_TaskOverall4Select4SC(backlogId, statusType);
+        } else if (actionType.equals("bug")) {
+            cout = DashboardStatistics.getProjectSummary_TaskBug4Select4SC(backlogId, statusType);
+        } else if (actionType.equals("new")) {
+            cout = DashboardStatistics.getProjectSummary_TaskNew4Select4SC(backlogId, statusType);
+        } else if (actionType.equals("change")) {
+            cout = DashboardStatistics.getProjectSummary_TaskChange4Select4SC(backlogId, statusType);
+        }
+//        else if (actionType.equals("new")) {
+//            cout = DashboardStatistics.getProjectSummary_New4Select(projectId, statusType, labelId, sprintId);
+//        } else if (actionType.equals("change")) {
+//            cout = DashboardStatistics.getProjectSummary_Change4Select(projectId, statusType, labelId, sprintId);
+//        } else if (actionType.equals("bug")) {
+//            cout = DashboardStatistics.getProjectSummary_Bug4Select(projectId, statusType, labelId, sprintId);
+//        }  
+
+        return cout;
     }
 
     private static Carrier getBacklogListByStatsGroup_inaction(String projectId, String status) throws QException {
@@ -3209,12 +3256,20 @@ public class TmModel {
 
     }
 
+    public static Carrier getGeneralStatisticsByUserStory(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+        Carrier cout = DashboardStatistics.getStoryCardSummary(carrier);
+        return cout;
+    }
+
     public static Carrier getGeneralStatistics(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
-
         Carrier cout = DashboardStatistics.getProjectSummary(carrier);
         return cout;
-
     }
 
     public static Carrier getGeneralStatisticsByUser(Carrier carrier) throws QException {
@@ -3657,9 +3712,8 @@ public class TmModel {
             String ln = "RENAME TABLE " + tnOld + " to " + tnNew + ";";
             EntityManager.executeUpdateByQuery(ln);
 
-     
             String filename = Config.getProperty("entity.path") + SessionManager.getCurrentDomain() + "/" + entDb.getDbName().toLowerCase() + "/" + oldName.toLowerCase();
-            String filenameNew =Config.getProperty("entity.path") + SessionManager.getCurrentDomain() + "/" + entDb.getDbName().toLowerCase() + "/" + ent.getTableName().toLowerCase();
+            String filenameNew = Config.getProperty("entity.path") + SessionManager.getCurrentDomain() + "/" + entDb.getDbName().toLowerCase() + "/" + ent.getTableName().toLowerCase();
 
             File file = new File(filename);
             File file2 = new File(filenameNew);
@@ -4846,7 +4900,7 @@ public class TmModel {
 
     }
 
-    public Carrier assignSprintToTask(Carrier carrier) throws QException {
+    public static Carrier assignSprintToTask(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkSprintId", cp.hasValue(carrier, "fkSprintId"));
         carrier.addController("fkBacklogTaskId", cp.hasValue(carrier, "fkBacklogTaskId"));
@@ -5724,7 +5778,29 @@ public class TmModel {
             getBacklogList4Select(ent.getFkBacklogId()).copyTo(carrier);
         } catch (Exception e) {
         }
+
+        String fieldName = getUpdatedFieldName(carrier.get("type"));
+        sendMailNotificationOnChange(ent.getId(), ent.getFkBacklogId(), fieldName);
+
         return carrier;
+    }
+
+    private static String getUpdatedFieldName(String fieldType) {
+        String field = "";
+        if (fieldType.equals("taskStatus")) {
+            field = "STATUS";
+        } else if (fieldType.equals("taskNature")) {
+            field = "TASK NATURE";
+        } else if (fieldType.equals("taskPriority")) {
+            field = "PRIORITY";
+        } else if (fieldType.equals("fkProjectId")) {
+            field = "PROJECT";
+        } else if (fieldType.equals("fkBacklogId")) {
+            field = "STORY CARD";
+        } else if (fieldType.equals("fkAssigneeId")) {
+            field = "ASSIGNEE";
+        }
+        return field;
     }
 
     public static Carrier insertNewBacklog(Carrier carrier) throws QException {
@@ -7036,6 +7112,8 @@ public class TmModel {
         carrier.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
 
         getTaskList4Short(ent.getFkTaskId()).copyTo(carrier);
+
+        sendMailNotificationOnNewcomment(ent.getFkTaskId(), ent.getFkBacklogId(), ent.getComment());
 
         return carrier;
     }
@@ -8941,6 +9019,7 @@ public class TmModel {
         ent.setCreatedDate(QDate.getCurrentDate());
         ent.setCreatedTime(QDate.getCurrentTime());
         ent.setTaskOrderNo("11");
+        ent.setTaskPriority("1");
         ent.setOrderNoSeq(nextTaskOrderNoSeq(carrier.get("fkProjectId")));
         EntityManager.insert(ent);
         carrier.setValue("id", ent.getId());
@@ -9047,7 +9126,7 @@ public class TmModel {
         return st;
     }
 
-    public Carrier insertNewBacklogTask4Short(Carrier carrier) throws QException {
+    public static Carrier insertNewBacklogTask4Short(Carrier carrier) throws QException {
         String orderNo = carrier.get("orderNo").length() == 0
                 ? nextTaskLOrderNo(carrier.get("fkProjectId"), carrier.get("fkBacklogId"))
                 : carrier.get("orderNo");
@@ -9062,6 +9141,7 @@ public class TmModel {
         ent.setOrderNoSeq(orderNoSeq);
         ent.setTaskName(carrier.get("taskName"));
         ent.setTaskStatus(status);
+        ent.setTaskPriority("1");
         ent.setFkBacklogId(carrier.get("fkBacklogId"));
         ent.setFkAssigneeId(carrier.get("fkAssigneeId"));
         ent.setFkProjectId(carrier.get("fkProjectId"));
@@ -9082,10 +9162,369 @@ public class TmModel {
         getBacklogList4Select(ent.getFkBacklogId()).copyTo(carrier);
         assigneSprintToTask(ent.getId(), carrier.get("sprintList"));
 
+        sendMailNotificationOnCreate(ent.getId(), ent.getFkBacklogId());
+
         return carrier;
     }
 
-    private void assigneSprintToTask(String taskId, String sprintIdList) throws QException {
+    private static void sendMailNotificationOnCreate(String taskId, String backlogId) throws QException {
+        if (backlogId.trim().length() < 4) {
+            return;
+        }
+
+        if (taskId.length() == 0) {
+            return;
+        }
+
+        EntityTmBacklog entBL = new EntityTmBacklog();
+        entBL.setId(backlogId);
+        EntityManager.select(entBL);
+
+        EntityTmBacklogTask entTaskNew = new EntityTmBacklogTask();
+        entTaskNew.setId(taskId);
+        EntityManager.select(entTaskNew);
+
+        EntityTmBacklogTask entTask = new EntityTmBacklogTask();
+        entTask.setFkBacklogId(backlogId);
+        Carrier cr = EntityManager.select(entTask);
+
+        String userIds = entBL.getFkOwnerId() + CoreLabel.IN + entBL.getCreatedBy();
+        userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.FK_ASSIGNEE_ID) + CoreLabel.IN;
+        userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.CREATED_BY);
+
+        if (userIds.length() > 6) {
+            EntityCrUserList entUser = new EntityCrUserList();
+            entUser.setId(userIds);
+            Carrier crUser = EntityManager.select(entUser);
+
+            String url = Config.getProperty("task.notify.on.create.url");
+            String mailBody = Config.getProperty("task.notify.on.create.body");
+            String mailSubject = Config.getProperty("task.notify.on.create.subject");
+
+            String storyCardName = entBL.getBacklogName();
+            String taskName = entTaskNew.getTaskName();
+            String assigneeName = " No one";
+            if (entTaskNew.getFkAssigneeId().length() > 1) {
+                EntityCrUserList entUserAssingee = new EntityCrUserList();
+                entUserAssingee.setId(entTaskNew.getFkAssigneeId());
+                EntityManager.select(entUserAssingee);
+                assigneeName = entUserAssingee.getUserPersonName();
+            }
+
+            String createdByName = "";
+            if (entTaskNew.getCreatedBy().length() > 1) {
+                EntityCrUserList entUserAssingee = new EntityCrUserList();
+                entUserAssingee.setId(entTaskNew.getCreatedBy());
+                EntityManager.select(entUserAssingee);
+                createdByName = entUserAssingee.getUserPersonName();
+            }
+
+            String tn = entUser.toTableName();
+            int rc = crUser.getTableRowCount(tn);
+            for (int i = 0; i < rc; i++) {
+                EntityManager.mapCarrierToEntity(crUser, tn, i, entUser);
+
+                String userFullname = entUser.getUserPersonName();
+
+                url = url.replaceAll("@backlogId", entBL.getId())
+                        .replaceAll("@projectId", entBL.getFkProjectId());
+
+                mailSubject = mailSubject.replaceAll("@taskName", taskName)
+                        .replaceAll("@assigneeName", assigneeName);
+
+                mailBody = mailBody.replaceAll(" @userFullname", userFullname)
+                        .replaceAll("@taskName", taskName)
+                        .replaceAll("@assigneeName", assigneeName)
+                        .replaceAll("@createdByName", createdByName)
+                        .replaceAll("@storyCard", storyCardName)
+                        .replaceAll("@url", url);
+
+                String email = entUser.getEmail1();
+                if (email.trim().length() > 3) {
+                    MailSender.sendMailInThread(email, mailSubject, mailBody, "");
+                }
+
+            }
+        }
+
+    }
+
+    private static void sendMailNotificationOnDelete(String taskId, String backlogId) throws QException {
+
+        if (taskId.length() == 0) {
+            return;
+        }
+
+        EntityTmBacklogTask entTaskNew = new EntityTmBacklogTask();
+        entTaskNew.setId(taskId);
+        EntityManager.select(entTaskNew);
+
+        String url = "No URL";
+        String mailBody = Config.getProperty("task.notify.on.delete.body");
+        String mailSubject = Config.getProperty("task.notify.on.delete.subject");
+
+        String storyCardName = "";
+        String taskName = entTaskNew.getTaskName();
+        String assigneeName = " No one";
+
+        String userIds = "";
+        if (entTaskNew.getFkAssigneeId().length() > 1) {
+            EntityCrUserList entUserAssingee = new EntityCrUserList();
+            entUserAssingee.setId(entTaskNew.getFkAssigneeId());
+            EntityManager.select(entUserAssingee);
+            assigneeName = entUserAssingee.getUserPersonName();
+
+            userIds += entTaskNew.getFkAssigneeId() + CoreLabel.IN;
+        }
+
+        String createdByName = "";
+        if (entTaskNew.getCreatedBy().length() > 1) {
+            EntityCrUserList entUserAssingee = new EntityCrUserList();
+            entUserAssingee.setId(entTaskNew.getCreatedBy());
+            EntityManager.select(entUserAssingee);
+            createdByName = entUserAssingee.getUserPersonName();
+
+            userIds += entTaskNew.getCreatedBy() + CoreLabel.IN;
+        }
+
+        if (backlogId.length() > 0) {
+            EntityTmBacklog entBL = new EntityTmBacklog();
+            entBL.setId(backlogId);
+            EntityManager.select(entBL);
+
+            storyCardName = entBL.getBacklogName();
+
+            EntityTmBacklogTask entTask = new EntityTmBacklogTask();
+            entTask.setFkBacklogId(backlogId);
+            Carrier cr = EntityManager.select(entTask);
+
+            userIds += entBL.getFkOwnerId() + CoreLabel.IN + entBL.getCreatedBy();
+            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.FK_ASSIGNEE_ID) + CoreLabel.IN;
+            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.CREATED_BY);
+
+            url = Config.getProperty("task.notify.on.delete.url");
+            url = url.replaceAll("@backlogId", entBL.getId())
+                    .replaceAll("@projectId", entBL.getFkProjectId());
+        }
+
+        if (userIds.length() > 6) {
+            EntityCrUserList entUser = new EntityCrUserList();
+            entUser.setId(userIds);
+            Carrier crUser = EntityManager.select(entUser);
+
+            String tn = entUser.toTableName();
+            int rc = crUser.getTableRowCount(tn);
+            for (int i = 0; i < rc; i++) {
+                EntityManager.mapCarrierToEntity(crUser, tn, i, entUser);
+
+                String userFullname = entUser.getUserPersonName();
+
+                mailSubject = mailSubject.replaceAll("@taskName", taskName)
+                        .replaceAll("@assigneeName", assigneeName);
+
+                mailBody = mailBody.replaceAll(" @userFullname", userFullname)
+                        .replaceAll("@taskName", taskName)
+                        .replaceAll("@assigneeName", assigneeName)
+                        .replaceAll("@createdByName", createdByName)
+                        .replaceAll("@storyCard", storyCardName)
+                        .replaceAll("@url", url);
+
+                String email = entUser.getEmail1();
+                if (email.trim().length() > 3) {
+                    MailSender.sendMailInThread(email, mailSubject, mailBody, "");
+                }
+
+            }
+        }
+
+    }
+
+    private static void sendMailNotificationOnChange(String taskId, String backlogId, String realtedFieldName) throws QException {
+
+        if (taskId.length() == 0) {
+            return;
+        }
+
+        if (realtedFieldName.length() == 0) {
+            return;
+        }
+
+        EntityTmBacklogTask entTaskNew = new EntityTmBacklogTask();
+        entTaskNew.setId(taskId);
+        EntityManager.select(entTaskNew);
+
+        String url = "No URL";
+        String mailBody = Config.getProperty("task.notify.on.change.body");
+        String mailSubject = Config.getProperty("task.notify.on.change.subject");
+
+        String storyCardName = "";
+        String taskName = entTaskNew.getTaskName();
+        String assigneeName = " No one";
+
+        String userIds = "";
+        if (entTaskNew.getFkAssigneeId().length() > 1) {
+            EntityCrUserList entUserAssingee = new EntityCrUserList();
+            entUserAssingee.setId(entTaskNew.getFkAssigneeId());
+            EntityManager.select(entUserAssingee);
+            assigneeName = entUserAssingee.getUserPersonName();
+
+            userIds += entTaskNew.getFkAssigneeId() + CoreLabel.IN;
+        }
+
+        String createdByName = "";
+        if (entTaskNew.getUpdatedBy().length() > 1) {
+            EntityCrUserList entUserAssingee = new EntityCrUserList();
+            entUserAssingee.setId(entTaskNew.getUpdatedBy());
+            EntityManager.select(entUserAssingee);
+            createdByName = entUserAssingee.getUserPersonName();
+
+            userIds += entTaskNew.getUpdatedBy() + CoreLabel.IN;
+        }
+
+        if (backlogId.length() > 0) {
+            EntityTmBacklog entBL = new EntityTmBacklog();
+            entBL.setId(backlogId);
+            EntityManager.select(entBL);
+
+            storyCardName = entBL.getBacklogName();
+
+            EntityTmBacklogTask entTask = new EntityTmBacklogTask();
+            entTask.setFkBacklogId(backlogId);
+            Carrier cr = EntityManager.select(entTask);
+
+            userIds += entBL.getFkOwnerId() + CoreLabel.IN + entBL.getCreatedBy();
+            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.FK_ASSIGNEE_ID) + CoreLabel.IN;
+            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.CREATED_BY);
+
+            url = Config.getProperty("task.notify.on.change.url");
+            url = url.replaceAll("@backlogId", entBL.getId())
+                    .replaceAll("@taskId", taskId)
+                    .replaceAll("@projectId", entBL.getFkProjectId());
+        }
+
+        if (userIds.length() > 6) {
+            EntityCrUserList entUser = new EntityCrUserList();
+            entUser.setId(userIds);
+            Carrier crUser = EntityManager.select(entUser);
+
+            String tn = entUser.toTableName();
+            int rc = crUser.getTableRowCount(tn);
+            for (int i = 0; i < rc; i++) {
+                EntityManager.mapCarrierToEntity(crUser, tn, i, entUser);
+
+                String userFullname = entUser.getUserPersonName();
+
+                mailSubject = mailSubject.replaceAll("@taskName", taskName)
+                        .replaceAll("@assigneeName", assigneeName);
+
+                mailBody = mailBody.replaceAll(" @userFullname", userFullname)
+                        .replaceAll("@taskName", taskName)
+                        .replaceAll("@assigneeName", assigneeName)
+                        .replaceAll("@createdByName", createdByName)
+                        .replaceAll("@storyCard", storyCardName)
+                        .replaceAll("@field", realtedFieldName)
+                        .replaceAll("@url", url);
+
+                String email = entUser.getEmail1();
+                if (email.trim().length() > 3) {
+                    MailSender.sendMailInThread(email, mailSubject, mailBody, "");
+                }
+
+            }
+        }
+
+    }
+
+    private static void sendMailNotificationOnNewcomment(String taskId, String backlogId, String commentBody) throws QException {
+
+        if (taskId.length() == 0) {
+            return;
+        }
+
+        EntityTmBacklogTask entTaskNew = new EntityTmBacklogTask();
+        entTaskNew.setId(taskId);
+        EntityManager.select(entTaskNew);
+
+        String url = "No URL";
+        String mailBody = Config.getProperty("task.notify.on.newcomment.body");
+        String mailSubject = Config.getProperty("task.notify.on.newcomment.subject");
+
+        String storyCardName = "";
+        String taskName = entTaskNew.getTaskName();
+        String assigneeName = " No one";
+
+        String userIds = "";
+        if (entTaskNew.getFkAssigneeId().length() > 1) {
+            EntityCrUserList entUserAssingee = new EntityCrUserList();
+            entUserAssingee.setId(entTaskNew.getFkAssigneeId());
+            EntityManager.select(entUserAssingee);
+            assigneeName = entUserAssingee.getUserPersonName();
+            userIds += entTaskNew.getFkAssigneeId() + CoreLabel.IN;
+        }
+
+        String createdByName = "";
+        if (entTaskNew.getCreatedBy().length() > 1) {
+            EntityCrUserList entUserAssingee = new EntityCrUserList();
+            entUserAssingee.setId(entTaskNew.getCreatedBy());
+            EntityManager.select(entUserAssingee);
+            createdByName = entUserAssingee.getUserPersonName();
+
+            userIds += entTaskNew.getCreatedBy() + CoreLabel.IN;
+        }
+
+        if (backlogId.length() > 0) {
+            EntityTmBacklog entBL = new EntityTmBacklog();
+            entBL.setId(backlogId);
+            EntityManager.select(entBL);
+
+            storyCardName = entBL.getBacklogName();
+
+            EntityTmBacklogTask entTask = new EntityTmBacklogTask();
+            entTask.setFkBacklogId(backlogId);
+            Carrier cr = EntityManager.select(entTask);
+
+            userIds += entBL.getFkOwnerId() + CoreLabel.IN + entBL.getCreatedBy();
+
+            url = Config.getProperty("task.notify.on.newcomment.url");
+            url = url.replaceAll("@backlogId", entBL.getId())
+                    .replaceAll("@taskId", taskId)
+                    .replaceAll("@projectId", entBL.getFkProjectId());
+        }
+
+        if (userIds.length() > 6) {
+            EntityCrUserList entUser = new EntityCrUserList();
+            entUser.setId(userIds);
+            Carrier crUser = EntityManager.select(entUser);
+
+            String tn = entUser.toTableName();
+            int rc = crUser.getTableRowCount(tn);
+            for (int i = 0; i < rc; i++) {
+                EntityManager.mapCarrierToEntity(crUser, tn, i, entUser);
+
+                String userFullname = entUser.getUserPersonName();
+
+                mailSubject = mailSubject.replaceAll("@taskName", taskName)
+                        .replaceAll("@assigneeName", assigneeName);
+
+                mailBody = mailBody.replaceAll(" @userFullname", userFullname)
+                        .replaceAll("@taskName", taskName)
+                        .replaceAll("@assigneeName", assigneeName)
+                        .replaceAll("@createdByName", createdByName)
+                        .replaceAll("@commentBody", commentBody)
+                        .replaceAll("@storyCard", storyCardName)
+                        .replaceAll("@url", url);
+
+                String email = entUser.getEmail1();
+                if (email.trim().length() > 3) {
+                    MailSender.sendMailInThread(email, mailSubject, mailBody, "");
+                }
+
+            }
+        }
+
+    }
+
+    private static void assigneSprintToTask(String taskId, String sprintIdList) throws QException {
         if (taskId.trim().length() == 0) {
             return;
         }
@@ -9298,6 +9737,9 @@ public class TmModel {
 
         //commentleride copy paste olmalidir
         getTaskList4Short(entNew.getId()).copyTo(carrier);
+
+        sendMailNotificationOnCreate(ent.getId(), ent.getFkBacklogId());
+
         return carrier;
     }
 
@@ -9501,6 +9943,7 @@ public class TmModel {
         } catch (Exception e) {
         }
 
+        sendMailNotificationOnDelete(entity.getId(), entity.getFkBacklogId());
 //        setNewBacklogHistory4TaskTypeDelete(entityList);
 //
 //        decreaseTaskCountBacklog(entity.getFkBacklogId());
@@ -14334,6 +14777,17 @@ class DashboardStatistics {
         return cout;
     }
 
+    public static Carrier getStoryCardSummary(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+
+        Carrier cout = new Carrier();
+        getProjectSummary_TaskOverall4SC(carrier).copyTo(cout);
+        getProjectSummary_Bug4SC(carrier).copyTo(cout);
+        getProjectSummary_Change4SC(carrier).copyTo(cout);
+        getProjectSummary_New4SC(carrier).copyTo(cout);
+        return cout;
+    }
+
     public static Carrier getProjectSummary(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
 
@@ -14760,6 +15214,70 @@ class DashboardStatistics {
                 + ") "
                 : "";
         return label;
+    }
+
+    public static Carrier getProjectSummary_TaskOverall4Select4SC(String backlogId, String statusType) throws QException {
+        String status = (statusType.equals("total")) ? ""
+                : " and m.task_status = '" + statusType + "'";
+
+        String line
+                = "select \n"
+                + "id ,task_name as backlog_name\n"
+                + "from " + SessionManager.getCurrentDomain() + ".tm_backlog_task m\n"
+                + "where m.status='A'\n"
+                + " and  m.fk_backlog_id in (" + backlogId + ")"
+                + status + " order by task_name;";
+
+        Carrier cout = EntityManager.selectBySql(line);
+        return cout;
+    }
+
+    public static Carrier getProjectSummary_TaskBug4Select4SC(String backlogId, String statusType) throws QException {
+        String status = (statusType.equals("total")) ? ""
+                : " and m.task_status = '" + statusType + "'";
+
+        String line
+                = "select \n"
+                + "id ,task_name as backlog_name\n"
+                + "from " + SessionManager.getCurrentDomain() + ".tm_backlog_task m\n"
+                + "where m.status='A'\n"
+                + " and m.task_nature = 'bug' and  m.fk_backlog_id in (" + backlogId + ")"
+                + status + " order by task_name;";
+
+        Carrier cout = EntityManager.selectBySql(line);
+        return cout;
+    }
+
+    public static Carrier getProjectSummary_TaskNew4Select4SC(String backlogId, String statusType) throws QException {
+        String status = (statusType.equals("total")) ? ""
+                : " and m.task_status = '" + statusType + "'";
+
+        String line
+                = "select \n"
+                + "id ,task_name as backlog_name\n"
+                + "from " + SessionManager.getCurrentDomain() + ".tm_backlog_task m\n"
+                + "where m.status='A'\n"
+                + " and m.task_nature = 'new' and  m.fk_backlog_id in (" + backlogId + ")"
+                + status + " order by task_name;";
+
+        Carrier cout = EntityManager.selectBySql(line);
+        return cout;
+    }
+
+    public static Carrier getProjectSummary_TaskChange4Select4SC(String backlogId, String statusType) throws QException {
+        String status = (statusType.equals("total")) ? ""
+                : " and m.task_status = '" + statusType + "'";
+
+        String line
+                = "select \n"
+                + "id ,task_name as backlog_name\n"
+                + "from " + SessionManager.getCurrentDomain() + ".tm_backlog_task m\n"
+                + "where m.status='A'\n"
+                + " and m.task_nature = 'change' and  m.fk_backlog_id in (" + backlogId + ")"
+                + status + " order by task_name;";
+
+        Carrier cout = EntityManager.selectBySql(line);
+        return cout;
     }
 
     public static Carrier getProjectSummary_TaskOverall4Select(String projectId, String statusType, String labelId, String sprintId) throws QException {
@@ -15189,6 +15707,86 @@ class DashboardStatistics {
                 : "";
 
         return res;
+    }
+
+    private static Carrier getProjectSummary_Bug4SC(Carrier carrier) throws QException {
+        String backlogId = carrier.get("fkBacklogId");
+
+        String line
+                = "select \n"
+                + "fk_backlog_id,\n"
+                + "count(distinct m.Id) overall,\n"
+                + "(select count(distinct a.Id) from " + SessionManager.getCurrentDomain() + ".tm_backlog_task a where  a.fk_backlog_id = m.fk_backlog_id   and a.task_nature='bug' and a.task_status='new'  " + " and  a.status = 'A') as status_new,\n"
+                + "(select count(distinct a.Id) from " + SessionManager.getCurrentDomain() + ".tm_backlog_task a where  a.fk_backlog_id = m.fk_backlog_id   and a.task_nature='bug' and a.task_status='ongoing'   " + "   and  a.status = 'A') as status_ongoing,\n"
+                + "(select count(distinct a.Id) from " + SessionManager.getCurrentDomain() + ".tm_backlog_task a where  a.fk_backlog_id = m.fk_backlog_id   and a.task_nature='bug' and a.task_status='closed'   " + "   and  a.status = 'A') as status_closed\n"
+                + "from " + SessionManager.getCurrentDomain() + ".tm_backlog_task m "
+                + "where m.status='A' "
+                + " and     m.task_nature='bug' and  m.fk_backlog_id in (" + backlogId + ")"
+                + " group by fk_backlog_id;";
+
+        Carrier cout = EntityManager.selectBySql(line);
+        cout.renameTableName(CoreLabel.RESULT_SET, "bugs");
+        return cout;
+    }
+
+    private static Carrier getProjectSummary_New4SC(Carrier carrier) throws QException {
+        String backlogId = carrier.get("fkBacklogId");
+
+        String line
+                = "select \n"
+                + "fk_backlog_id,\n"
+                + "count(distinct m.Id) overall,\n"
+                + "(select count(distinct a.Id) from " + SessionManager.getCurrentDomain() + ".tm_backlog_task a where  a.fk_backlog_id = m.fk_backlog_id   and a.task_nature='new' and a.task_status='new'  " + " and  a.status = 'A') as status_new,\n"
+                + "(select count(distinct a.Id) from " + SessionManager.getCurrentDomain() + ".tm_backlog_task a where  a.fk_backlog_id = m.fk_backlog_id   and a.task_nature='new' and a.task_status='ongoing'   " + "   and  a.status = 'A') as status_ongoing,\n"
+                + "(select count(distinct a.Id) from " + SessionManager.getCurrentDomain() + ".tm_backlog_task a where  a.fk_backlog_id = m.fk_backlog_id   and a.task_nature='new' and a.task_status='closed'   " + "   and  a.status = 'A') as status_closed\n"
+                + "from " + SessionManager.getCurrentDomain() + ".tm_backlog_task m "
+                + "where m.status='A' "
+                + " and     m.task_nature='new' and  m.fk_backlog_id in (" + backlogId + ")"
+                + " group by fk_backlog_id;";
+
+        Carrier cout = EntityManager.selectBySql(line);
+        cout.renameTableName(CoreLabel.RESULT_SET, "news");
+        return cout;
+    }
+
+    private static Carrier getProjectSummary_Change4SC(Carrier carrier) throws QException {
+        String backlogId = carrier.get("fkBacklogId");
+
+        String line
+                = "select \n"
+                + "fk_backlog_id,\n"
+                + "count(distinct m.Id) overall,\n"
+                + "(select count(distinct a.Id) from " + SessionManager.getCurrentDomain() + ".tm_backlog_task a where  a.fk_backlog_id = m.fk_backlog_id   and a.task_nature='change' and a.task_status='new'  " + " and  a.status = 'A') as status_new,\n"
+                + "(select count(distinct a.Id) from " + SessionManager.getCurrentDomain() + ".tm_backlog_task a where  a.fk_backlog_id = m.fk_backlog_id   and a.task_nature='change' and a.task_status='ongoing'   " + "   and  a.status = 'A') as status_ongoing,\n"
+                + "(select count(distinct a.Id) from " + SessionManager.getCurrentDomain() + ".tm_backlog_task a where  a.fk_backlog_id = m.fk_backlog_id   and a.task_nature='change' and a.task_status='closed'   " + "   and  a.status = 'A') as status_closed\n"
+                + "from " + SessionManager.getCurrentDomain() + ".tm_backlog_task m "
+                + "where m.status='A' "
+                + " and     m.task_nature='change' and  m.fk_backlog_id in (" + backlogId + ")"
+                + " group by fk_backlog_id;";
+
+        Carrier cout = EntityManager.selectBySql(line);
+        cout.renameTableName(CoreLabel.RESULT_SET, "changes");
+        return cout;
+    }
+
+    private static Carrier getProjectSummary_TaskOverall4SC(Carrier carrier) throws QException {
+        String backlogId = carrier.get("fkBacklogId");
+
+        String line
+                = "select \n"
+                + "fk_backlog_id,\n"
+                + "count(distinct m.Id) overall,\n"
+                + "(select count(distinct a.Id) from " + SessionManager.getCurrentDomain() + ".tm_backlog_task a where  a.fk_backlog_id = m.fk_backlog_id and a.task_status='new'  " + " and  a.status = 'A') as status_new,\n"
+                + "(select count(distinct a.Id) from " + SessionManager.getCurrentDomain() + ".tm_backlog_task a where  a.fk_backlog_id = m.fk_backlog_id and a.task_status='ongoing'   " + "   and  a.status = 'A') as status_ongoing,\n"
+                + "(select count(distinct a.Id) from " + SessionManager.getCurrentDomain() + ".tm_backlog_task a where  a.fk_backlog_id = m.fk_backlog_id and a.task_status='closed'   " + "   and  a.status = 'A') as status_closed\n"
+                + "from " + SessionManager.getCurrentDomain() + ".tm_backlog_task m "
+                + "where m.status='A' "
+                + " and  m.fk_backlog_id in (" + backlogId + ")"
+                + " group by fk_backlog_id;";
+
+        Carrier cout = EntityManager.selectBySql(line);
+        cout.renameTableName(CoreLabel.RESULT_SET, "overall");
+        return cout;
     }
 
     private static Carrier getProjectSummary_TaskOverallBug(Carrier carrier) throws QException {
