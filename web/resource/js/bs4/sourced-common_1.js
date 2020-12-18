@@ -5297,11 +5297,7 @@ UserStory.prototype = {
     },
 
     insertNewBacklogDescDetails: function (desc, relatedId) {
-        var json = {kv: {}};
-        try {
-            json.kv.cookie = getToken();
-        } catch (err) {
-        }
+        var json = initJSON();
         json.kv.fkBacklogId = global_var.current_backlog_id;
         json.kv.fkProjectId = global_var.current_project_id;
         json.kv.description = desc;
@@ -7809,20 +7805,28 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
 
     },
     getOutputByAPIDetails: function (res) {
-        $('#sus-api-output-id').html("");
+        try {
+            $('#sus-api-output-id').html("");
+
+
+            var obj = res.tbl[0].r;
+
+            for (var n = 0; n < obj.length; n++) {
+                $('#sus-api-output-id').append($("<option></option>")
+                        .attr("value", obj[n].id)
+                        .text(replaceTags(obj[n].inputName)));
+            }
+
+            sortSelectBox('sus-api-output-id');
+        } catch (err) {
+        }
+
         $('#sus-api-output-id')
                 .append($("<option></option>").val('').text(''))
                 .append($("<option></option>").val('-2').text(' New'))
                 .append($("<option disabled></option>").val('').text(''))
                 ;
 
-        var obj = res.tbl[0].r;
-
-        for (var n = 0; n < obj.length; n++) {
-            $('#sus-api-output-id').append($("<option></option>")
-                    .attr("value", obj[n].id)
-                    .text(replaceTags(obj[n].inputName)));
-        }
     },
     getOutputBySUSIdDetails: function (res) {
         $('#sus-output-id').html("");
@@ -13183,7 +13187,7 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
             data: data,
             contentType: "application/json",
             crossDomain: true,
-            async: true,
+            async: false,
             success: function (res) {
                 SACore.addBacklogByRes(res);
                 SACore.SetBacklogNo(res.kv.backlogNo, res.kv.id);
@@ -13192,9 +13196,22 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
                 Utility.addParamToUrl('current_backlog_id', global_var.current_backlog_id);
                 new UserStory().loadSUSList4InputDetails(SACore.toJSON());
                 that.clearField();
-                that.load();
+
 //                
                 $('#backlogName').focus();
+
+
+                //add label to story card
+                $('.us-filter-checkbox-label').each(function () {
+                    if ($(this).is(":checked")) {
+                        var labelId = $(this).val();
+                        if (labelId) {
+                            that.assignLabelToNewBacklog(res.kv.id, labelId);
+                        }
+                    }
+                })
+
+                that.load();
 //                
             },
             error: function () {
@@ -13202,6 +13219,38 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
             }
         });
     },
+
+    assignLabelToNewBacklog: function (backlogId, labelId) {
+        var id = backlogId;
+        var checked = '1';
+        if ($(this).is(":checked")) {
+            checked = '1';
+        }
+
+        var json = initJSON();
+        json.kv['fkLabelId'] = labelId;
+        json.kv['fkProjectId'] = global_var.current_project_id;
+        json.kv['fkBacklogId'] = id;
+        json.kv.assign = checked;
+        var that = this;
+        var data = JSON.stringify(json);
+        $.ajax({
+            url: urlGl + "api/post/srv/serviceTmAssignLabel",
+            type: "POST",
+            data: data,
+            contentType: "application/json",
+            crossDomain: true,
+            async: false,
+            success: function (res) {
+                SACore.updateBacklogByRes(res);
+                new Label().load();
+            },
+            error: function () {
+                Toaster.showError(('somethingww'));
+            }
+        });
+    },
+
     addEpicToJira: function (backlogId) {
         if (!backlogId) {
             return;
@@ -13957,10 +14006,10 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
     },
 
     getBacklogTaskStats: function () {
-        $('.xpclear').each(function(){
+        $('.xpclear').each(function () {
             $(this).html('0')
         });
-        
+
         var json = initJSON();
         json.kv.fkBacklogId = global_var.current_backlog_id;
         var that = this;
@@ -17852,21 +17901,32 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
 //        Utility.addParamToUrl('current_us_submenu', global_var.current_us_submenu);
 //        $('.us-sm-detail').hide();
         $('#smb-details-' + menuName).show();
-        if (menuName === 'comments') {
-            this.fillCommentList(global_var.current_backlog_id);
-        } else if (menuName === 'ipo') {
+//        if (menuName === 'comments') {
+//            this.fillCommentList(global_var.current_backlog_id);
+//        } else
+
+        if (menuName === 'ipo') {
             this.toggleSubmenuIPO();
+
+            if ($(document).find(".StoryCardPanel").first().html()) {
+                $(document).find(".StoryCardPanel").remove();
+                var id = global_var.current_backlog_id;
+                callStoryCard(id);
+            }
+
+
         } else if (menuName === 'tasks') {
             this.loadBacklogTask();
-        } else if (menuName === 'history') {
-            BacklogHistory.clearBacklogHistoryFilter();
-            BacklogHistory.loadFilterComponents();
-            BacklogHistory.load();
         } else if (menuName === 'generalview') {
             this.toggleSubmenuStoryCard();
-        } else if (menuName === 'testscenario') {
-            this.loadTestScenario();
         }
+//        else if (menuName === 'history') {
+//            BacklogHistory.clearBacklogHistoryFilter();
+//            BacklogHistory.loadFilterComponents();
+//            BacklogHistory.load();
+//        } else if (menuName === 'testscenario') {
+//            this.loadTestScenario();
+//        }
         dragResize();
 //        hideProgress();
     },
@@ -19075,17 +19135,25 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
     selectDataFromDbModalDetails: function (res) {
         $('#selectFromDbModal-dbid').html('');
 
+
+        try {
+            var obj = res.tbl[0].r;
+            for (var i = 0; i < obj.length; i++) {
+                $('#selectFromDbModal-dbid')
+                        .append($('<option>').val(obj[i].id)
+                                .append(obj[i].dbName))
+            }
+        } catch (err) {
+
+        }
+        sortSelectBox('selectFromDbModal-dbid');
+
+
         $('#selectFromDbModal-dbid')
                 .append($('<option>').val("").text(""))
                 .append($('<option>').val('-2').text("New Database"))
                 .append($('<option disabled>').val('').text(""));
 
-        var obj = res.tbl[0].r;
-        for (var i = 0; i < obj.length; i++) {
-            $('#selectFromDbModal-dbid')
-                    .append($('<option>').val(obj[i].id)
-                            .append(obj[i].dbName))
-        }
     },
 
     dbFieldOnChange: function (el) {
@@ -19149,17 +19217,23 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
     getDbFieldsListDetails: function (res) {
         $('#selectFromDbModal-fieldid').html('');
 
+
+        try {
+            var obj = res.tbl[0].r;
+            for (var i = 0; i < obj.length; i++) {
+                $('#selectFromDbModal-fieldid')
+                        .append($('<option>').val(obj[i].id)
+                                .append(obj[i].fieldName))
+            }
+        } catch (err) {
+        }
+
+        sortSelectBox('selectFromDbModal-fieldid');
+
         $('#selectFromDbModal-fieldid')
                 .append($('<option>').val("").text(""))
                 .append($('<option>').val('-2').text("New Field"))
                 .append($('<option disabled>').val('').text(""));
-
-        var obj = res.tbl[0].r;
-        for (var i = 0; i < obj.length; i++) {
-            $('#selectFromDbModal-fieldid')
-                    .append($('<option>').val(obj[i].id)
-                            .append(obj[i].fieldName))
-        }
     },
 
     getDbTableList: function (dbid) {
@@ -19219,17 +19293,24 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
     getDbTablesListDetails: function (res) {
         $('#selectFromDbModal-tableid').html('');
 
+
+        try {
+            var obj = res.tbl[0].r;
+            for (var i = 0; i < obj.length; i++) {
+                $('#selectFromDbModal-tableid')
+                        .append($('<option>').val(obj[i].id)
+                                .append(obj[i].tableName))
+            }
+        } catch (err) {
+        }
+
+        sortSelectBox('selectFromDbModal-tableid');
+
+
         $('#selectFromDbModal-tableid')
                 .append($('<option>').val("").text(""))
                 .append($('<option>').val('-2').text("New Table"))
                 .append($('<option disabled>').val('').text(""));
-
-        var obj = res.tbl[0].r;
-        for (var i = 0; i < obj.length; i++) {
-            $('#selectFromDbModal-tableid')
-                    .append($('<option>').val(obj[i].id)
-                            .append(obj[i].tableName))
-        }
     },
 
 //    getDbFieldsListDetails: function (res) {
@@ -19473,13 +19554,15 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
             $('#sus-api-output-id').html('');
         }
 
+
+
+        this.loadApisToCombo(action);
+
         $('#us-related-apis')
                 .append($("<option>").val('').append(('')))
                 .append($("<option>").val('-2').append(('New User Story (API)')))
                 .append($("<option disabled>").val('').append(('')))
                 ;
-
-        this.loadApisToCombo(action);
 
         if (f) {
             $('#sus-api-output-id').html('');
@@ -19493,29 +19576,36 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
     },
 
     loadApisToCombo: function (action) {
-        var keys = SACore.GetBacklogKeys();
-        for (var i in keys) {
-            if (action === 'select' && SACore.GetBacklogDetails(keys[i], "isApi") !== '1') {
-                continue;
-            }
-            if (keys[i] === global_var.current_backlog_id) {
-                continue;
-            }
-            var backlogId = keys[i];
-            var backlogName = SACore.GetBacklogname(backlogId);
-            backlogName += SACore.GetBacklogDetails(keys[i], "isApi") === '1'
-                    ? ' (is API)' : "";
+        try {
+            var keys = SACore.GetBacklogKeys();
+            for (var i in keys) {
+                if (action === 'select' && SACore.GetBacklogDetails(keys[i], "isApi") !== '1') {
+                    continue;
+                }
+                if (keys[i] === global_var.current_backlog_id) {
+                    continue;
+                }
+                var backlogId = keys[i];
+                var backlogName = SACore.GetBacklogname(backlogId);
+                backlogName += SACore.GetBacklogDetails(keys[i], "isApi") === '1'
+                        ? ' (is API)' : "";
 
-            var op = $("<option>")
-                    .val(backlogId)
-                    .append(replaceTags(backlogName));
-            if (keys[i] === global_var.last_select_from_us_id) {
-                op.attr("selected", true);
+                var op = $("<option>")
+                        .val(backlogId)
+                        .append(replaceTags(backlogName));
+                if (keys[i] === global_var.last_select_from_us_id) {
+                    op.attr("selected", true);
+                }
+                $('#us-related-apis').append(op);
             }
-            $('#us-related-apis').append(op);
+            sortSelectBox('us-related-apis');
+        } catch (err) {
+
         }
     },
 
+
+    
     sendDataToModal: function (el, id) {
         if (!id) {
             return;
@@ -20703,7 +20793,7 @@ Label.prototype = {
 
             var tr = $('<tr class="lbl-list-tr"></tr>');
             tr.append($('<td class="lbl-list-td"></td>')
-                    .html($('<input type="checkbox" class="bug-task-filter-checkbox-label" value="' + obj[n].id + '">')
+                    .html($('<input type="checkbox" class="us-filter-checkbox-label bug-task-filter-checkbox-label" value="' + obj[n].id + '">')
                             .attr('taskIds', obj[n].labelTaskIds)
                             .prop("checked", isFiltered))
                     .attr('id', obj[n].id));

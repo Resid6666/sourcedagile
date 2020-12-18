@@ -275,7 +275,15 @@ public class EntityManager {
                 }
             }
 
-            arr[i] = carrier.get(key);
+            String val = (carrier.hasCurrentUserField())
+                    ? SessionManager.getCurrentUserId()
+                    : (carrier.hasCurrentDateField())
+                    ? QDate.getCurrentDate()
+                    : (carrier.hasCurrentTimeField())
+                    ? QDate.getCurrentTime()
+                    : carrier.get(key);
+            
+            arr[i] = val;
         }
 
         return arr;

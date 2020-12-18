@@ -131,6 +131,9 @@ import module.tm.entity.EntityTmInputActionRel;
 import module.tm.entity.EntityTmInputAttributes;
 import module.tm.entity.EntityTmInputClassRelation;
 import module.tm.entity.EntityTmJsCode;
+import module.tm.entity.EntityTmRole;
+import module.tm.entity.EntityTmRolePermission;
+import module.tm.entity.EntityTmUserPermission;
 import utility.QUtility;
 import utility.sqlgenerator.SQLConnection;
 import utility.sqlgenerator.SQLGenerator;
@@ -187,6 +190,339 @@ public class TmModel {
     /////////////////////////////////////////
     //// type code here
     ///////////////////////////////////////////////
+    public Carrier addRolePermissionToUser(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkUserId", cp.hasValue(carrier, "fkUserId"));
+        carrier.addController("fkRoleId", cp.hasValue(carrier, "fkRoleId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmRole entRole = new EntityTmRole();
+        entRole.setId(carrier.get("fkRoleId"));
+        EntityManager.select(entRole);
+
+        EntityTmUserPermission entUser = new EntityTmUserPermission();
+        entUser.setFkProjectId(entRole.getFkProjectId());
+        entUser.setFkUserId(carrier.get("fkUserId"));
+        entUser.setPermissionType("sc");
+        String ids = EntityManager.select(entUser).getValueLine(entUser.toTableName(), "id");
+        if (ids.length() > 2) {
+            entUser.setId(ids);
+            EntityManager.delete(entUser);
+        }
+
+        EntityTmRolePermission ent = new EntityTmRolePermission();
+        ent.setFkRoleId(carrier.get("fkRoleId"));
+        Carrier crt = EntityManager.select(ent);
+        String tn = ent.toTableName();
+        int rc = crt.getTableRowCount(tn);
+        for (int i = 0; i < rc; i++) {
+            EntityManager.mapCarrierToEntity(crt, tn, i, entUser);
+            entUser.setFkUserId(carrier.get("fkUserId"));
+            EntityManager.insert(entUser);
+        }
+
+        return carrier;
+    }
+
+    public Carrier addRolePermission(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        carrier.addController("fkRoleId", cp.hasValue(carrier, "fkRoleId"));
+        carrier.addController("relationId", cp.hasValue(carrier, "relationId"));
+        carrier.addController("permissionType", cp.hasValue(carrier, "permissionType"));
+        carrier.addController("accessType", cp.hasValue(carrier, "accessType"));
+//        carrier.addController("exceptInputs", cp.hasValue(carrier, "exceptInputs"));
+
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmRolePermission ent = new EntityTmRolePermission();
+        EntityManager.mapCarrierToEntity(carrier, ent);
+        ent.setExceptInputs(carrier.get("exceptInputs"));
+        EntityManager.insert(ent);
+
+        return carrier;
+    }
+
+    public Carrier deletePermissionRole(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("id", cp.hasValue(carrier, "id"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmRole ent = new EntityTmRole();
+        ent.setId(carrier.get("id"));
+        EntityManager.delete(ent);
+
+        return carrier;
+    }
+
+    public Carrier updatePermissionRole(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("id", cp.hasValue(carrier, "id"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmRole ent = new EntityTmRole();
+        ent.setId(carrier.get("id"));
+        EntityManager.select(ent);
+
+        EntityManager.mapCarrierToEntity(carrier, ent);
+        EntityManager.update(ent);
+
+        return carrier;
+    }
+
+    public Carrier addPermissionRole(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("roleName", cp.hasValue(carrier, "roleName"));
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmRole ent = new EntityTmRole();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.setRoleName(carrier.get("roleName"));
+        EntityManager.insert(ent);
+
+        return carrier;
+    }
+
+    public Carrier getPermissionRoleByProject(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmRole ent = new EntityTmRole();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.addSortBy("roleName");
+        ent.setSortByAsc(true);
+        carrier = EntityManager.select(ent);
+
+        return carrier;
+    }
+
+    public Carrier addBacklogExceptInputPermissionById(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkUserId", cp.hasValue(carrier, "fkUserId"));
+        carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        carrier.addController("fkInputId", cp.hasValue(carrier, "fkInputId"));
+        carrier.addController("accessType", cp.hasValue(carrier, "accessType"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmUserPermission ent = new EntityTmUserPermission();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.setFkUserId(carrier.get("fkUserId"));
+        ent.setRelationId(carrier.get("fkBacklogId"));
+        ent.setEndLimit(0);
+        EntityManager.select(ent);
+
+        if (ent.getId().length() == 0) {
+            ent.setPermissionType("sc");
+            ent.setAccessType("y");
+            EntityManager.insert(ent);
+        }
+
+        if (ent.getId().length() > 0) {
+            String ids = ent.getExceptInputs();
+
+            if (carrier.get("accessType").equals("n")) {
+                ids = ids.contains(carrier.get("fkInputId"))
+                        ? ids
+                        : ids + "," + carrier.get("fkInputId");
+            } else if (carrier.get("accessType").equals("y")) {
+                ids = ids.replaceAll(carrier.get("fkInputId"), "");
+            }
+            ent.setExceptInputs(ids);
+            EntityManager.update(ent);
+        }
+
+        return carrier;
+    }
+
+    public Carrier getBacklogPermissionById(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkUserId", cp.hasValue(carrier, "fkUserId"));
+        carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmUserPermission ent = new EntityTmUserPermission();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.setFkUserId(carrier.get("fkUserId"));
+        ent.setRelationId(carrier.get("fkBacklogId"));
+        ent.setEndLimit(0);
+        carrier = EntityManager.select(ent);
+        EntityManager.mapEntityToCarrier(ent, carrier, true);
+
+        return carrier;
+    }
+
+    public Carrier getInputListByBacklogId(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmInput ent = new EntityTmInput();
+        ent.setFkBacklogId(carrier.get("fkBacklogId"));
+        ent.setInputType("IN");
+        ent.addSortBy("inputName");
+        carrier = EntityManager.select(ent);
+
+        return carrier;
+    }
+
+    public Carrier addApiPermission(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkUserId", cp.hasValue(carrier, "fkUserId"));
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        carrier.addController("relationId", cp.hasValue(carrier, "relationId"));
+        carrier.addController("accessType", cp.hasValue(carrier, "accessType"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmUserPermission ent = new EntityTmUserPermission();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.setFkUserId(carrier.get("fkUserId"));
+        ent.setRelationId(carrier.get("relationId"));
+        ent.setPermissionType("api");
+        ent.setEndLimit("0");
+        EntityManager.select(ent);
+
+        if (ent.getId().length() == 0) {
+            ent.setAccessType(carrier.get("accessType"));
+            EntityManager.insert(ent);
+        } else {
+            ent.setAccessType(carrier.get("accessType"));
+            EntityManager.update(ent);
+        }
+
+        return carrier;
+    }
+
+    public Carrier addBacklogPermission(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkUserId", cp.hasValue(carrier, "fkUserId"));
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        carrier.addController("relationId", cp.hasValue(carrier, "relationId"));
+        carrier.addController("accessType", cp.hasValue(carrier, "accessType"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmUserPermission ent = new EntityTmUserPermission();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.setFkUserId(carrier.get("fkUserId"));
+        ent.setRelationId(carrier.get("relationId"));
+        ent.setPermissionType("sc");
+        ent.setEndLimit("0");
+        EntityManager.select(ent);
+
+        if (ent.getId().length() == 0) {
+            ent.setAccessType(carrier.get("accessType"));
+            EntityManager.insert(ent);
+        } else {
+            ent.setAccessType(carrier.get("accessType"));
+            EntityManager.update(ent);
+        }
+
+        return carrier;
+    }
+
+    public Carrier getApiPermissionList(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkUserId", cp.hasValue(carrier, "fkUserId"));
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmUserPermission ent = new EntityTmUserPermission();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.setFkUserId(carrier.get("fkUserId"));
+        ent.setPermissionType("api");
+        carrier = EntityManager.select(ent);
+
+        return carrier;
+    }
+
+    public Carrier getBacklogPermissionList(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkUserId", cp.hasValue(carrier, "fkUserId"));
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmUserPermission ent = new EntityTmUserPermission();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.setFkUserId(carrier.get("fkUserId"));
+        ent.setPermissionType("sc");
+        carrier = EntityManager.select(ent);
+
+        return carrier;
+    }
+
+    public Carrier getModulePermissionList(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkUserId", cp.hasValue(carrier, "fkUserId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmUserPermission ent = new EntityTmUserPermission();
+        ent.setFkProjectId("-1");
+        ent.setPermissionType("mdl");
+        ent.setFkUserId(carrier.get("fkUserId"));
+        carrier = EntityManager.select(ent);
+
+        return carrier;
+    }
+
+    public Carrier addModulePermission(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkUserId", cp.hasValue(carrier, "fkUserId"));
+        carrier.addController("relationId", cp.hasValue(carrier, "relationId"));
+        carrier.addController("accessType", cp.hasValue(carrier, "accessType"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmUserPermission ent = new EntityTmUserPermission();
+        ent.setFkProjectId("-1");
+        ent.setFkUserId(carrier.get("fkUserId"));
+        ent.setRelationId(carrier.get("relationId"));
+        ent.setPermissionType("mdl");
+        ent.setEndLimit("0");
+        EntityManager.select(ent);
+
+        if (ent.getId().length() == 0) {
+            ent.setAccessType(carrier.get("accessType"));
+            EntityManager.insert(ent);
+        } else {
+            ent.setAccessType(carrier.get("accessType"));
+            EntityManager.update(ent);
+        }
+
+        return carrier;
+    }
+
     public Carrier showInputTableColumnEntireComponent(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkInputTableId", cp.isKeyExist(carrier, "fkInputTableId"));
@@ -2854,6 +3190,25 @@ public class TmModel {
         return carrier;
     }
 
+    public static Carrier loadApiByProject(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmBacklog ent = new EntityTmBacklog();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.addDistinctField(EntityTmBacklog.ID);
+        ent.addDistinctField(EntityTmBacklog.BACKLOG_NAME);
+        ent.setIsApi("1");
+        ent.addSortBy("backlogName");
+        ent.setSortByAsc(true);
+        carrier = EntityManager.select(ent);
+
+        return carrier;
+    }
+
     public static Carrier loadStoryCardByProject(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
@@ -2865,6 +3220,7 @@ public class TmModel {
         ent.setFkProjectId(carrier.get("fkProjectId"));
         ent.addDistinctField(EntityTmBacklog.ID);
         ent.addDistinctField(EntityTmBacklog.BACKLOG_NAME);
+        ent.setIsApi(CoreLabel.NE + "1");
         ent.addSortBy("backlogName");
         ent.setSortByAsc(true);
         carrier = EntityManager.select(ent);
@@ -4479,7 +4835,7 @@ public class TmModel {
     }
 
     private static String getNextBacklogDescriptionOrderNo(String fkProjectId) throws QException {
-        String res = "1";
+        String res = "11";
 
         if (fkProjectId.trim().length() == 0) {
             return res;
@@ -7227,7 +7583,7 @@ public class TmModel {
     }
 
     private static void insertNewCommentFile(String filename, String id) throws QException {
-        if (filename.trim().length() == 0 || id.trim().length() == 0) {
+        if (filename.trim().length() <= 3 || id.trim().length() == 0) {
             return;
         }
 

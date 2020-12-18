@@ -9,6 +9,14 @@ sortByField
 selectedField
 updatedField
 distinctField
+currentUserField
+currentDateField
+currentTimeField
+isMaximumField
+isMinimumField
+isCountField
+isAverageField
+isSumField
 
 
 var json = initJSON();
@@ -34,8 +42,22 @@ data._table = select olanda table "_table" key ile geri qayidir.
 .sa-onloadclick class  // onclick action for page load componentingde itifade edilecek.sa-onloadclick
 .sa-onloadchange class  // onclick action for page load componentingde itifade edilecek.sa-onloadclick
 
-display:inline;
+sa-item-key -> selectbox -da eger bu key olarsa o zaman, value yerine bu FIELD-i goturecekdir. 
 
+
+.sa-event-relation-trigger-onclick // manual hazirlanmis componentlerden diger core componentlerdeki eventi cagirman ucun
+.sa-event-relation-trigger-onchange // sa-event-relation-trigger-class-id   attributu ile core olan componentin classId-is gosterilir
+.sa-event-relation-trigger-ondblclick
+
+
+class-da @{keyName} olar update edilir. .redirectClass clasinin terkibinde olan.
+
+sa-show-form // show form of manually attached backlogId new UserStory().setGUIComponentButtonGUIModal('',this)
+			 // sa-data-backlogid='' attributu olmalidir
+			 
+			     
+
+var out = be.callApi(apiId, finalRes);
 
 
 

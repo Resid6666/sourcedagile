@@ -304,11 +304,7 @@ function callBugFilterMulti(el) {
 
 function setBugFilterAssignees() {
 
-    var json = {kv: {}};
-    try {
-        json.kv.cookie = getToken();
-    } catch (err) {
-    }
+    var json = initJSON();
     var that = this;
     var data = JSON.stringify(json);
     $.ajax({
@@ -1185,11 +1181,7 @@ function getProjectListIn() {
 function loadAssigneesByProject(projectId) {
 
 
-    var json = {kv: {}};
-    try {
-        json.kv.cookie = getToken();
-    } catch (err) {
-    }
+    var json = initJSON();
     json.kv.fkProjectId = projectId;
     var that = this;
     var data = JSON.stringify(json);
@@ -1238,11 +1230,7 @@ function loadStoryCardByProject(projectId) {
         return;
     }
 
-    var json = {kv: {}};
-    try {
-        json.kv.cookie = getToken();
-    } catch (err) {
-    }
+    var json = initJSON();
     json.kv.fkProjectId = projectId;
     var that = this;
     var data = JSON.stringify(json);

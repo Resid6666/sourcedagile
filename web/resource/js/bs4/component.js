@@ -424,7 +424,7 @@ var Component = {
         return ((comp.pureDescription)
                 && comp.pureDescription !== 'undefined'
                 && comp.pureDescription.includes('fn_(ismandatory)'))
-                ? '<b style="color:red">*</b>' : ""
+                ? '<span style="color:red">*</span>' : ""
     },
     ReplaceCSS: function (arg) {
         try {
@@ -566,10 +566,7 @@ var Component = {
                 if (inputId.length === 0)
                     continue;
 
-                if (global_var.current_modal !== 'loadLivePrototype' &&
-                        pairShowColumn[inputId].trim() === '1') {
-                    continue;
-                }
+
 
                 var inputName = SAInput.GetInputName(inputId);
                 var a = (pairShowColumnName[inputId].trim() === '1')
@@ -615,14 +612,21 @@ var Component = {
                         .attr("onclick", "showInputTableColumnItselfComponent(this,'" + tableId + "','" + inputId + "')")
                         : "";
 
-                tr.append($("<th>")
+
+                var th = $("<th>")
                         .addClass("text-center")
                         .css("min-width", "70px;")
                         .append(a)
                         .append(showComp, ' ')
                         .append(showColumn, ' ')
-                        .append(showColumnName)
-                        );
+                        .append(showColumnName);
+
+                if (global_var.current_modal !== 'loadLivePrototype' &&
+                        pairShowColumn[inputId].trim() === '1') {
+                    th.hide();
+                }
+
+                tr.append(th);
             }
             thead.append(tr);
             return thead;
@@ -707,10 +711,6 @@ var Component = {
                     if (inputId.length === 0)
                         continue;
 
-                    if (global_var.current_modal !== 'loadLivePrototype' &&
-                            pairShowColumn[inputId].trim() === '1') {
-                        continue;
-                    }
 
                     idx++;
                     var val = this.GetTableCellValue(tableId, inputId, j - 1);
@@ -732,16 +732,22 @@ var Component = {
                         val = Component.GetComponentHtmlNew(comp);
                     }
 
-
-
-                    tr.append($("<td>")
+                    var td12 = $("<td>")
                             .css("min-width", "70px")
                             .addClass("component-input-class")
 //                            .attr("sa-tableselectedfield", )
                             .addClass("component-table-input-class")
                             .attr("pdid", inputId)
                             .val(val)
-                            .append(val));
+                            .append(val);
+
+                    if (global_var.current_modal !== 'loadLivePrototype' &&
+                            pairShowColumn[inputId].trim() === '1') {
+                        td12.hide();
+                    }
+
+
+                    tr.append(td12);
                 }
                 tbody.append(tr);
             }

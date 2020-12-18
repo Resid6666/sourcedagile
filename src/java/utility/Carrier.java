@@ -90,20 +90,20 @@ public class Carrier implements Serializable {
         tableSequence.clear();
     }
 
-    public String getEntityFullname() throws QException{
-        String name =  this.getEntityDb()+"_"+this.getEntityName();
+    public String getEntityFullname() throws QException {
+        String name = this.getEntityDb() + "_" + this.getEntityName();
         name = name.toLowerCase();
         return name;
     }
-    
-    private String[] getTrim(String[] arg){
+
+    private String[] getTrim(String[] arg) {
         String[] t = new String[arg.length];
-        for (int i=0;i<arg.length;i++){
-            t[i]=arg[i].trim();
+        for (int i = 0; i < arg.length; i++) {
+            t[i] = arg[i].trim();
         }
         return t;
     }
-    
+
     public void setStartLimit(String startLimit) throws QException {
         this.setValue("startLimit", startLimit);
     }
@@ -138,7 +138,6 @@ public class Carrier implements Serializable {
 
     public String[] getSortByField() throws QException {
         String res[] = this.get("sortByField").split(",");
-
         return res;
     }
 
@@ -147,8 +146,62 @@ public class Carrier implements Serializable {
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
         return res.length > 0;
     }
-    
-     public void setUpdatedField(String fieldName) throws QException {
+
+    public boolean hasSelectedField() throws QException {
+        String ln = this.get("selectedField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+        return res.length > 0;
+    }
+
+    public boolean hasCurrentUserField() throws QException {
+        String ln = this.get("currentUserField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+        return res.length > 0;
+    }
+
+    public boolean hasCurrentDateField() throws QException {
+        String ln = this.get("currentDateField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+        return res.length > 0;
+    }
+
+    public boolean hasCurrentTimeField() throws QException {
+        String ln = this.get("currentTimeField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+        return res.length > 0;
+    }
+
+    public boolean hasIsMaximumField() throws QException {
+        String ln = this.get("isMaximumField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+        return res.length > 0;
+    }
+
+    public boolean hasIsMinimumField() throws QException {
+        String ln = this.get("isMinimumField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+        return res.length > 0;
+    }
+
+    public boolean hasIsCountField() throws QException {
+        String ln = this.get("isCountField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+        return res.length > 0;
+    }
+
+    public boolean hasIsAverageField() throws QException {
+        String ln = this.get("isAverageField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+        return res.length > 0;
+    }
+
+    public boolean hasIsSumField() throws QException {
+        String ln = this.get("isSumField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+        return res.length > 0;
+    }
+
+    public void setUpdatedField(String fieldName) throws QException {
         this.setValue("updatedField", fieldName);
     }
 
@@ -173,13 +226,7 @@ public class Carrier implements Serializable {
 
         return res;
     }
-
-    public boolean hasSelectedField() throws QException {
-        String ln = this.get("selectedField");
-        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-        return res.length > 0;
-    }
-
+ 
     public void setDistinctField(String fieldName) throws QException {
         this.setValue("distinctField", fieldName);
     }
@@ -203,8 +250,8 @@ public class Carrier implements Serializable {
     public String getEntityName() throws QException {
         return this.get("entity");
     }
-    
-     public String getEntityDb() throws QException {
+
+    public String getEntityDb() throws QException {
         return this.get("entityDb");
     }
 
@@ -1940,8 +1987,6 @@ public class Carrier implements Serializable {
                 new String[]{sourceRelatedColName}, "", newColumnName,
                 carrier, false);
     }
-    
-    
 
     public void mergeCarrier(String sourceTablename,
             String sourceRelatedColName, String newColumnName,

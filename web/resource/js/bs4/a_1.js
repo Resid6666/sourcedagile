@@ -28,8 +28,938 @@ var cr_input_cont_attribute_kv = {};
 var cr_project_desc = {};
 var cr_project_desc_by_backlog = {};
 var cr_js_list = {};
+var moduleList = {
+    "loadStoryCard": "Story Card",
+    "loadLivePrototype": "Live Prototype",
+    "loadUserStoryMgmt": "User Story Management"
+};
+
+function addRolePermissionToUser() {
+    var json = initJSON();
+    
+    json.kv.fkRoleId = $('#permission_rolelist').val();
+    json.kv.fkUserId = $('#permission_userlist').val();
+ 
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmAddRolePermissionToUser",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            
+            Toaster.showMessage("Permissions are added User successfully!")
+            $('#permission_projectlist4backlog').change();
+        }
+
+    });
+}
+
+function addRolePermission() {
+    $(".permision_bystorycard_list_user").each(function (e) {
+        var projectId = $('#permission_projectlist4backlog').val();
+        var roleId = $('#permission_rolelist').val();
+        var relId = $(this).attr('id');
+        var relType = 'sc';
+        var exceptInputs = $(this).attr('einputs');
+
+        var accessType = 'n';
+        if ($(this).is(':checked')) {
+            accessType = 'y';
+        }
+
+        var json = initJSON();
+        json.kv.fkProjectId = projectId;
+        json.kv.fkRoleId = roleId;
+        json.kv.relationId = relId;
+        json.kv.permissionType = relType;
+        json.kv.accessType = accessType;
+        json.kv.exceptInputs = exceptInputs;
+        var that = this;
+        var data = JSON.stringify(json);
+        $.ajax({
+            url: urlGl + "api/post/srv/serviceTmAddRolePermission",
+            type: "POST",
+            data: data,
+            contentType: "application/json",
+            crossDomain: true,
+            async: true,
+            success: function (res) {
+                Toaster.showMessage("Permissions are added successfully!")
+//                getPermissionRoleByProject();
+            }
+
+        });
+
+    })
+}
 
 
+function addPermissionRoleModal() {
+    $('#addPermissionRoleModal').modal('show');
+    getPermissionRoleByProject4List();
+}
+
+$(document).on("change", ".permission-role-list-item", function (e) {
+    var id = $(this).attr('data-id');
+    var name = $(this).val();
+    updatePermissionRoleName(id, name);
+})
+
+
+
+function updatePermissionRoleName(roleId, roleName) {
+
+    if (!roleId || !roleName) {
+        return;
+    }
+
+    var json = initJSON();
+    json.kv.id = roleId;
+    json.kv.roleName = roleName;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmUpdatePermissionRole",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: false,
+        success: function (res) {
+            getPermissionRoleByProject();
+        }
+
+    });
+}
+
+
+function deletePermissionList(roleId) {
+
+    if (!roleId) {
+        return;
+    }
+
+    var json = initJSON();
+    json.kv.id = roleId;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmDeletePermissionRole",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: false,
+        success: function (res) {
+            getPermissionRoleByProject();
+            getPermissionRoleByProject4List();
+        }
+
+    });
+}
+
+function getPermissionRoleByProject4List() {
+    var projectId = $('#permission_projectlist4backlog').val();
+    if (!projectId) {
+        return;
+    }
+
+    var json = initJSON();
+    json.kv.fkProjectId = projectId;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetPermissionRoleByProject",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: false,
+        success: function (res) {
+            var el = $('#addPermissionRoleModal_rolelist');
+            el.html('');
+
+            var obj = res.tbl[0].r;
+            for (var i in obj) {
+                var o = obj[i];
+                el.append($('<div class="col-6">')
+                        .append($('<input>')
+                                .addClass("permission-role-list-item")
+                                .css("border", "0px")
+                                .attr('data-id', o.id)
+                                .val(o.roleName))
+                        .append($('<a>')
+                                .attr('href', "#")
+                                .attr('onclick', 'deletePermissionList("' + o.id + '")')
+                                .text('Delete')))
+            }
+        }
+
+    });
+}
+
+
+function addPermissionRoleAction() {
+
+
+    var roleName = $('#addPermissionRoleModal_rolename').val();
+    var projectId = $('#permission_projectlist4backlog').val();
+
+
+    addPermissionRoleDetails(roleName, projectId);
+    getPermissionRoleByProject4List();
+
+
+    $('#addPermissionRoleModal_rolename').val('');
+}
+
+function addPermissionRoleDetails(roleName, projectId) {
+    if (!roleName || !projectId) {
+        return;
+    }
+
+    var json = initJSON();
+    json.kv.fkProjectId = projectId;
+    json.kv.roleName = roleName;
+
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmAddPermissionRole",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: false,
+        success: function (res) {
+            getPermissionRoleByProject();
+        }
+
+    });
+}
+
+function getPermissionRoleByProject() {
+    var projectId = $('#permission_projectlist4backlog').val();
+    if (!projectId) {
+        return;
+    }
+
+    var json = initJSON();
+    json.kv.fkProjectId = projectId;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetPermissionRoleByProject",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: false,
+        success: function (res) {
+            var el = $('#permission_rolelist');
+            el.html('');
+            el.append($('<option>'))
+
+            var obj = res.tbl[0].r;
+            for (var i in obj) {
+                var o = obj[i];
+                el.append($('<option>').val(o.id).text(o.roleName))
+            }
+        }
+
+    });
+}
+
+$(document).on("change", ".permision_inputlistbystorycard", function (e) {
+    var accessType = 'n';
+    if ($(this).is(':checked')) {
+        accessType = 'y';
+    }
+
+    var backlogId = $(this).attr('pid');
+    var inputId = $(this).attr('id');
+
+    if (!backlogId) {
+        return;
+    }
+
+    var json = initJSON();
+    json.kv.fkBacklogId = backlogId;
+    json.kv.fkUserId = $('#permission_userlist').val();
+    json.kv.fkProjectId = $('#permission_projectlist4backlog').val();
+    json.kv.fkInputId = inputId;
+    json.kv.accessType = accessType;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmAddBacklogExceptInputPermissionById",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: false,
+        success: function (res) {
+        }
+
+    });
+})
+
+$(document).on("change", ".permision_byapi_list_user", function (e) {
+    var accessType = 'n';
+    var relationId = $(this).attr('id');
+    if ($(this).is(':checked')) {
+        accessType = 'y';
+    }
+
+
+    var fkUserId = $('#permission_userlist').val();
+    var fkProjectId = $('#permission_projectlist4backlog').val();
+
+    if (!(fkUserId) || !(fkProjectId)) {
+        return;
+    }
+
+    var json = initJSON()
+    json.kv.fkUserId = fkUserId;
+    json.kv.fkProjectId = fkProjectId;
+    json.kv.relationId = relationId;
+    json.kv.accessType = accessType;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmAddApiPermission",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: false,
+        success: function (res) {
+
+        }
+    });
+
+})
+
+$(document).on("change", ".permision_bystorycard_list_user", function (e) {
+    var accessType = 'n';
+    var relationId = $(this).attr('id');
+    if ($(this).is(':checked')) {
+        accessType = 'y';
+    }
+
+    addStoryCardPermission(relationId, accessType);
+})
+
+function addStoryCardPermission(relationId, accessType) {
+    var fkUserId = $('#permission_userlist').val();
+    var fkProjectId = $('#permission_projectlist4backlog').val();
+
+    if (!(fkUserId) || !(fkProjectId)) {
+        return;
+    }
+
+    var json = initJSON()
+    json.kv.fkUserId = fkUserId;
+    json.kv.fkProjectId = fkProjectId;
+    json.kv.relationId = relationId;
+    json.kv.accessType = accessType;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmAddBacklogPermission",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: false,
+        success: function (res) {
+
+        }
+    });
+}
+
+function getBodyOfApiPermissionByUser() {
+    var pid = $('#permission_userlist').val();
+    var projectId = $('#permission_projectlist4api').val();
+    if (pid.trim().length === 0 || projectId.trim().length === 0) {
+        return;
+    }
+
+    $('.permision_byapi_list_user').prop('checked', true)
+
+    var json = initJSON();
+    json.kv.fkUserId = pid;
+    json.kv.fkProjectId = projectId;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetApiPermissionList",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            var obj = res.tbl[0].r;
+            for (var n = 0; n < obj.length; n++) {
+                var o = obj[n];
+                if (o.accessType === 'n') {
+                    $('.permision_byapi_list_user[id="' + o.relationId + '"]').prop("checked", false);
+                }
+            }
+        }
+    });
+}
+
+function getBodyOfBacklogPermissionByUser() {
+    var pid = $('#permission_userlist').val();
+    var projectId = $('#permission_projectlist4backlog').val();
+    if (pid.trim().length === 0 || projectId.trim().length === 0) {
+        return;
+    }
+
+    $('.permision_bystorycard_list_user').prop('checked', true)
+
+    var json = initJSON();
+    json.kv.fkUserId = pid;
+    json.kv.fkProjectId = projectId;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetBacklogPermissionList",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            var obj = res.tbl[0].r;
+            for (var n = 0; n < obj.length; n++) {
+                var o = obj[n];
+                if (o.accessType === 'n') {
+                    $('.permision_bystorycard_list_user[id="' + o.relationId + '"]')
+                            .attr("einputs", o.exceptInputs)
+                            .prop("checked", false);
+                }
+            }
+        }
+    });
+}
+
+
+function addStoryCardInputPermission(el) {
+    $('#backlogInputPermissionModal').modal('show');
+
+
+    var backlogId = $(el).attr('pid');
+
+    if (!backlogId) {
+        return;
+    }
+
+    var json = initJSON();
+    json.kv.fkBacklogId = backlogId;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetInputListByBacklogId",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: false,
+        success: function (res) {
+            var el = $('#permision_byinput_body');
+            el.html('');
+            var obj = res.tbl[0].r;
+            for (var i in obj) {
+                var o = obj[i];
+
+                el.append($('<div>')
+                        .addClass("col-4")
+                        .append($('<input>')
+                                .attr("type", "checkbox")
+                                .attr('id', o.id)
+                                .attr("pid", o.fkBacklogId)
+                                .attr("checked", true)
+                                .val(o.id)
+                                .addClass("permision_inputlistbystorycard"))
+                        .append(" ")
+                        .append($('<span>').text(o.inputName))
+                        )
+            }
+
+            getInputPermissionInfoByStoryCard(backlogId);
+        }
+    });
+}
+
+function getInputPermissionInfoByStoryCard(backlogId) {
+
+    if (!backlogId) {
+        return;
+    }
+
+    var json = initJSON();
+    json.kv.fkBacklogId = backlogId;
+    json.kv.fkUserId = $('#permission_userlist').val();
+    json.kv.fkProjectId = $('#permission_projectlist4backlog').val();
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetBacklogPermissionById",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: false,
+        success: function (res) {
+            var el = $('#permision_byinput_body');
+            var obj = res.kv.exceptInputs.split(',');
+            for (var i in obj) {
+                var id = obj[i];
+                if (!id)
+                    continue;
+                el.find(".permision_inputlistbystorycard[id='" + id + "']").first().prop("checked", false);
+            }
+        }
+    });
+}
+
+$(document).on("change", "#permission_projectlist4api", function (e) {
+
+    var projectId = $(this).val();
+
+    if (!projectId) {
+        return;
+    }
+
+    var json = initJSON();
+    json.kv.fkProjectId = projectId;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmLoadApiByProject",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: false,
+        success: function (res) {
+            var el = $('#permision_byapi_body');
+            el.html('');
+            var obj = res.tbl[0].r;
+            for (var i in obj) {
+                var o = obj[i];
+
+
+
+                el.append($('<div>')
+                        .addClass("col-4")
+                        .append($('<input>')
+                                .attr("type", "checkbox")
+                                .attr('id', o.id)
+                                .val(o.id)
+                                .addClass("permision_byapi_list_user"))
+                        .append(" ")
+                        .append($('<span>').text(o.backlogName))
+
+                        )
+            }
+            getBodyOfApiPermissionByUser();
+        }
+
+    });
+
+})
+
+
+$(document).on("change", "#permission_projectlist4backlog", function (e) {
+
+    var projectId = $(this).val();
+
+    if (!projectId) {
+        return;
+    }
+
+    var json = initJSON();
+    json.kv.fkProjectId = projectId;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmLoadStoryCardByProject",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: false,
+        success: function (res) {
+            var el = $('#permision_bystorycard_body');
+            el.html('');
+            var obj = res.tbl[0].r;
+            for (var i in obj) {
+                var o = obj[i];
+
+                var inputPermission = $('<i>')
+                        .addClass('fa fa-adjust')
+                        .css('font-size', '10px')
+                        .css('color', 'blue')
+                        .attr('pid', o.id)
+                        .css('cursor', 'pointer')
+                        .attr('onclick', 'addStoryCardInputPermission(this)')
+                        .attr('title', 'Input Permission')
+
+                el.append($('<div>')
+                        .addClass("col-4")
+                        .append($('<input>')
+                                .attr("type", "checkbox")
+                                .attr('id', o.id)
+                                .val(o.id)
+                                .addClass("permision_bystorycard_list_user"))
+                        .append(" ")
+                        .append($('<span>').text(o.backlogName))
+                        .append(" ")
+                        .append(inputPermission)
+                        )
+            }
+            getBodyOfBacklogPermissionByUser();
+        }
+
+    });
+
+    getPermissionRoleByProject();
+
+})
+
+$(document).on("change", ".module-list-4-permission", function (e) {
+    var accessType = 'n';
+    var relationId = $(this).attr('data-type');
+    if ($(this).is(':checked')) {
+        accessType = 'y';
+    }
+
+    addModulePermission(relationId, accessType);
+})
+
+function addModulePermission(relationId, accessType) {
+    var fkUserId = $('#permission_userlist').val();
+
+    if (!(fkUserId)) {
+        return;
+    }
+
+    var json = initJSON()
+    json.kv.fkUserId = fkUserId;
+    json.kv.relationId = relationId;
+    json.kv.accessType = accessType;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmAddModulePermission",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: false,
+        success: function (res) {
+
+        }
+    });
+}
+
+function getModuleList4Permission() {
+
+
+    var keys = Object.keys(moduleList);
+    var select = $('#permision_bymodule_body');
+    select.html('');
+    for (var k in keys) {
+        var key = keys[k];
+        var module = moduleList[key];
+        select.append($('<div>')
+                .addClass('col-4')
+                .append($('<input>')
+                        .attr('type', 'checkbox')
+                        .addClass("module-list-4-permission")
+                        .attr('data-type', key))
+                .append(" ")
+                .append($('<span>').text(module))
+                )
+
+    }
+}
+
+
+$(document).on("change", "#permission_userlist", function (e) {
+    var id = $(this).val();
+    getBodyOfPermissionByUser(id);
+    getBodyOfModulePermissionByUser(id);
+})
+
+
+$(document).on("change", ".project-permission-item-by-user", function (e) {
+    var projectId = $(this).attr('id');
+    var userId = $('#permission_userlist').val();
+    var relId = $(this).attr('relId');
+
+    if ($(this).is(":checked")) {
+        var json = initJSON()
+        json.kv.fkUserId = userId;
+        json.kv.fkProjectId = projectId;
+        var that = this;
+        var data = JSON.stringify(json);
+        $.ajax({
+            url: urlGl + "api/post/srv/serviceTmInsertNewProjectPermission",
+            type: "POST",
+            data: data,
+            contentType: "application/json",
+            crossDomain: true,
+            async: false,
+            success: function (res) {
+                getBodyOfPermissionByUser();
+            }
+        });
+    } else if (!$(this).is(":checked")) {
+
+        var json = initJSON();
+        json.kv.id = relId;
+        var that = this;
+        var data = JSON.stringify(json);
+        $.ajax({
+            url: urlGl + "api/post/srv/serviceTmDeleteProjectPermission",
+            type: "POST",
+            data: data,
+            contentType: "application/json",
+            crossDomain: true,
+            async: true,
+            success: function (res) {
+                getBodyOfPermissionByUser();
+            }
+        });
+    }
+})
+
+
+function getBodyOfModulePermissionByUser() {
+    var pid = $('#permission_userlist').val();
+    if (pid.trim().length === 0) {
+        return;
+    }
+
+    $('.module-list-4-permission').prop('checked', true)
+
+    var json = initJSON();
+    json.kv.fkUserId = pid;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetModulePermissionList",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            var obj = res.tbl[0].r;
+            for (var n = 0; n < obj.length; n++) {
+                var o = obj[n];
+                if (o.accessType === 'n') {
+                    $('.module-list-4-permission[data-type="' + o.relationId + '"]').prop("checked", false);
+                }
+            }
+        }
+    });
+}
+
+
+function getBodyOfPermissionByUser() {
+    var pid = $('#permission_userlist').val();
+    if (pid.trim().length === 0) {
+        return;
+    }
+
+    $('.project-permission-item-by-user').prop('checked', false)
+
+    var json = initJSON();
+    json.kv.fkUserId = pid;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetProjectPermissionList",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            var select = $('#permission_projectlist4backlog');
+            var select1 = $('#permission_projectlist4api');
+            select.html('');
+            select1.html('');
+
+            var obj = res.tbl[0].r;
+            for (var n = 0; n < obj.length; n++) {
+                var o = obj[n];
+                $('.project-permission-item-by-user[id="' + o.fkProjectId + '"]').prop("checked", true);
+                $('.project-permission-item-by-user[id="' + o.fkProjectId + '"]').attr("relId", o.id);
+
+
+                if (SACore.Project[o.fkProjectId]) {
+                    select.append($('<option>').val(o.fkProjectId).text(SACore.Project[o.fkProjectId]))
+                    select1.append($('<option>').val(o.fkProjectId).text(SACore.Project[o.fkProjectId]))
+                }
+
+            }
+
+            select.change();
+            select1.change();
+        }
+    });
+}
+
+function getProjectList4Permission() {
+    var json = initJSON();
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetProjectList4Modal",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            var obj = res.tbl[0].r;
+            var select = $('#permision_byproject_body');
+            select.html('');
+            for (var n = 0; n < obj.length; n++) {
+                var o = obj[n];
+                select.append($('<div class="col-4">')
+                        .append($('<input>')
+                                .attr('type', 'checkbox')
+                                .addClass("project-permission-item-by-user")
+                                .attr("id", o.id)
+                                )
+                        .append(' ')
+                        .append($('<span>').text(o.projectName))
+                        );
+            }
+
+        }
+    });
+}
+
+function getUserList4Permission() {
+    var json = initJSON();
+    json.kv.asc = "userPersonName";
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceCrGetUserList",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            var obj = res.tbl[0].r;
+            var select = $('#permission_userlist');
+            select.html('');
+            var f = true;
+            for (var n = 0; n < obj.length; n++) {
+                var o = obj[n];
+                var option = $('<option>').val(o.id).text(o.userPersonName);
+                if (f) {
+                    option.attr("selected", true);
+                    f = false;
+                }
+                select.append(option);
+            }
+
+            select.selectpicker('refresh');
+            select.change();
+
+        },
+        error: function () {
+            Toaster.showError(('somethingww'));
+        }
+    });
+}
+
+
+
+
+function copyApiIdOnJSCode() {
+    var copyText = $('#jsCodeModal_apilist').val();
+    var $temp = $("<input>");
+    $("body").append($temp);
+    $temp.val(copyText).select();
+    document.execCommand("copy");
+    $temp.remove();
+}
+
+function getApiIdOnJSCode(el) {
+    $('#jsCodeModal_apiid').val($(el).val())
+}
+
+function loadApisToComboOnJSCode() {
+    $('#jsCodeModal_apilist').html('');
+    try {
+        var keys = SACore.GetBacklogKeys();
+        for (var i in keys) {
+            if (SACore.GetBacklogDetails(keys[i], "isApi") !== '1') {
+                continue;
+            }
+
+            var backlogId = keys[i];
+            var backlogName = SACore.GetBacklogname(backlogId);
+
+
+            var op = $("<option>")
+                    .val(backlogId)
+                    .append(replaceTags(backlogName));
+
+            $('#jsCodeModal_apilist').append(op);
+        }
+        sortSelectBox('jsCodeModal_apilist');
+    } catch (err) {
+
+    }
+}
+
+
+function GetCurrentProjectStoryCard() {
+    var res = [];
+    var backlogList = Object.keys(SACore.Backlogs);
+    for (var i in backlogList) {
+        var id = backlogList[i];
+        var obj = SACore.Backlogs[id];
+        if (obj.isApi !== '1')
+            res.push(obj);
+    }
+    return res;
+}
+
+function GetCurrentProjectApi() {
+    var res = [];
+    var backlogList = Object.keys(SACore.Backlogs);
+    for (var i in backlogList) {
+        var id = backlogList[i];
+        var obj = SACore.Backlogs[id];
+        if (obj.isApi === '1')
+            res.push(obj);
+    }
+    return res;
+}
+
+$(document).on("click", ".sa-show-form", function (e) {
+    var backlogId = $(this).attr('sa-data-backlogid');
+    new UserStory().setGUIComponentButtonGUIModal(backlogId, this);
+})
 
 $(document).on("click", ".sa-event-relation-trigger-onclick", function (e) {
     var classId = $(this).attr('sa-event-relation-trigger-class-id');
@@ -37,6 +967,10 @@ $(document).on("click", ".sa-event-relation-trigger-onclick", function (e) {
         $('.' + classId).click();
     }
 })
+
+
+
+
 
 $(document).on("change", ".sa-event-relation-trigger-onchange", function (e) {
     var classId = $(this).attr('sa-event-relation-trigger-class-id');
@@ -131,7 +1065,7 @@ function getInputList4Code(el) {
                         .append($('<input>')
                                 .css("border-color", "transparent")
                                 .attr('type', 'text')
-                                .val(obj[i].inputName)
+                                .val(addSpaceToCamelView(obj[i].inputName))
                                 .attr("checked", "true")
                                 .attr('pid', obj[i].id))
                         .append(' < ')
@@ -450,6 +1384,13 @@ function updateAttributeBasedOnData(el, data) {
                 var classVal = $(this).attr('class').replace(regexp, newVal);
                 $(this).attr('class', classVal);
             });
+
+
+            var attrName4Filter = 'sa-data-' + key;
+            $(el).closest('.redirectClass').find('[' + attrName4Filter + ']').each(function () {
+                var newVal = data[key];
+                $(this).attr(attrName4Filter, newVal);
+            });
         } catch (err) {
         }
     }
@@ -467,6 +1408,14 @@ function updateAttributeBasedOnKey(el, key, value) {
 
             var cssBody = cr_gui_classes_by_name[classVal.replace(/./g, '')];
             $(this).attr('style', $(this).attr('style' + ' ' + cssBody));
+
+        });
+
+
+        var attrName = 'sa-data-' + key;
+        $(el).closest('.redirectClass').find('[' + attrName + ']').each(function () {
+            var newVal = value;
+            $(this).attr(attrName, newVal);
 
         });
     } catch (err) {
@@ -527,10 +1476,12 @@ function triggerAPI2Fill(el, apiId, selectField, data) {
             ? out._table.r
             : [];
     $(el).html('');
+    var itemKey = ($(el).attr('sa-item-key')) ? $(el).attr('sa-item-key') : "id";
     for (var i in rows) {
         var row = rows[i];
-        $(el).append($('<option>').val(row.id).text(row[selectField]))
+        $(el).append($('<option>').val(row[itemKey]).text(row[selectField]))
     }
+    sortSelectBoxByElement(el);
 }
 
 function getOutputNamesOfBacklog(storyCardId) {
@@ -1180,12 +2131,14 @@ function getAllJsCodeByProjectDetails(res) {
 function showJSModal(jsId) {
     showJsCodeModal();
     $('.jscode-row-tr[pid="' + jsId + '"]').click();
+
 }
 
 
 function showJsCodeModal() {
     $('#jsCodeModal').modal('show');
     getAllJsCodeByProject();
+    loadApisToComboOnJSCode();
 }
 
 function guiClassModal(el) {
@@ -2387,6 +3340,25 @@ function convertToCamelView(str) {
     return str;
 }
 
+function addSpaceToCamelView(str) {
+    str = str.replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+
+    str = str.toLowerCase().replace(/^[\u00C0-\u1FFF\u2C00-\uD7FF\w]|\s[\u00C0-\u1FFF\u2C00-\uD7FF\w]/g, function (letter) {
+        return letter.toUpperCase();
+    });
+
+    return str;
+}
+
+function firstLetterToLowercase(str) {
+    str = str.toLowerCase().replace(/^[\u00C0-\u1FFF\u2C00-\uD7FF\w]|\s[\u00C0-\u1FFF\u2C00-\uD7FF\w]/g, function (letter) {
+        return letter.toUpperCase();
+    });
+    str = str.replace(/ /g, '');
+    str = str[0].toLowerCase() + str.slice(1);
+    return str;
+}
+
 function firstLetterToLowercase(str) {
     str = str.toLowerCase().replace(/^[\u00C0-\u1FFF\u2C00-\uD7FF\w]|\s[\u00C0-\u1FFF\u2C00-\uD7FF\w]/g, function (letter) {
         return letter.toUpperCase();
@@ -3320,6 +4292,11 @@ function addDatabaseRelation() {
 }
 
 function addDatabaseRelationDetails(id, action, dbId, tableId, fieldId) {
+
+    if (!action) {
+        return;
+    }
+
     var json = initJSON();
     json.kv.id = id;
     json.kv.action = action;
@@ -4718,6 +5695,65 @@ $(document).on('click', '.loadDashboard', function (evt) {
     });
 });
 
+function mergeTableDataWithObject(sourceData, sourceColumn, destinationData, destinationColumn) {
+    try {
+        var destDataKV = {};
+        var destRc = destinationData.r.length;
+        for (var i = 0; i < destRc; i++) {
+            var o = destinationData.r[i];
+            destDataKV[o[destinationColumn]] = o;
+        }
+
+
+        var srcRc = sourceData.r.length;
+        for (var i = 0; i < srcRc; i++) {
+
+            var o = sourceData.r[i];
+            var valDes = '';
+            try {
+                var relCol = o[sourceColumn];
+                valDes = destDataKV[relCol];
+            } catch (err) {
+            }
+            o = $.extend(o, valDes);
+            sourceData[i] = o;
+
+        }
+    } catch (err) {
+    }
+    return sourceData;
+}
+
+function mergeTableDataWithFields(sourceData, sourceColumn, destinationData, destinationColumn, destinationRelCol, finalColumnName) {
+    try {
+        var destDataKV = {};
+        var destRc = destinationData.r.length;
+        for (var i = 0; i < destRc; i++) {
+            var o = destinationData.r[i];
+            destDataKV[o[destinationColumn]] = o;
+        }
+
+
+        var srcRc = sourceData.r.length;
+        for (var i = 0; i < srcRc; i++) {
+
+            var o = sourceData.r[i];
+            var valDes = '';
+
+            try {
+                var relCol = o[sourceColumn];
+                valDes = destDataKV[relCol][destinationRelCol];
+            } catch (err) {
+            }
+
+            o[finalColumnName] = valDes;
+            sourceData[i] = o;
+
+        }
+    } catch (err) {
+    }
+    return sourceData;
+}
 
 function mergeTableData(sourceData, destinationData) {
     try {
@@ -4735,10 +5771,13 @@ function mergeTableData(sourceData, destinationData) {
 
         var srcRc = sourceData.r.length;
         for (var i = 0; i < srcRc; i++) {
-            var o = sourceData.r[i];
-            var id = o[foreignKey];
-            o = $.extend(o, destDataKV[id]);
-            sourceData[i] = o;
+            try {
+                var o = sourceData.r[i];
+                var id = o[foreignKey];
+                o = $.extend(o, destDataKV[id]);
+                sourceData[i] = o;
+            } catch (err) {
+            }
         }
     } catch (err) {
     }
@@ -5005,6 +6044,22 @@ $(document).on('click', '.loadBusinessService', function (evt) {
     });
 });
 
+
+$(document).on('click', '.loadPermission', function (evt) {
+    var f = "perm";
+    global_var.current_modal = "loadPermission";
+    Utility.addParamToUrl('current_modal', global_var.current_modal);
+    $.get("resource/child/" + f + ".html", function (html_string)
+    {
+        $('#mainBodyDivForAll').html(html_string);
+//        new UserStory().clearAll();
+        getUserList4Permission();
+        getProjectList4Permission();
+
+        getModuleList4Permission();
+
+    });
+});
 
 $(document).on('click', '.loadTaskManagement', function (evt) {
     var f = $(this).data('link');
@@ -5372,6 +6427,17 @@ function loadSUSList4InputDetailsNew(res, backlogId) {
         $('#addUserStoryToSectionModal-userstory').change();
     } catch (err) {
     }
+}
+
+function sortSelectBoxByElement(el) {
+    var sel = $(el);
+    var selected = sel.val(); // cache selected value, before reordering
+    var opts_list = sel.find('option');
+    opts_list.sort(function (a, b) {
+        return $(a).text().toLowerCase() > $(b).text().toLowerCase() ? 1 : -1;
+    });
+    sel.html('').append(opts_list);
+    sel.val(selected); // set cached selected value
 }
 
 function sortSelectBox(id) {
@@ -8172,16 +9238,16 @@ function   generateCommentListHtml4Task(res, taskId) {
                                     )
                             .append('&nbsp;&nbsp;&nbsp;')
 
-                            .append($('<a href="#" style="font-size:11px;">')
-                                    .addClass('comment-content-header-name')
-                                    .attr('onclick', "deleteComment('" + obj[i].id + "')")
-                                    .append("Delete"))
+//                            .append($('<a href="#" style="font-size:11px;">')
+//                                    .addClass('comment-content-header-name')
+//                                    .attr('onclick', "deleteComment('" + obj[i].id + "')")
+//                                    .append("Delete"))
                             )
                     .append("<br><br>")
                     .append($("<span>")
                             .css('padding-bottom', "5px")
                             .attr("id", obj[i].id)
-                            .attr("ondblclick", "new UserStory().convertCommentHtml2TextArea(this)")
+//                            .attr("ondblclick", "new UserStory().convertCommentHtml2TextArea(this)")
                             .attr("pval", replaceMainTrustedTags(replaceTags(obj[i].comment)))
                             .append(MapTextAreaHtml(comment)))
                     ;

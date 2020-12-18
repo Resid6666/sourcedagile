@@ -12,6 +12,9 @@ var be = {
             return;
         }
 
+
+        be.ValidateApi(apiId, data);
+
         var actionType = SACore.GetBacklogDetails(apiId, "apiAction");
         if (actionType === 'C') {
             res = this.callInsertAPI(apiId, data);
@@ -551,6 +554,10 @@ var be = {
             ////valicadate the inputs before deyerlerin deyishdirilmesi
             be.ValidateApi(apiId, outputKV);
 
+            //set Required Field From Descriptons
+            
+            
+            
             //add alians to output keys data
             var outputKVFinal = be.ExecAPI.SetKeysAsAlians4Insert(outputKV, INSERT_OBJ_PAIR);
             //call services
@@ -847,6 +854,63 @@ var be = {
             });
             return rs;
         }
+    },
+    AddDbDescriptionField: function (apiId, data) {
+        var err = [];
+        var outputList = SACore.GetBacklogDetails(apiId, "inputIds").split(',');
+        for (var i in outputList) {
+            try {
+                var oid = outputList[i];
+                oid = oid.trim();
+                var inputObj = SAInput.getInputObject(oid);
+                if (inputObj.inputType === 'OUT') {
+                    var inputDescIds = SAInput.getInputDetails(inputObj.id, 'inputDescriptionIds').split(',');
+                    for (var j in inputDescIds) {
+                        try {
+                            var descId = inputDescIds[j].trim();
+                            var descBody = SAInputDesc.GetDetails(descId);
+                            if (descBody.includes('fn_(iscurrentuser)')) {
+                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
+                                   data['currentUserField']=data['currentUserField']+','+ inputObj.inputName;
+                                }
+                            }else if (descBody.includes('fn_(iscurrentdate)')) {
+                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
+                                   data['currentDateField']=data['currentDateField']+','+ inputObj.inputName;
+                                }
+                            }else if (descBody.includes('fn_(iscurrenttime)')) {
+                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
+                                   data['currentTimeField']=data['currentTimeField']+','+ inputObj.inputName;
+                                }
+                            }else if (descBody.includes('fn_(ismaximumvalue)')) {
+                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
+                                   data['isMaximumField']=data['isMaximumField']+','+ inputObj.inputName;
+                                }
+                            }else if (descBody.includes('fn_(isminimumvalue)')) {
+                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
+                                   data['isMinimumField']=data['isMinimumField']+','+ inputObj.inputName;
+                                }
+                            }else if (descBody.includes('fn_(iscountfield)')) {
+                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
+                                   data['isCountField']=data['isCountField']+','+ inputObj.inputName;
+                                }
+                            }else if (descBody.includes('fn_(isaveragevalue)')) {
+                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
+                                   data['isAverageField']=data['isAverageField']+','+ inputObj.inputName;
+                                }
+                            }else if (descBody.includes('fn_(issumfield)')) {
+                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
+                                   data['isSumField']=data['isSumField']+','+ inputObj.inputName;
+                                }
+                            } 
+                        } catch (err1) {
+
+                        }
+                    }
+                }
+            } catch (err) {
+            }
+        }
+        return data;
     },
     ValidateApi: function (apiId, data) {
         var err = [];
