@@ -34,6 +34,11 @@ var moduleList = {
     "loadUserStoryMgmt": "User Story Management"
 };
 
+function upperCaseFirstLetter(str){
+     str = str[0].toUpperCase() + str.slice(1);
+     return str;
+}
+
 function addRolePermissionToUser() {
     var json = initJSON();
     
@@ -1110,8 +1115,10 @@ function addStoryCardInputsAsAction() {
                     SACore.addInputToBacklog(res.kv.fkBacklogId, res.kv.id);
 
                     if ($('#addStoryCardInputsAsModal-actiontype').val() === 'send') {
-                        addSourceOfRelationAsAPI4SendDetails(res.kv.id,
+                         addSourceOfRelationAsAPIDetails(res.kv.id, 'send',
                                 $('#addStoryCardInputsAsModal-backlogid').val(), inputId);
+//                        addSourceOfRelationAsAPI4SendDetails(res.kv.id,
+//                                $('#addStoryCardInputsAsModal-backlogid').val(), inputId);
                     } else if ($('#addStoryCardInputsAsModal-actiontype').val() === 'select') {
                         addSourceOfRelationAsAPIDetails(res.kv.id, 'select',
                                 $('#addStoryCardInputsAsModal-backlogid').val(), inputId);

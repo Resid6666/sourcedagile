@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import label.CoreLabel;
 import module.cr.CrModel;
 import module.cr.entity.EntityCrInspectionMatrix;
+import org.apache.commons.lang.ArrayUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -153,53 +154,132 @@ public class Carrier implements Serializable {
         return res.length > 0;
     }
 
-    public boolean hasCurrentUserField() throws QException {
+    public boolean hasCurrentUserField(String arg) throws QException {
         String ln = this.get("currentUserField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-        return res.length > 0;
+        return ArrayUtils.contains(res,arg);
     }
 
-    public boolean hasCurrentDateField() throws QException {
+    public boolean hasCurrentDateField(String arg) throws QException {
         String ln = this.get("currentDateField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-        return res.length > 0;
+       return ArrayUtils.contains(res,arg);
     }
 
-    public boolean hasCurrentTimeField() throws QException {
+    public boolean hasCurrentTimeField(String arg) throws QException {
         String ln = this.get("currentTimeField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-        return res.length > 0;
+       return ArrayUtils.contains(res,arg);
     }
 
+    public boolean hasIsMaximumField(String arg) throws QException {
+        String ln = this.get("isMaximumField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+       return ArrayUtils.contains(res,arg);
+    }
+
+    public boolean hasIsMinimumField(String arg) throws QException {
+        String ln = this.get("isMinimumField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+       return ArrayUtils.contains(res,arg);
+    }
+
+    public boolean hasIsCountField(String arg) throws QException {
+        String ln = this.get("isCountField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+       return ArrayUtils.contains(res,arg);
+    }
+
+    public boolean hasIsAverageField(String arg) throws QException {
+        String ln = this.get("isAverageField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+       return ArrayUtils.contains(res,arg);
+    }
+
+    public boolean hasIsSumField(String arg) throws QException {
+        String ln = this.get("isSumField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+       return ArrayUtils.contains(res,arg);
+    }
+    
+    
+    
+    
+    
+    
     public boolean hasIsMaximumField() throws QException {
         String ln = this.get("isMaximumField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-        return res.length > 0;
+       return res.length > 0;
     }
 
     public boolean hasIsMinimumField() throws QException {
         String ln = this.get("isMinimumField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-        return res.length > 0;
+       return res.length > 0;
     }
 
     public boolean hasIsCountField() throws QException {
         String ln = this.get("isCountField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-        return res.length > 0;
+       return res.length > 0;
     }
 
     public boolean hasIsAverageField() throws QException {
         String ln = this.get("isAverageField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-        return res.length > 0;
-    }
+       return res.length > 0;
+    } 
 
     public boolean hasIsSumField() throws QException {
         String ln = this.get("isSumField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-        return res.length > 0;
+       return res.length > 0;
     }
+    
+    
+
+    public String[] getIsMaximumField() throws QException {
+        String ln = this.get("isMaximumField");
+        String res[] = (ln.trim().length() > 0) ? 
+                ln.replaceAll("undefined","").replaceAll("null","").split(",")
+                : new String[]{};
+       return    res ;
+    }
+
+    public String[] getIsMinimumField() throws QException {
+        String ln = this.get("isMinimumField");
+        String res[] = (ln.trim().length() > 0) ? 
+                ln.replaceAll("undefined","").replaceAll("null","").split(",")
+                : new String[]{};
+       return res;
+    }
+
+    public String[] getIsCountField() throws QException {
+        String ln = this.get("isCountField");
+        String res[] = (ln.trim().length() > 0) ? 
+                ln.replaceAll("undefined","").replaceAll("null","").split(",")
+                : new String[]{};
+       return res;
+    }
+
+    public String[] getIsAverageField() throws QException {
+        String ln = this.get("isAverageField");
+        String res[] = (ln.trim().length() > 0) ? 
+                ln.replaceAll("undefined","").replaceAll("null","").split(",")
+                : new String[]{};
+       return res;
+    }
+
+    public String[] getIsSumField() throws QException {
+        String ln = this.get("isSumField");
+        String res[] = (ln.trim().length() > 0) ? 
+                ln.replaceAll("undefined","").replaceAll("null","").split(",")
+                : new String[]{};
+       return res;
+    }
+    
+    
 
     public void setUpdatedField(String fieldName) throws QException {
         this.setValue("updatedField", fieldName);

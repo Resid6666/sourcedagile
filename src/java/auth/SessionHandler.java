@@ -6,6 +6,10 @@
 package auth;
 
 import java.security.Key;
+import java.util.logging.Level;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
 import module.cr.entity.EntityCrUser;
 import module.cr.entity.EntityCrCompany;
 import module.cr.entity.EntityCrListItem;
@@ -51,6 +55,32 @@ public class SessionHandler {
             }
         }
     }*/
+    public static String getTokenAsString(HttpHeaders headers, String json) {
+        Carrier c = new Carrier();
+        c.fromJson(json);
+        String cs = "";
+        try {
+            Cookie cookie = headers.getCookies().get("apdtok");
+            cs = cookie.getValue();
+        } catch (Exception e) {
+            try {
+                cs = c.get("cookie").replace("apdtok=", "");
+            } catch (QException ex) {
+            }
+        }
+        return cs;
+    }
+
+    public static boolean checkPermission(HttpHeaders headers, String json) {
+        
+        String token = getTokenAsString(headers, json);
+        if (!SessionHandler.checkSession(token)) {
+            return false;
+        }
+
+        return true;
+    }
+
     public static boolean checkSession(String token) {
         if (token == null || token.equals("")) {
             return false;
@@ -138,7 +168,7 @@ public class SessionHandler {
         user.setUsername(username.trim());
         user.setDbname(company.getCompanyDb());
         user.setUserStatus("A");
-       
+
         EntityManager.select(user);
 //        System.out.println("OK - 5");
 //        System.out.println("passwd db->>" + user.getPassword().trim());

@@ -275,11 +275,11 @@ public class EntityManager {
                 }
             }
 
-            String val = (carrier.hasCurrentUserField())
+            String val = (carrier.hasCurrentUserField(key))
                     ? SessionManager.getCurrentUserId()
-                    : (carrier.hasCurrentDateField())
+                    : (carrier.hasCurrentDateField(key))
                     ? QDate.getCurrentDate()
-                    : (carrier.hasCurrentTimeField())
+                    : (carrier.hasCurrentTimeField(key))
                     ? QDate.getCurrentTime()
                     : carrier.get(key);
             

@@ -79,6 +79,10 @@ public class PostServices {
     @Path("upload")
     @Produces(MediaType.APPLICATION_JSON)
     public Response doPostRequestUpload(@Context HttpHeaders headers, String jsonData) throws Exception {
+        if (!SessionHandler.checkPermission(headers, jsonData)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+
 //        System.out.println("geldi");
         Carrier carrier = new Carrier();
 //        System.out.println("uploaded file json->" + jsonData);
@@ -459,30 +463,28 @@ public class PostServices {
 
     private Response doCallDispatcher(@Context HttpHeaders headers,
             @PathParam("servicename") String servicename, String json) {
+
+        if (!SessionHandler.checkPermission(headers, json)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+
         Connection conn = null;
         try {
+
+            Carrier c = new Carrier();
+            c.setServiceName(servicename);
+            c.fromJson(json);
+            String cs = SessionHandler.getTokenAsString(headers, json);
+
 //            System.out.println("ok 2 - 1"+"  "+servicename);
             QLogger.saveServiceLog(servicename);
-            
 
             conn = new DBConnection().getConnection();
             conn.setAutoCommit(false);
             SessionManager.setConnection(Thread.currentThread().getId(), conn);
 
             long serviceTime = System.currentTimeMillis();
-            
-            Carrier c = new Carrier();
-            c.setServiceName(servicename);
-            c.fromJson(json);
-            String cs = "";
-            try {
-                System.out.println("json srv->" + json);
-                Cookie cookie = headers.getCookies().get("apdtok");
-                cs = cookie.getValue();
-            } catch (Exception e) {
-                cs = c.get("cookie").replace("apdtok=", "");
-            }
-            
+
             EntityCrUser user = null;
 // System.out.println("ok 2 - 5"+"  "+servicename);
             user = SessionHandler.getTokenFromCookie(cs);
@@ -693,6 +695,8 @@ public class PostServices {
     @Compress
     @Produces(value = MediaType.TEXT_HTML)
     public Response getContent(@Context HttpHeaders headers) {
+         
+
         Connection conn = null;
         try {
 //            System.out.println("connectin yaradilir");
@@ -705,6 +709,7 @@ public class PostServices {
 
             Cookie cookie = headers.getCookies().get("apdtok");
             String cs = cookie.getValue();
+
             EntityCrUser user = null;
             long startTime = System.currentTimeMillis();
             user = SessionHandler.getTokenFromCookie(cs);

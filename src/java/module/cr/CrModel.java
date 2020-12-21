@@ -1083,54 +1083,55 @@ public class CrModel {
     }
 
     public static Carrier getEntityLabelList4Cache(Carrier carrier) throws QException {
-        try {
-            EntityCrEntityLabelList ent = new EntityCrEntityLabelList();
-            ent.setDeepWhere(false);
-            ent.addAndStatementField(EntityCrEntityLabelList.FIELD_NAME);
-            ent.addAndStatementField(EntityCrEntityLabelList.DESCRIPTION);
-            Carrier c = EntityManager.select(ent);
-            carrier.removeKey("startLimit");
-            carrier.removeKey("endLimit");
-
-            c.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
-
-            String tn = CoreLabel.RESULT_SET;
-            int rc = c.getTableRowCount(tn);
-            for (int i = 0; i < rc; i++) {
-                String newTN = c.getValue(tn, i, "fieldName").toString()
-                        + c.getValue(tn, i, "lang").toString();
-                String desc = c.getValue(tn, i, "description").toString();
-                String labelType = c.getValue(tn, i, "labelType").toString();
-//                System.out.println("------------------------------------------");
-//                System.out.println("newTN=" + newTN + "; description=" + desc + "; labelType=" + labelType);
-//                System.out.println("-------------------------------------------");
-                c.setValue(newTN, 0, "labelType", labelType);
-                c.setValue(newTN, 0, "description", desc);
-            }
-
-            //get attribute name  
-            Carrier cAttr = new Carrier();
-//            cAttr = CrModel.getAttributeMainList(cAttr);
-//            System.out.println("xml->"+cAttr.toXML());
-            String tn1 = CoreLabel.RESULT_SET;
-            int rc1 = cAttr.getTableRowCount(tn1);
-            for (int i = 0; i < rc1; i++) {
-                String col = cAttr.getValue(tn1, i, "attributeCode").toString();
-                String lang = cAttr.getValue(tn1, i, "lang").toString();
-                String desc = cAttr.getValue(tn1, i, "attributeName").toString();
-                String newTN = col + lang;
-//                System.out.println("newTN=" + newTN + "; description=" + desc);
-                c.setValue(newTN, 0, "labelType", "INTEGER");
-                c.setValue(newTN, 0, "description", desc);
-            }
-//            System.out.println("c.getJson >>>>> "+c.toJson(CoreLabel.RESULT_SET));
-            return c;
-        } catch (Exception ex) {
-            throw new QException(new Object() {
-            }.getClass().getEnclosingClass().getName(),
-                    new Object() {
-                    }.getClass().getEnclosingMethod().getName(), ex);
-        }
+        return carrier;
+//        try {
+//            EntityCrEntityLabelList ent = new EntityCrEntityLabelList();
+//            ent.setDeepWhere(false);
+//            ent.addAndStatementField(EntityCrEntityLabelList.FIELD_NAME);
+//            ent.addAndStatementField(EntityCrEntityLabelList.DESCRIPTION);
+//            Carrier c = EntityManager.select(ent);
+//            carrier.removeKey("startLimit");
+//            carrier.removeKey("endLimit");
+//
+//            c.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
+//
+//            String tn = CoreLabel.RESULT_SET;
+//            int rc = c.getTableRowCount(tn);
+//            for (int i = 0; i < rc; i++) {
+//                String newTN = c.getValue(tn, i, "fieldName").toString()
+//                        + c.getValue(tn, i, "lang").toString();
+//                String desc = c.getValue(tn, i, "description").toString();
+//                String labelType = c.getValue(tn, i, "labelType").toString();
+////                System.out.println("------------------------------------------");
+////                System.out.println("newTN=" + newTN + "; description=" + desc + "; labelType=" + labelType);
+////                System.out.println("-------------------------------------------");
+//                c.setValue(newTN, 0, "labelType", labelType);
+//                c.setValue(newTN, 0, "description", desc);
+//            }
+//
+//            //get attribute name  
+//            Carrier cAttr = new Carrier();
+////            cAttr = CrModel.getAttributeMainList(cAttr);
+////            System.out.println("xml->"+cAttr.toXML());
+//            String tn1 = CoreLabel.RESULT_SET;
+//            int rc1 = cAttr.getTableRowCount(tn1);
+//            for (int i = 0; i < rc1; i++) {
+//                String col = cAttr.getValue(tn1, i, "attributeCode").toString();
+//                String lang = cAttr.getValue(tn1, i, "lang").toString();
+//                String desc = cAttr.getValue(tn1, i, "attributeName").toString();
+//                String newTN = col + lang;
+////                System.out.println("newTN=" + newTN + "; description=" + desc);
+//                c.setValue(newTN, 0, "labelType", "INTEGER");
+//                c.setValue(newTN, 0, "description", desc);
+//            }
+////            System.out.println("c.getJson >>>>> "+c.toJson(CoreLabel.RESULT_SET));
+//            return c;
+//        } catch (Exception ex) {
+//            throw new QException(new Object() {
+//            }.getClass().getEnclosingClass().getName(),
+//                    new Object() {
+//                    }.getClass().getEnclosingMethod().getName(), ex);
+//        }
     }
 
     public static Carrier getListItemByComponentType(Carrier carrier) throws QException {

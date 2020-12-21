@@ -12,8 +12,7 @@ var be = {
             return;
         }
 
-
-        be.ValidateApi(apiId, data);
+        be.ValidateApiOnInput(apiId, data);
 
         var actionType = SACore.GetBacklogDetails(apiId, "apiAction");
         if (actionType === 'C') {
@@ -119,8 +118,13 @@ var be = {
             var innerData = {};
             var SELECT_OBJ = {};
             var SELECT_OBJ_PAIR = {};
+            var SELECT_OBJ_PAIR_GROUP = {};
 
             var outputList = SACore.GetBacklogDetails(storyCardId, "inputIds").split(',');
+
+            //set Required Field From Descriptons
+            var paramData = be.AddDbDescriptionField(storyCardId);
+
             for (var i in outputList) {
                 try {
                     var oid = outputList[i];
@@ -135,7 +139,35 @@ var be = {
                             fieldName = fieldName.replace(/_/g, ' ');
                             fieldName = firstLetterToLowercase(fieldName);
 
-                            SELECT_OBJ_PAIR[fieldName] = inputObj.inputName;
+
+                            var coreName = inputObj.inputName;
+                            var inputName = inputObj.inputName;
+                            if (paramData.isCountField && paramData.isCountField.includes(inputName)) {
+                                var fname = "count" + upperCaseFirstLetter(fieldName);
+                                paramData.isCountField = paramData.isCountField.replace(coreName, fieldName);
+                                SELECT_OBJ_PAIR_GROUP[fname] = inputName;
+                            } else if (paramData.isMaximumField && paramData.isMaximumField.includes(inputName)) {
+                                var fname = "maximum" + upperCaseFirstLetter(fieldName);
+                                paramData.isMaximumField = paramData.isMaximumField.replace(coreName, fieldName);
+                                SELECT_OBJ_PAIR_GROUP[fname] = inputName;
+                            } else if (paramData.isMinimumField && paramData.isMinimumField.includes(inputName)) {
+                                var fname = "minimum" + upperCaseFirstLetter(fieldName);
+                                paramData.isMinimumField = paramData.isMinimumField.replace(coreName, fieldName);
+                                SELECT_OBJ_PAIR_GROUP[fname] = inputName;
+                            } else if (paramData.isAverageField && paramData.isAverageField.includes(inputName)) {
+                                var fname = "average" + upperCaseFirstLetter(fieldName);
+                                paramData.isAverageField = paramData.isAverageField.replace(coreName, fieldName);
+                                SELECT_OBJ_PAIR_GROUP[fname] = inputName;
+                            } else if (paramData.isSumField && paramData.isSumField.includes(inputName)) {
+                                var fname = "sum" + upperCaseFirstLetter(fieldName);
+                                paramData.isSumField = paramData.isSumField.replace(coreName, fieldName);
+                                SELECT_OBJ_PAIR_GROUP[fname] = inputName;
+                            } else {
+                                SELECT_OBJ_PAIR[fieldName] = inputName;
+                            }
+
+
+
 
                             try {
                                 if (!SELECT_OBJ[dbname]) {
@@ -162,6 +194,8 @@ var be = {
             }
             innerData.SELECT_OBJ = SELECT_OBJ;
             innerData.SELECT_OBJ_PAIR = SELECT_OBJ_PAIR;
+            innerData.SELECT_OBJ_PAIR_GROUP = SELECT_OBJ_PAIR_GROUP;
+            innerData.PARAM_DATA = paramData;
             return innerData;
         },
         SetInsertObjects: function (apiId) {
@@ -339,7 +373,10 @@ var be = {
             var res = {};
             var SELECT_OBJ = innerData.SELECT_OBJ;
             var SELECT_OBJ_PAIR = innerData.SELECT_OBJ_PAIR;
+            var SELECT_OBJ_PAIR_GROUP = innerData.SELECT_OBJ_PAIR_GROUP;
 
+//set Required Field From Descriptons
+            var paramData = innerData.PARAM_DATA;
 
             var inputList = be.ExecAPI.GetInputsByAPI(apiId);
             var inputKV = be.ExecAPI.SetInputValuesOnStoryCard(inputList, data);
@@ -354,6 +391,12 @@ var be = {
             ////valicadate the inputs before deyerlerin deyishdirilmesi
             be.ValidateApi(apiId, inputKV);
 
+
+
+
+            inputKV = $.extend(inputKV, paramData);
+
+
             //////////////////////
 
             var syncType = (SACore.GetBacklogDetails(apiId, 'apiSyncRequest'));
@@ -366,7 +409,8 @@ var be = {
                 var tableList = Object.keys(SELECT_OBJ[dbName]);
                 for (var j in tableList) {
                     var tableName = tableList[j];
-                    var fieldList = SELECT_OBJ[dbName][tableName];
+//                    var fieldList = SELECT_OBJ[dbName][tableName];
+                    var fieldList = Object.keys(SELECT_OBJ_PAIR);
                     var ln = "";
                     for (var k = 0; k < fieldList.length; k++) {
                         var fieldName = fieldList[k];
@@ -382,8 +426,11 @@ var be = {
                     json.kv.selectedField = ln;
                     try {
                         var output = be.ExecAPI.CallSelectService(json, isAsync);
+                        var out1 = {};
                         var out = {};
                         out = be.ExecAPI.SetKeysAsAlians4Select(output.kv, SELECT_OBJ_PAIR);
+                        out1 = be.ExecAPI.SetKeysAsAlians4Select(output.kv, SELECT_OBJ_PAIR_GROUP);
+                        out = $.extend(out, out1);
                         try {
 
                             var rc = (output.tbl[0].r && output.tbl[0].r.length > 0)
@@ -394,6 +441,8 @@ var be = {
                             for (var k = 0; k < rc; k++) {
                                 var kv1 = output.tbl[0].r[k];
                                 var kv2 = be.ExecAPI.SetKeysAsAlians4Select(kv1, SELECT_OBJ_PAIR);
+                                var kv3 = be.ExecAPI.SetKeysAsAlians4Select(kv1, SELECT_OBJ_PAIR_GROUP);
+                                kv2 = $.extend(kv2, kv3);
                                 rsOut.push(kv2)
                             }
                             output.tbl[0].r = rsOut;
@@ -555,11 +604,13 @@ var be = {
             be.ValidateApi(apiId, outputKV);
 
             //set Required Field From Descriptons
-            
-            
-            
+            var paramData = be.AddDbDescriptionField4InsertUpdate(apiId, INSERT_OBJ_PAIR);
+
+
             //add alians to output keys data
             var outputKVFinal = be.ExecAPI.SetKeysAsAlians4Insert(outputKV, INSERT_OBJ_PAIR);
+
+            outputKVFinal = $.extend(outputKVFinal, paramData);
             //call services
             var resEndup = be.ExecAPI.CallInsertServicesEndup(outputKVFinal, INSERT_OBJ, apiId);
 
@@ -637,10 +688,16 @@ var be = {
             //////////////////////
             ////valicadate the inputs before deyerlerin deyishdirilmesi
             be.ValidateApi(apiId, outputKV);
+
+
+            //set Required Field From Descriptons
+            var paramData = be.AddDbDescriptionField(apiId);
+
             //////////////////////
             var outputKVFinal = be.ExecAPI.SetKeysAsAlians4Update(outputKV, UPDATE_OBJ_PAIR);
-
             var updatedField = this.ConvertArrayToStringLine(Object.keys(outputKVFinal));
+
+            outputKVFinal = $.extend(outputKVFinal, paramData);
 
             var syncType = (SACore.GetBacklogDetails(apiId, 'apiSyncRequest'));
             var isAsync = (syncType === 'sync') ? true : false;
@@ -855,8 +912,8 @@ var be = {
             return rs;
         }
     },
-    AddDbDescriptionField: function (apiId, data) {
-        var err = [];
+    AddDbDescriptionField: function (apiId) {
+        var data = {};
         var outputList = SACore.GetBacklogDetails(apiId, "inputIds").split(',');
         for (var i in outputList) {
             try {
@@ -870,38 +927,67 @@ var be = {
                             var descId = inputDescIds[j].trim();
                             var descBody = SAInputDesc.GetDetails(descId);
                             if (descBody.includes('fn_(iscurrentuser)')) {
-                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
-                                   data['currentUserField']=data['currentUserField']+','+ inputObj.inputName;
-                                }
-                            }else if (descBody.includes('fn_(iscurrentdate)')) {
-                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
-                                   data['currentDateField']=data['currentDateField']+','+ inputObj.inputName;
-                                }
-                            }else if (descBody.includes('fn_(iscurrenttime)')) {
-                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
-                                   data['currentTimeField']=data['currentTimeField']+','+ inputObj.inputName;
-                                }
-                            }else if (descBody.includes('fn_(ismaximumvalue)')) {
-                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
-                                   data['isMaximumField']=data['isMaximumField']+','+ inputObj.inputName;
-                                }
-                            }else if (descBody.includes('fn_(isminimumvalue)')) {
-                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
-                                   data['isMinimumField']=data['isMinimumField']+','+ inputObj.inputName;
-                                }
-                            }else if (descBody.includes('fn_(iscountfield)')) {
-                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
-                                   data['isCountField']=data['isCountField']+','+ inputObj.inputName;
-                                }
-                            }else if (descBody.includes('fn_(isaveragevalue)')) {
-                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
-                                   data['isAverageField']=data['isAverageField']+','+ inputObj.inputName;
-                                }
-                            }else if (descBody.includes('fn_(issumfield)')) {
-                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
-                                   data['isSumField']=data['isSumField']+','+ inputObj.inputName;
-                                }
-                            } 
+                                data['currentUserField'] = data['currentUserField'] + ',' + inputObj.inputName;
+                            } else if (descBody.includes('fn_(iscurrentdate)')) {
+                                data['currentDateField'] = data['currentDateField'] + ',' + inputObj.inputName;
+                            } else if (descBody.includes('fn_(iscurrenttime)')) {
+                                data['currentTimeField'] = data['currentTimeField'] + ',' + inputObj.inputName;
+                            } else if (descBody.includes('fn_(ismaximumvalue)')) {
+                                data['isMaximumField'] = data['isMaximumField'] + ',' + inputObj.inputName;
+                            } else if (descBody.includes('fn_(isminimumvalue)')) {
+                                data['isMinimumField'] = data['isMinimumField'] + ',' + inputObj.inputName;
+                            } else if (descBody.includes('fn_(isrowcount)')) {
+                                data['isCountField'] = data['isCountField'] + ',' + inputObj.inputName;
+                            } else if (descBody.includes('fn_(isaveragevalue)')) {
+                                data['isAverageField'] = data['isAverageField'] + ',' + inputObj.inputName;
+                            } else if (descBody.includes('fn_(issummary)')) {
+                                data['isSumField'] = data['isSumField'] + ',' + inputObj.inputName;
+                            }
+                        } catch (err1) {
+
+                        }
+                    }
+                }
+            } catch (err) {
+            }
+        }
+        return data;
+    },
+    AddDbDescriptionField4InsertUpdate: function (apiId, pairData) {
+        var data = {};
+        var outputList = SACore.GetBacklogDetails(apiId, "inputIds").split(',');
+        for (var i in outputList) {
+            try {
+                var oid = outputList[i];
+                oid = oid.trim();
+                var inputObj = SAInput.getInputObject(oid);
+                if (inputObj.inputType === 'OUT') {
+                    var inputDescIds = SAInput.getInputDetails(inputObj.id, 'inputDescriptionIds').split(',');
+                    for (var j in inputDescIds) {
+                        try {
+                            var descId = inputDescIds[j].trim();
+                            var descBody = SAInputDesc.GetDetails(descId);
+                            var inputName = (pairData[inputObj.inputName])
+                                    ? pairData[inputObj.inputName]
+                                    : inputObj.inputName;
+
+                            if (descBody.includes('fn_(iscurrentuser)')) {
+                                data['currentUserField'] = data['currentUserField'] + ',' + inputName;
+                            } else if (descBody.includes('fn_(iscurrentdate)')) {
+                                data['currentDateField'] = data['currentDateField'] + ',' + inputName;
+                            } else if (descBody.includes('fn_(iscurrenttime)')) {
+                                data['currentTimeField'] = data['currentTimeField'] + ',' + inputName;
+                            } else if (descBody.includes('fn_(ismaximumvalue)')) {
+                                data['isMaximumField'] = data['isMaximumField'] + ',' + inputName;
+                            } else if (descBody.includes('fn_(isminimumvalue)')) {
+                                data['isMinimumField'] = data['isMinimumField'] + ',' + inputName;
+                            } else if (descBody.includes('fn_(isrowcount)')) {
+                                data['isCountField'] = data['isCountField'] + ',' + inputName;
+                            } else if (descBody.includes('fn_(isaveragevalue)')) {
+                                data['isAverageField'] = data['isAverageField'] + ',' + inputName;
+                            } else if (descBody.includes('fn_(issummary)')) {
+                                data['isSumField'] = data['isSumField'] + ',' + inputName;
+                            }
                         } catch (err1) {
 
                         }
@@ -921,6 +1007,39 @@ var be = {
                 oid = oid.trim();
                 var inputObj = SAInput.getInputObject(oid);
                 if (inputObj.inputType === 'OUT') {
+                    var inputDescIds = SAInput.getInputDetails(inputObj.id, 'inputDescriptionIds').split(',');
+                    for (var j in inputDescIds) {
+                        try {
+                            var descId = inputDescIds[j].trim();
+                            var descBody = SAInputDesc.GetDetails(descId);
+                            if (descBody.includes('fn_(ismandatory)')) {
+                                if (!(data[inputObj.inputName] && data[inputObj.inputName].trim().length > 0)) {
+                                    var kv = {};
+                                    kv.code = inputObj.inputName;
+                                    kv.val = 'Value is not entered!'
+                                    err.push(kv);
+                                }
+                            }
+                        } catch (err1) {
+
+                        }
+                    }
+                }
+            } catch (err) {
+            }
+        }
+        be.AJAXCallFeedback(err);
+        return err;
+    },
+     ValidateApiOnInput: function (apiId, data) {
+        var err = [];
+        var outputList = SACore.GetBacklogDetails(apiId, "inputIds").split(',');
+        for (var i in outputList) {
+            try {
+                var oid = outputList[i];
+                oid = oid.trim();
+                var inputObj = SAInput.getInputObject(oid);
+                if (inputObj.inputType === 'IN') {
                     var inputDescIds = SAInput.getInputDetails(inputObj.id, 'inputDescriptionIds').split(',');
                     for (var j in inputDescIds) {
                         try {

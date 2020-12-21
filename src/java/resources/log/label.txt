@@ -218,3 +218,4 @@ Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ g
 Regression	Regression	AZE
 Müayin? g?lir nisb?ti (t?yinat? gönd?r?n)	Müayin?_ g?lir_ nisb?ti_ _(t?yinat?_ gönd?r?n_)	AZE
 currentPasswordIsNotCorrect	current_Password_Is_Not_Correct	ENG
+mailActivationSubject	mail_Activation_Subject	ENG

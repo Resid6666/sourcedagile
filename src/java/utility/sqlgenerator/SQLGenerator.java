@@ -206,8 +206,12 @@ public class SQLGenerator {
 //        } else if (coreEnt.hasIncludedField()) {
 //            st = selectFieldNameGeneratorByIncludedFileds(coreEnt, addEntityNameToAS);
         } else {
-            st = selectFieldNameGeneratorByMethodnames(crin, methods);
+            st = (crin.hasIsCountField() || crin.hasIsMaximumField() || crin.hasIsMinimumField()
+                    || crin.hasIsSumField() || crin.hasIsAverageField())
+                    ? ""
+                    : selectFieldNameGeneratorByMethodnames(crin, methods);
         }
+
         return st;
     }
 
@@ -328,6 +332,54 @@ public class SQLGenerator {
         return st.substring(1, st.length() - SEPERATOR_COMMA.length() - 1);
     }
 
+    private static String addOperationPartToSelect(Carrier crin) throws QException {
+        String res = "";
+
+        String countField[] = crin.getIsCountField();
+        for (int i = 0; i < countField.length; i++) {
+            String field = countField[i].trim();
+            if (field.length() > 0) {
+                res += ", COUNT(" + field + ") as COUNT_" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH);
+            }
+        }
+
+        String maxield[] = crin.getIsMaximumField();
+        for (int i = 0; i < maxield.length; i++) {
+            String field = maxield[i].trim();
+            if (field.length() > 0) {
+                res += ", MAX(" + field + ") as MAXIMUM_" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH);
+            }
+        }
+
+        String minField[] = crin.getIsMinimumField();
+        for (int i = 0; i < minField.length; i++) {
+            String field = minField[i].trim();
+            if (field.length() > 0) {
+                res += ", MIN(" + field + ") as MINIMUM_" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH);
+            }
+        }
+
+        String avgField[] = crin.getIsAverageField();
+        for (int i = 0; i < avgField.length; i++) {
+            String field = avgField[i].trim();
+            if (field.length() > 0) {
+                res += ", AVG(" + field + ") as AVERAGE_" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH);
+            }
+        }
+
+        String sumField[] = crin.getIsSumField();
+        for (int i = 0; i < sumField.length; i++) {
+            String field = sumField[i].trim();
+            if (field.length() > 0) {
+                res += ", SUM(" + field + ") as SUM_" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH);
+            }
+        }
+
+        res = (res.length() > 1) ? res.substring(1, res.length()) : res;
+
+        return res;
+    }
+
     private static String selectFieldNameGeneratorByCustom(CoreEntity coreEnt, boolean addEntityNameToAS) {
         String tablename = coreEnt.toDBTableName();
         String st = SPACE;
@@ -405,7 +457,7 @@ public class SQLGenerator {
         }
     }
 
-    public static String getTableNameBasedOnEntity(String tableName,Carrier crin) throws QException {
+    public static String getTableNameBasedOnEntity(String tableName, Carrier crin) throws QException {
 
         String dbname = SessionManager.getCurrentDomain();
         tableName = dbname + "." + tableName;
@@ -646,18 +698,34 @@ public class SQLGenerator {
         return selectGenerator(coreEnt, databaseNumber, methodNames, values, valueArr, withLimit, false);
     }
 
-    public static String selectGenerator(String entityFullname,Carrier crin, String[] methodNames, String[] values, ArrayList valueArr) throws QException, Exception {
+    public static String selectGenerator(String entityFullname, Carrier crin, String[] methodNames, String[] values, ArrayList valueArr) throws QException, Exception {
         String selectSql = "";
 
         selectSql = "SELECT ";
         selectSql += crin.hasDistinctField() ? " DISTINCT " : "";
 
-        selectSql += SPACE + generateSelectFieldPartOfSelectSql(crin, methodNames);
+        String coreSelectPart = generateSelectFieldPartOfSelectSql(crin, methodNames);
+        String groupSelectPart = addOperationPartToSelect(crin);
+
+        selectSql += SPACE + coreSelectPart;
+
+        selectSql += (coreSelectPart.length() > 0 && groupSelectPart.length() > 0)
+                ? "," + groupSelectPart
+                : groupSelectPart;
+
         selectSql += SPACE + FROM;
-        selectSql += SPACE + getTableNameBasedOnEntity(entityFullname,crin);
+        selectSql += SPACE + getTableNameBasedOnEntity(entityFullname, crin);
 
         String wherePart = generateWherePartOfSelect(crin, methodNames, values, valueArr);
         selectSql += wherePart;
+
+        //add group by
+        if (crin.hasIsCountField() || crin.hasIsMaximumField() || crin.hasIsMinimumField()
+                || crin.hasIsSumField() || crin.hasIsAverageField()) {
+            if (coreSelectPart.length() > 1) {
+                selectSql += " group by " + coreSelectPart;
+            }
+        }
 
         //add order by
         selectSql += crin.hasSortByField() ? selectSortPartOfSelect(crin) : " ORDER BY ID DESC ";
