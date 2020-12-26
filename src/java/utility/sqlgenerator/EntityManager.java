@@ -908,28 +908,28 @@ public class EntityManager {
             return "Message code is empty";
         }
 
-        EntityCrListItem ent = new EntityCrListItem();
-        ent.setItemCode("errorMessage");
-        ent.setItemKey(messageCode);
-        ent.setLang(lang);
-        EntityManager.select(ent);
+//        EntityCrListItem ent = new EntityCrListItem();
+//        ent.setItemCode("errorMessage");
+//        ent.setItemKey(messageCode);
+//        ent.setLang(lang);
+//        EntityManager.select(ent);
 
-        if (ent.getItemValue().trim().equals("")) {
-            EntityCrListItem ent1 = new EntityCrListItem();
-            ent1.setItemCode("errorMessage");
-            ent1.setItemKey(messageCode);
-            ent1.setLang("ENG");
-
-            EntityManager.select(ent1);
-            if (ent1.getItemValue().trim().equals("")) {
+//        if (ent.getItemValue().trim().equals("")) {
+//            EntityCrListItem ent1 = new EntityCrListItem();
+//            ent1.setItemCode("errorMessage");
+//            ent1.setItemKey(messageCode);
+//            ent1.setLang("ENG");
+//
+//            EntityManager.select(ent1);
+//            if (ent1.getItemValue().trim().equals("")) {
                 return "{" + messageCode + "}";
-            } else {
-                return ent1.getItemValue().trim();
-            }
-
-        } else {
-            return ent.getItemValue().trim();
-        }
+//            } else {
+//                return ent1.getItemValue().trim();
+//            }
+//
+//        } else {
+//            return ent.getItemValue().trim();
+//        }
     }
 
     public static String getMessageText(String messageCode) throws QException {

@@ -31,20 +31,121 @@ var cr_js_list = {};
 var moduleList = {
     "loadStoryCard": "Story Card",
     "loadLivePrototype": "Live Prototype",
-    "loadUserStoryMgmt": "User Story Management"
+    "loadUserStoryMgmt": "User Story Management",
+    "loadDashboard": "Dashboard",
+    "loadTaskManagement": "Task Management",
+    "loadBugChange": "Issue Management",
+    "loadTestCase": "Test Case Management",
+    "loadDocEditor": "Document Editor",
+    "loadBusinessCase": "Business Case",
+    "loadBusinessService": "Business Service",
+    "loadSourceActivity": "Sourced-Activity Diagram",
+    "loadEntityDiagram": "Entity Diagram",
+    "loadProject": "Project",
+    "loadUser": "User",
+    "loadTaskType": "Task Type",
+    "loadPermission": "Permission",
+    "loadOldVersion": "Old Version",
 };
+var dgui = {};
 
-function upperCaseFirstLetter(str){
-     str = str[0].toUpperCase() + str.slice(1);
-     return str;
+
+$(document).on('click', '.manualProject', function (evt) {
+    showProgressAlternative();
+
+    try {
+
+        init4Core();
+
+
+
+        var bid = $(this).attr('tid');
+        global_var.current_project_id = $(this).attr("pid");
+
+        global_var.projectToggleWithSync = false;
+
+        new Project().toggleProjectDetails();
+        getAllGuiClassList();
+        getInputClassRelByProject();
+        getInputAttributeByProject();
+        getProjectDescriptionByProject();
+        getJsCodeListByProject();
+        getInputActionRelByProject();
+        getJsCodeByProject();
+
+
+        squeezGUI();
+
+        var body = (dgui[bid]) ? dgui[bid] : new UserStory().genGUIDesignHtmlById(bid);
+        $('#mainBodyDivForAll').html(body);
+        initOnloadActionOnGUIDesign();
+    } catch (ee) {
+    }
+
+    hideProgressAlternative();
+});
+
+function p() {
+    showProgressAlternative();
+
+    try {
+        Utility.setParamOnLoad();
+        init4Core();
+        new Project().loadMainProjectList();
+        init();
+
+        var bid = Utility.getParamFromUrl('bid');
+        global_var.current_project_id = Utility.getParamFromUrl('pid');
+
+        global_var.projectToggleWithSync = false;
+
+        new Project().toggleProjectDetails();
+        getAllGuiClassList();
+        getInputClassRelByProject();
+        getInputAttributeByProject();
+        getProjectDescriptionByProject();
+        getJsCodeListByProject();
+        getInputActionRelByProject();
+        getJsCodeByProject();
+
+
+        squeezGUI();
+
+
+        var body = (dgui[bid]) ? dgui[bid] : new UserStory().genGUIDesignHtmlById(bid);
+        $('#main_body_container').html(body);
+        initOnloadActionOnGUIDesign();
+    } catch (ee) {
+    }
+
+    hideProgressAlternative();
+}
+
+function squeezGUI() {
+    dgui = {};
+    var b = SACore.GetBacklogKeyList();
+    for (var i in b) {
+        var bid = b[i];
+        if (SACore.GetBacklogDetails(bid, 'isApi') === '1') {
+            continue;
+        }
+        var res = SAInput.toJSONByBacklog(bid);
+        var gui = new UserStory().getGUIDesignHTMLPure(res);
+        dgui[bid] = gui;
+    }
+}
+
+function upperCaseFirstLetter(str) {
+    str = str[0].toUpperCase() + str.slice(1);
+    return str;
 }
 
 function addRolePermissionToUser() {
     var json = initJSON();
-    
+
     json.kv.fkRoleId = $('#permission_rolelist').val();
     json.kv.fkUserId = $('#permission_userlist').val();
- 
+
     var that = this;
     var data = JSON.stringify(json);
     $.ajax({
@@ -55,7 +156,7 @@ function addRolePermissionToUser() {
         crossDomain: true,
         async: true,
         success: function (res) {
-            
+
             Toaster.showMessage("Permissions are added User successfully!")
             $('#permission_projectlist4backlog').change();
         }
@@ -826,6 +927,100 @@ function getBodyOfPermissionByUser() {
     });
 }
 
+function changeProjectIconInMenu(el) {
+    var json = initJSON();
+    json.kv.id = $(el).attr('pid');
+    json.kv.icon = $(el).val();
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmChangeProjectIconInMenu",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+        }
+    });
+}
+
+function changeProjectShowInMenu(el) {
+    var json = initJSON();
+    json.kv.id = $(el).attr('pid');
+    json.kv.showValue = $(el).is(":checked") ? "1" : "0";
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmChangeProjectShowInMenu",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+        }
+    });
+}
+
+function addPermissionBacklockListAction() {
+    var projectId = $('#addPermissionBacklockListModal_id').val();
+
+    var json = initJSON();
+    json.kv.id = projectId;
+    json.kv.backlogId = $('#addPermissionBacklockListModal_storycard').val();
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmChangeProjectTriggerStoryCardInMenu",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            $('#addPermissionBacklockListModal').modal('hide');
+            getProjectList4Permission();
+        }
+    });
+}
+
+function showPermissionProjectPinModal(el) {
+    var projectId = $(el).attr('pid');
+    if (!projectId) {
+        return;
+    }
+
+    $('#addPermissionBacklockListModal').modal('show');
+    $('#addPermissionBacklockListModal_id').val(projectId);
+
+    var json = initJSON();
+    json.kv.fkProjectId = projectId;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmLoadStoryCardByProject",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: false,
+        success: function (res) {
+            var el = $('#addPermissionBacklockListModal_storycard');
+            el.html('');
+            var obj = res.tbl[0].r;
+            for (var i in obj) {
+                var o = obj[i];
+                if (o.isApi === '1')
+                    continue;
+
+                el.append($('<option>').val(o.id).text(o.backlogName))
+            }
+            sortSelectBoxByElement(el);
+        }
+    });
+}
+
 function getProjectList4Permission() {
     var json = initJSON();
     var that = this;
@@ -840,7 +1035,14 @@ function getProjectList4Permission() {
         success: function (res) {
             var obj = res.tbl[0].r;
             var select = $('#permision_byproject_body');
+            var div = $('#permision_pinproject_body');
+
+            div.html('')
+                    .append($('<div class="col-5">'))
+                    .append($('<div class="col-4">').append('<b>Trigger Story Card</b><br><br><br>'))
+                    .append($('<div class="col-3">').append("<b>Logo</b>"));
             select.html('');
+
             for (var n = 0; n < obj.length; n++) {
                 var o = obj[n];
                 select.append($('<div class="col-4">')
@@ -852,6 +1054,39 @@ function getProjectList4Permission() {
                         .append(' ')
                         .append($('<span>').text(o.projectName))
                         );
+
+                //load project pin list for tab section
+                var checked = (o.showInMenu === '1') ? "checked" : "nome";
+                div.append($('<div class="col-5">')
+                        .append($('<input>')
+                                .attr("onchange", "changeProjectShowInMenu(this)")
+                                .attr('type', 'checkbox')
+                                .attr(checked, checked)
+                                .addClass("project-pin-item")
+                                .attr("pid", o.id)
+                                )
+                        .append(' ')
+                        .append($('<span>').text(o.projectName))
+                        )
+                        .append($('<div class="col-4">')
+                                .append($('<span>').text(o.backlogName).append(" "))
+                                .append($('<a href="#">')
+                                        .attr('onclick', 'showPermissionProjectPinModal(this)')
+                                        .attr('pid', o.id)
+                                        .text("change"))
+                                )
+                        .append($('<div class="col-3">')
+                                .append($('<input>')
+                                        .attr("onchange", "changeProjectIconInMenu(this)")
+                                        .attr('type', 'text')
+                                        .val(o.menuIcon)
+                                        .addClass('form-control')
+                                        .addClass("project-pin-logo")
+                                        .attr("pid", o.id)
+                                        .attr("id", o.id)
+                                        )
+                                )
+                        ;
             }
 
         }
@@ -1115,7 +1350,7 @@ function addStoryCardInputsAsAction() {
                     SACore.addInputToBacklog(res.kv.fkBacklogId, res.kv.id);
 
                     if ($('#addStoryCardInputsAsModal-actiontype').val() === 'send') {
-                         addSourceOfRelationAsAPIDetails(res.kv.id, 'send',
+                        addSourceOfRelationAsAPIDetails(res.kv.id, 'send',
                                 $('#addStoryCardInputsAsModal-backlogid').val(), inputId);
 //                        addSourceOfRelationAsAPI4SendDetails(res.kv.id,
 //                                $('#addStoryCardInputsAsModal-backlogid').val(), inputId);
@@ -1353,18 +1588,22 @@ function triggerAPI(el, apiId, data) {
     var finalRes = $.extend(initData, res);
     finalRes = LeftMergeOfObjers(finalRes, res);
 
-    var out = be.callApi(apiId, finalRes);
+    var out = be.callApi(apiId, finalRes, el);
 //    if ($(el).attr('sa-triggersetvalue') === '1') {
-    setValueOnCompAfterTriggerApi(el, out);
-    setTableValueOnCompAfterTriggerApi(el, apiId, out, finalRes.startLimit);
-    updateAttributeBasedOnData(el, out);
+
+    triggerAPIAfter(el, apiId, out, finalRes)
 
     //call oncload action
     if (!$(el).hasClass('sa-onloadclick') || $(el).hasClass('sa-onloadchange')) {
         initOnloadActionOnGUIDesign();
     }
 //    }
+}
 
+function triggerAPIAfter(el, apiId, data, finalRes) {
+    setValueOnCompAfterTriggerApi(el, data);
+    setTableValueOnCompAfterTriggerApi(el, apiId, data, finalRes.startLimit);
+    updateAttributeBasedOnData(el, data);
 }
 
 function LeftMergeOfObjers(sourceData, mergedData) {
@@ -1532,8 +1771,6 @@ function clearTableBodyAfterApiCall(el, apiId) {
 function setTableValueOnCompAfterTriggerApi(el, apiId, data, startLimit) {
     try {
 
-        clearTableBodyAfterApiCall(el, apiId);
-
         var rc = (data._table.r && data._table.r.length > 0)
                 ? data._table.r.length
                 : 0;
@@ -1541,6 +1778,10 @@ function setTableValueOnCompAfterTriggerApi(el, apiId, data, startLimit) {
         if (rc === 0) {
             return;
         }
+
+        // for filling table on dinamycally
+        clearTableBodyAfterApiCall(el, apiId);
+
 
         var cols = (data._table.r && data._table.r.length > 0)
                 ? Object.keys(data._table.r[0])
@@ -1573,17 +1814,25 @@ function setTableValueOnCompAfterTriggerApi(el, apiId, data, startLimit) {
             for (var i in cols) {
                 var c = cols[i];
                 var val = data._table.r[(j - 1)][c];
+                var rowId = "";
+
+                try {
+                    var rowId = data._table.r[(j - 1)]['id'];
+                } catch (err) {
+                }
+
                 $(el).closest('.redirectClass').find('[sa-selectedfield*="' + c + '"][row-no="' + j + '"]').each(function () {
                     var fieldList = $(this).attr('sa-selectedfield').split(',');
                     if (fieldList.includes(c)) {
+                        $(this).attr('sa-data-table-row-id', rowId)
                         $(this).val(val);
                         $(this).text(val);
                         updateAttributeBasedOnKey(this, c, val);
                     }
-
                 })
             }
         }
+
 
     } catch (err) {
     }
@@ -5683,7 +5932,6 @@ $(document).on('click', '.loadLivePrototype', function (evt) {
         getGuiClassList();
         getJsCodeByProject();
         getInputActionRelByProject();
-
     });
 });
 $(document).on('click', '.loadDashboard', function (evt) {

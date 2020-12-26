@@ -141,7 +141,7 @@ public class GetServices {
                     //ByteArrayInputStream reader = (ByteArrayInputStream) Thread.currentThread().getContextClassLoader().getResourceAsStream();     
                     //byte[] input = new byte[2048];  
                     java.net.URL uri = Thread.currentThread().getContextClassLoader().getResource("");
-                    String fname = new FileUpload().getUploadPath() + filename;
+                    String fname = getFullname(filename);//new FileUpload().getUploadPath() + filename;
                     System.out.println("fname=" + fname);
                     File file = new File(fname);
 //                    File file = new File("D:\\"+filename);
@@ -168,16 +168,16 @@ public class GetServices {
             final String filename) throws Exception {
 
         StreamingOutput sout = new StreamingOutput() {
-            
+ 
             @Override
             public void write(OutputStream arg0) throws IOException, WebApplicationException {
                 // TODO Auto-generated method stub
-                System.out.println("fname= will be upload started" );
+                System.out.println("fname= will be upload started");
                 BufferedOutputStream bus = new BufferedOutputStream(arg0);
-                System.out.println("fname= will be uploaded" );
+                System.out.println("fname= will be uploaded");
                 try {
                     java.net.URL uri = Thread.currentThread().getContextClassLoader().getResource("");
-                    String fname = new FileUpload().getUploadPath() + filename;
+                    String fname =  getFullname(filename);//new FileUpload().getUploadPath() + filename;
                     System.out.println("fname=" + fname);
                     File file = new File(fname);
 //                    File file = new File("D:\\"+filename);
@@ -208,7 +208,7 @@ public class GetServices {
 
                 try {
                     java.net.URL uri = Thread.currentThread().getContextClassLoader().getResource("");
-                    String fname = new FileUpload().getUploadPath() + filename;
+                    String fname = getFullname(filename);// new FileUpload().getUploadPath() + filename;
                     System.out.println("fname=" + fname);
                     File file = new File(fname);
 //                    File file = new File("D:\\"+filename);
@@ -239,7 +239,7 @@ public class GetServices {
 
                 try {
                     java.net.URL uri = Thread.currentThread().getContextClassLoader().getResource("");
-                    String fname = new FileUpload().getUploadPath() + filename;
+                    String fname =  getFullname(filename);//new FileUpload().getUploadPath() + filename;
                     System.out.println("fname=" + fname);
                     File file = new File(fname);
 //                    File file = new File("D:\\"+filename);
@@ -270,7 +270,7 @@ public class GetServices {
                     //ByteArrayInputStream reader = (ByteArrayInputStream) Thread.currentThread().getContextClassLoader().getResourceAsStream();     
                     //byte[] input = new byte[2048];  
                     java.net.URL uri = Thread.currentThread().getContextClassLoader().getResource("");
-                    String fname = new FileUpload().getUploadPath() + filename;
+                    String fname =  getFullname(filename);//new FileUpload().getUploadPath() + filename;
                     System.out.println("fname=" + fname);
                     File file = new File(fname);
 //                    File file = new File("D:\\"+filename);
@@ -304,7 +304,7 @@ public class GetServices {
                     //ByteArrayInputStream reader = (ByteArrayInputStream) Thread.currentThread().getContextClassLoader().getResourceAsStream();     
                     //byte[] input = new byte[2048];  
                     java.net.URL uri = Thread.currentThread().getContextClassLoader().getResource("");
-                    String fname = new FileUpload().getUploadPathPrivate() + filename;
+                    String fname =  getFullname(filename);//new FileUpload().getUploadPathPrivate() + filename;
 //                    System.out.println("fname="+fname);
                     File file = new File(fname);
 //                    File file = new File("D:\\"+filename);
@@ -348,6 +348,37 @@ public class GetServices {
 
             // asyncResponse.resume(doCallDispatcher(headers, servicename, json));
         });
+    }
+
+    private String getFullname(String filename) {
+        String res = "";
+        try {
+            String domainzad = SessionManager.getCurrentDomain();
+            String downloadPath = FileUpload.getUploadPath() + domainzad + "/";
+            String fname = downloadPath + filename;
+            File f = new File(fname);
+            if (f.exists() && !f.isDirectory()) {
+                return fname;
+            } else {
+                String domainzad1 = "commonzad";
+                String downloadPath1 = FileUpload.getUploadPath() + domainzad1 + "/";
+                String fname1 = downloadPath1 + filename;
+                File f1 = new File(fname1);
+                if (f1.exists() && !f1.isDirectory()) {
+                    return fname1;
+                }
+            }
+        } catch (Exception e) {
+            String domainzad1 = "commonzad";
+            String downloadPath1 = FileUpload.getUploadPath() + domainzad1 + "/";
+            String fname1 = downloadPath1 + filename;
+            File f1 = new File(fname1);
+            if (f1.exists() && !f1.isDirectory()) {
+                return fname1;
+            }
+        }
+        return res;
+
     }
 
     private Response doCallDispatcherNoToken(@Context HttpHeaders headers,

@@ -1194,10 +1194,10 @@ var SACore = {
     GetCurrentBaklogSpentBudget: function () {
         return this.GetBacklogKey(this.GetCurrentBacklogId(), "spentBudget");
     },
-     GetCurrentBaklogApiAction: function () {
+    GetCurrentBaklogApiAction: function () {
         return this.GetBacklogKey(this.GetCurrentBacklogId(), "apiAction");
     },
-     GetCurrentBaklogApiSyncRequest: function () {
+    GetCurrentBaklogApiSyncRequest: function () {
         return this.GetBacklogKey(this.GetCurrentBacklogId(), "apiSyncRequest");
     },
     GetCurrentBaklogShowPrototype: function () {
@@ -1649,19 +1649,7 @@ var SAInput = {
         var ids = SACore.GetInputList(id);
         return ids;
     },
-    toJSON: function () {
-        var json = {"tbl": [{"r": []}]};
-        var keys = this.getInputsByBacklodId();
-        var idx = 0;
-        for (var n = 0; n < keys.length; n++) {
-            var k = keys[n].trim();
-            var o = SAInput.Inputs[k];
-            json.tbl[0].r.push(o);
-            idx++;
-        }
 
-        return json;
-    },
     toJSONWithInputs: function () {
         var json = {"tbl": [{"r": []}]};
 
@@ -1703,6 +1691,19 @@ var SAInput = {
         var json = {"tbl": [{"r": []}]};
 
         var keys = SACore.GetInputList(backlogId);
+        var idx = 0;
+        for (var n = 0; n < keys.length; n++) {
+            var k = keys[n].trim();
+            var o = SAInput.Inputs[k];
+            json.tbl[0].r.push(o);
+            idx++;
+        }
+
+        return json;
+    },
+    toJSON: function () {
+        var json = {"tbl": [{"r": []}]};
+        var keys = this.getInputsByBacklodId();
         var idx = 0;
         for (var n = 0; n < keys.length; n++) {
             var k = keys[n].trim();

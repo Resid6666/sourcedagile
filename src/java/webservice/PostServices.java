@@ -78,7 +78,7 @@ public class PostServices {
     @POST
     @Path("upload")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response doPostRequestUpload(@Context HttpHeaders headers, String jsonData) throws Exception {
+    public static Response doPostRequestUpload(@Context HttpHeaders headers, String jsonData) throws Exception {
         if (!SessionHandler.checkPermission(headers, jsonData)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }

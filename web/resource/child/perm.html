@@ -35,6 +35,13 @@ and open the template in the editor.
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link " 
+                   onclick=""
+                   href="#permision_pinproject" data-toggle="tab" style="font-size: 14px;"> 
+                    Pin Project 
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link  " 
                    onclick=""
                    href="#permision_bymodule" data-toggle="tab" style="font-size: 14px;"> 
@@ -60,6 +67,12 @@ and open the template in the editor.
             <div class="container tab-pane active" id="permision_byproject">
                 <br><br>
                 <div class="row" id="permision_byproject_body">
+
+                </div>
+            </div>
+            <div class="container tab-pane  " id="permision_pinproject">
+                <br><br>
+                <div class="row" id="permision_pinproject_body">
 
                 </div>
             </div>
@@ -94,7 +107,7 @@ and open the template in the editor.
                         </select>
                     </div>
                     <div class="col-3 " style="padding-top:10px;">
-                        
+
                         <a onclick="addRolePermissionToUser()"    style=" font-size:10px;" href="#">Load Permission List</a><br>
                         <a onclick="addRolePermission()" style=" font-size:10px;" href="#">Add To Role Permission</a>
 
@@ -170,6 +183,42 @@ and open the template in the editor.
             </div>
             <div class="modal-footer">
 
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="addPermissionBacklockListModal" tabindex="-1" role="dialog" aria-labelledby=""
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width: 50%;max-width: 50%" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="">Triggered Story Card</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="font-size: 12px;">
+                <div class="row" id="">
+                    <br>
+                    <div class="col-12">
+                        <input type="hidden" id="addPermissionBacklockListModal_id" class="form-control">
+                    </div>
+                    <div class="col-12">
+                        Story Card
+                        <select type="text" id="addPermissionBacklockListModal_storycard" class="form-control">
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="addPermissionBacklockListAction()">
+                    Add
+                </button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>

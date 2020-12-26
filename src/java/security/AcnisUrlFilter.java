@@ -24,7 +24,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utility.CacheUtil;
 import java.util.Enumeration;
+import java.util.logging.Level;
+import module.cr.entity.EntityCrUser;
+import org.jose4j.lang.JoseException;
 import resources.config.Config;
+import utility.SessionManager;
 
 /**
  *
@@ -56,6 +60,20 @@ public class AcnisUrlFilter implements Filter {
                 Cookie cookie = cookies[i];
                 if ("apdtok".equals(cookie.getName())) {
                     token = cookie.getValue();
+                    if (token != null) {
+                        EntityCrUser user = null;
+
+                        try {
+                            user = SessionHandler.getTokenFromCookie(token);
+                        } catch (JoseException ex) {
+                        }
+
+                        SessionManager.setUserName(Thread.currentThread().getId(), user.getUsername());
+                        SessionManager.setLang(Thread.currentThread().getId(), user.selectLang());
+                        SessionManager.setDomain(Thread.currentThread().getId(), user.selectDomain());
+                        SessionManager.setUserId(Thread.currentThread().getId(), user.getId());
+                        SessionManager.setCompanyId(Thread.currentThread().getId(), user.selectCompanyId());
+                    }
                     break;
                 }
             }
@@ -68,18 +86,15 @@ public class AcnisUrlFilter implements Filter {
 //            //for cloud
 ////            token = "eyJhbGciOiJBMTI4S1ciLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0.8CfCKDDkN5bDj_WgmUCxtKfkVe7Dg2kqqyRy6sVRXUed_ZjjZ0z7aA.Nv3dDqtYh2RtnQNwjkZTiQ.RjH9tmSc8KO623BW5nUU9QPv9oNwih7kgMHi30vOdR43SU1Oy7JGLHD8lvgeRDMwkiYWgv-IkZoM8K-DnA492ufzFd7IwNdvAWoze7DR2fEbJfwywZ-3RkwHQogctezvb9GaKSAF17y_Pga5pyBU9IQoTdsSZoa9q7WjlszN2V8.ewgirI-uoJfcQI9rJ1YbNw";
 //        }
-
 //        System.out.println(" ok 3 - 1"+"  "+url);
 //        System.out.println("token=" + token);
-
         //Key test = CacheUtil.getKeyFromCache(token);
         //System.out.println(test);
 //        System.out.println("java.io.tmpdir="+System.getProperty("java.io.tmpdir"));
 //        System.out.println("web service token->>" + token);  
-
-        String urlLink[] = Config.getProperty("url.none.auth.link").split(",");
+//        String urlLink[] = Config.getProperty("url.none.auth.link").split(",");
 //        ArrayUtils.contains(res, arg);
-                
+
         if (url.trim().length() == 0 || url.trim().equals("/tsn/")
                 || url.trim().equals("/tsn1/")
                 || url.trim().equals("/tsn2/") || url.trim().equals("/")) {
@@ -115,7 +130,7 @@ public class AcnisUrlFilter implements Filter {
         } else {
 //             System.out.println("ok 3 - 4"+"  "+url);
 //            System.out.println("Access controled allowed" + res.toString());
-             response.addHeader("Access-Controll-Allow-Origin", "*");
+            response.addHeader("Access-Controll-Allow-Origin", "*");
             response.addHeader("Access-Control-Allow-Methods", "*");
             response.addHeader("Access-Control-Allow-Credentials", "true");
             response.addHeader("Access-Control-Allow-Headers", "Accept");

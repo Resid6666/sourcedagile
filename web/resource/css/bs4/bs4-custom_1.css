@@ -1021,7 +1021,7 @@ a.dropdown-menu-header {
     z-index: 9999;
     background-image: url('../../img/loader.gif');
     background-repeat: no-repeat; 
-    background-color:rgba(255, 255, 255, 0.8);
+    /*background-color:rgba(255, 255, 255, 0.8);*/
     background-position: center;
 }
 

@@ -26,6 +26,22 @@ public class CallDispatcher {
     static String SERVICE = "Service";
     static String DISPATCHER_LABEL = "Dispatcher";
 
+    
+    public static void main(String[] args) {
+        // TODO code application logic here
+        System.out.println("zad shey oldu");
+
+    }
+    
+     public static String callService(String json){
+         Carrier carrier = new Carrier();
+         carrier.fromJson(json);
+         System.out.println(carrier.toXML());
+        
+         
+         return json;
+     }
+    
     public static Response callService(Carrier carrier) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, Exception {
         Cache<String, String> serviceCache = CacheUtil.cacheManager
                 .getCache("serviceCache", String.class, String.class);

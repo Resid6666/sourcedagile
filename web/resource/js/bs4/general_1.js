@@ -1079,7 +1079,7 @@ function replaceTags(arg) {
 }
 
 function init4Core() {
-  
+
 
     $('[data-toggle="tooltip"]').tooltip();
 //    new UserStory().load();
@@ -1090,6 +1090,32 @@ function init4Core() {
     new Project().loadUserList4Combo();
     new Notification().getNotificationCount();
     new Notification().setTime();
+    loadModulePermission();
+}
+
+function loadModulePermission() {
+    var json = initJSON();
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetModulePermissionListByOwn",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            var obj = res.tbl[0].r;
+            for (var n = 0; n < obj.length; n++) {
+                var o = obj[n];
+                if (o.accessType === 'n') {
+                    if (o.relationId === 'loadPermission')
+                        continue;
+                    $('.' + o.relationId).closest('.project-item-zad').remove();
+                }
+            }
+        }
+    });
 }
 
 function add3Dots2Filename(fname) {
@@ -1727,8 +1753,8 @@ function fnExcelReport(tableId)
 }
 
 var global_var = {
-    current_issue_id:"",
-    current_issue_is_hide:"1",
+    current_issue_id: "",
+    current_issue_is_hide: "1",
     projectToggleWithSync: true,
     is_select_from_db_modal_clicked: false,
     active_input_desc_type: "IN",
@@ -1771,7 +1797,7 @@ var global_var = {
     "fileViewerPath": "http://docs.google.com/gview?url=resources/upload/",
     "current_us_submenu": "generalview",
     "current_domain": "",
-    "current_ticker_id":"",
+    "current_ticker_id": "",
     "ipoTable": {},
     "ipoTableVal": {},
     "data_eliminator": ".",

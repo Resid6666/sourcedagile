@@ -6,7 +6,7 @@
 
 var be = {
 
-    callApi: function (apiId, data) {
+    callApi: function (apiId, data,element) {
         var res = {};
         if (SACore.GetBacklogDetails(apiId, "isApi") !== '1') {
             return;
@@ -18,7 +18,7 @@ var be = {
         if (actionType === 'C') {
             res = this.callInsertAPI(apiId, data);
         } else if (actionType === 'R') {
-            res = this.callSelectAPI(apiId, data);
+            res = this.callSelectAPI(apiId, data,element);
         } else if (actionType === 'U') {
             res = this.callUpdateAPI(apiId, data);
         } else if (actionType === 'D') {
@@ -83,7 +83,7 @@ var be = {
         return res;
     },
 
-    callSelectAPI: function (apiId, data) {
+    callSelectAPI: function (apiId, data,element) {
         if (!data) {
             data = {};
         }
@@ -92,7 +92,7 @@ var be = {
         var pureData = be.ExecAPI.SetInputValuesOnStoryCard(inputList, data);
 
         var innerData = this.ExecAPI.SetSelectObjects(apiId);
-        var res = this.ExecAPI.CallSelectServices(apiId, pureData, innerData);
+        var res = this.ExecAPI.CallSelectServices(apiId, pureData, innerData,element);
         return res;
     },
     GetGUIDataByStoryCard: function (storyCardId) {
@@ -369,7 +369,7 @@ var be = {
             innerData.DELETE_OBJ_PAIR = DELETE_OBJ_PAIR;
             return innerData;
         },
-        CallSelectServices: function (apiId, data, innerData) {
+        CallSelectServices: function (apiId, data, innerData,element) {
             var res = {};
             var SELECT_OBJ = innerData.SELECT_OBJ;
             var SELECT_OBJ_PAIR = innerData.SELECT_OBJ_PAIR;
@@ -400,7 +400,7 @@ var be = {
             //////////////////////
 
             var syncType = (SACore.GetBacklogDetails(apiId, 'apiSyncRequest'));
-            var isAsync = (syncType === 'sync') ? true : false;
+            var isAsync = (syncType === 'async') ? true : false;
 
 
             var dbList = Object.keys(SELECT_OBJ);
@@ -425,40 +425,46 @@ var be = {
                     json.kv.entity = tableName;
                     json.kv.selectedField = ln;
                     try {
-                        var output = be.ExecAPI.CallSelectService(json, isAsync);
-                        var out1 = {};
-                        var out = {};
-                        out = be.ExecAPI.SetKeysAsAlians4Select(output.kv, SELECT_OBJ_PAIR);
-                        out1 = be.ExecAPI.SetKeysAsAlians4Select(output.kv, SELECT_OBJ_PAIR_GROUP);
-                        out = $.extend(out, out1);
-                        try {
+                        if (isAsync === false) {
+                            var output = be.ExecAPI.CallSelectService(json, isAsync);
+                            var out1 = {};
+                            var out = {};
+                            out = be.ExecAPI.SetKeysAsAlians4Select(output.kv, SELECT_OBJ_PAIR);
+                            out1 = be.ExecAPI.SetKeysAsAlians4Select(output.kv, SELECT_OBJ_PAIR_GROUP);
+                            out = $.extend(out, out1);
+                            try {
 
-                            var rc = (output.tbl[0].r && output.tbl[0].r.length > 0)
-                                    ? output.tbl[0].r.length
-                                    : 0;
+                                var rc = (output.tbl[0].r && output.tbl[0].r.length > 0)
+                                        ? output.tbl[0].r.length
+                                        : 0;
 
-                            var rsOut = [];
-                            for (var k = 0; k < rc; k++) {
-                                var kv1 = output.tbl[0].r[k];
-                                var kv2 = be.ExecAPI.SetKeysAsAlians4Select(kv1, SELECT_OBJ_PAIR);
-                                var kv3 = be.ExecAPI.SetKeysAsAlians4Select(kv1, SELECT_OBJ_PAIR_GROUP);
-                                kv2 = $.extend(kv2, kv3);
-                                rsOut.push(kv2)
+                                var rsOut = [];
+                                for (var k = 0; k < rc; k++) {
+                                    var kv1 = output.tbl[0].r[k];
+                                    var kv2 = be.ExecAPI.SetKeysAsAlians4Select(kv1, SELECT_OBJ_PAIR);
+                                    var kv3 = be.ExecAPI.SetKeysAsAlians4Select(kv1, SELECT_OBJ_PAIR_GROUP);
+                                    kv2 = $.extend(kv2, kv3);
+                                    rsOut.push(kv2)
+                                }
+                                output.tbl[0].r = rsOut;
+
+                                out['_table'] = output.tbl[0];
+
+
+                            } catch (err) {
                             }
-                            output.tbl[0].r = rsOut;
-
-                            out['_table'] = output.tbl[0];
-                        } catch (err) {
+                            var b = $.extend(res, out);
+                            res = b;
+                            try {
+                                if (output.err.length > 0) {
+                                    be.AJAXCallFeedback(output.err);
+                                }
+                            } catch (e) {
+                            }
+                        } else {
+                            be.ExecAPI.CallSelectServiceAsync(json,SELECT_OBJ_PAIR,SELECT_OBJ_PAIR_GROUP,element,apiId);
                         }
 
-                        var b = $.extend(res, out);
-                        res = b;
-                        try {
-                            if (output.err.length > 0) {
-                                be.AJAXCallFeedback(output.err);
-                            }
-                        } catch (e) {
-                        }
                     } catch (err) {
                         console.log(err)
                     }
@@ -621,7 +627,7 @@ var be = {
         },
         CallInsertServicesEndup: function (outputKVFinal, INSERT_OBJ, apiId) {
             var syncType = (SACore.GetBacklogDetails(apiId, 'apiSyncRequest'));
-            var isAsync = (syncType === 'sync') ? true : false;
+            var isAsync = (syncType === 'async') ? true : false;
 
             var res = {};
             var dbList = Object.keys(INSERT_OBJ);
@@ -700,7 +706,7 @@ var be = {
             outputKVFinal = $.extend(outputKVFinal, paramData);
 
             var syncType = (SACore.GetBacklogDetails(apiId, 'apiSyncRequest'));
-            var isAsync = (syncType === 'sync') ? true : false;
+            var isAsync = (syncType === 'async') ? true : false;
 
             var dbList = Object.keys(UPDATE_OBJ);
             for (var i in dbList) {
@@ -792,7 +798,7 @@ var be = {
             outputKV = t;
 
             var syncType = (SACore.GetBacklogDetails(apiId, 'apiSyncRequest'));
-            var isAsync = (syncType === 'sync') ? true : false;
+            var isAsync = (syncType === 'async') ? true : false;
 
             //////////////////////
             be.ValidateApi(outputKV, outputKVFinal);
@@ -910,7 +916,61 @@ var be = {
                 }
             });
             return rs;
+        },
+        CallSelectServiceAsync: function (dataJSON,SELECT_OBJ_PAIR,SELECT_OBJ_PAIR_GROUP,element,apiId) {
+            var rs = "";
+            var that = this;
+            delete dataJSON._table;
+            var data = JSON.stringify(dataJSON);
+            $.ajax({
+                url: urlGl + "api/post/srv/serviceIoCoreSelect",
+                type: "POST",
+                data: data,
+                contentType: "application/json",
+                crossDomain: true,
+                async: true,
+                success: function (res) {
+                    var output = res;
+                    var out1 = {};
+                    var out = {};
+                    out = be.ExecAPI.SetKeysAsAlians4Select(output.kv, SELECT_OBJ_PAIR);
+                    out1 = be.ExecAPI.SetKeysAsAlians4Select(output.kv, SELECT_OBJ_PAIR_GROUP);
+                    out = $.extend(out, out1);
+                    try {
+
+                        var rc = (output.tbl[0].r && output.tbl[0].r.length > 0)
+                                ? output.tbl[0].r.length
+                                : 0;
+
+                        var rsOut = [];
+                        for (var k = 0; k < rc; k++) {
+                            var kv1 = output.tbl[0].r[k];
+                            var kv2 = be.ExecAPI.SetKeysAsAlians4Select(kv1, SELECT_OBJ_PAIR);
+                            var kv3 = be.ExecAPI.SetKeysAsAlians4Select(kv1, SELECT_OBJ_PAIR_GROUP);
+                            kv2 = $.extend(kv2, kv3);
+                            rsOut.push(kv2)
+                        }
+                        output.tbl[0].r = rsOut;
+
+                        out['_table'] = output.tbl[0];
+                    } catch (err) {
+                    }
+                    var b = $.extend(res, out);
+                    res = b;
+                    try {
+                        if (output.err.length > 0) {
+                            be.AJAXCallFeedback(output.err);
+                        }
+                    } catch (e) {
+                    }
+                     triggerAPIAfter(element, apiId, out)
+                }
+            });
+            return rs;
         }
+    },
+    ShowKVAtGUI:function(){
+        
     },
     AddDbDescriptionField: function (apiId) {
         var data = {};
@@ -1031,7 +1091,7 @@ var be = {
         be.AJAXCallFeedback(err);
         return err;
     },
-     ValidateApiOnInput: function (apiId, data) {
+    ValidateApiOnInput: function (apiId, data) {
         var err = [];
         var outputList = SACore.GetBacklogDetails(apiId, "inputIds").split(',');
         for (var i in outputList) {

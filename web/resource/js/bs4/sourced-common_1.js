@@ -10039,6 +10039,10 @@ class="us-ipo-input-table-tr"  pid="' + id + '" itable="' + replaceTags(Replace2
         if (backlogId.length === 0) {
             return "";
         }
+
+        if (dgui[backlogId]) {
+            return dgui[backlogId]
+        }
         var st = "";
         var json = {kv: {}};
         try {
@@ -10162,12 +10166,12 @@ class="us-ipo-input-table-tr"  pid="' + id + '" itable="' + replaceTags(Replace2
     },
     setGUIComponentButtonGUIModal: function (popupBacklogId, el) {
         closeModal('userstory-gui-input-component-res-sus-analytic');
-        var backlog = this.getBacklogCoreInfoById(popupBacklogId);
-        var canvasCSS = Component.ReplaceCSS(backlog.kv.param1);
+        var backlog = SACore.GetBacklogDetails(popupBacklogId, 'param1')// this.getBacklogCoreInfoById(popupBacklogId);
+        var canvasCSS = Component.ReplaceCSS(SACore.GetBacklogDetails(popupBacklogId, 'param1'));
         var html = this.genGUIDesignHtmlById(popupBacklogId);
         var bcode = $(el).closest('div.redirectClass').attr("bcode");
         bcode = (bcode === undefined) ? "" : bcode;
-        var padeId = generatePopupModalNew(html, canvasCSS, bcode, backlog.kv.id);
+        var padeId = generatePopupModalNew(html, canvasCSS, bcode, popupBacklogId);
         //  click on first tab
         $('.activeTabClass').each(function (e) {
             $(this).click();
@@ -12065,16 +12069,48 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
             },
             success: function (res) {
                 SACore.LoadBacklog(res);
-//                that.load();
-                if (global_var.mainview === 'projectpreview') {
-                    ProjectPreview.showDetails();
-                }
+
                 hideProgress();
             },
             error: function () {
                 hideProgress();
             }
         });
+    },
+    addProjectToMenu: function (res) {
+        var obj = res.tbl[0].r;
+        for (var i in obj) {
+            var o = obj[i];
+            if (o.showInMenu === '1') {
+
+                $('.project-item-zad')
+                        .last()
+                        .after($('<div>')
+                                .addClass("row row-style")
+                                .append($('<a>')
+                                        .addClass('btnplus manualProject openNavhide left-menu-load')
+                                        .attr("title", o.projectName)
+                                        .attr('pid', o.id)
+                                        .attr('tid', o.fkTriggerBacklogId)
+                                        .append($("<i>")
+                                                .addClass((o.menuIcon) ? "fa fa-" + o.menuIcon : "plus"))
+                                        )
+                                .append($('<a>')
+                                        .addClass('  manualProject openNavhide left-menu-load')
+                                        .attr('pid', o.id)
+                                        .attr('tid', o.fkTriggerBacklogId)
+                                        .attr("title", o.projectName)
+                                        .append($("<span>")
+                                                .css("margin-top", "19px")
+                                                .addClass("description-main")
+                                                .addClass("fa fa-" + (o.menuIcon) ? o.menuIcon : "plus")
+                                                .text(o.projectName))
+                                        )
+                                )
+
+            }
+
+        }
     },
     loadInputDetailsOnProjectSelect4Stats: function () {
         var json = {kv: {}};
@@ -19604,8 +19640,6 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
         }
     },
 
-
-    
     sendDataToModal: function (el, id) {
         if (!id) {
             return;
@@ -21669,6 +21703,7 @@ Project.prototype = {
             },
             success: function (res) {
                 that.generateTableBody4MainProject(res);
+                new UserStory().addProjectToMenu(res);
                 hideProgress();
             },
             error: function () {
@@ -22258,6 +22293,7 @@ Project.prototype = {
 function User() {
     this.msg = "";
     this.default_userprofile_name = "userprofile.png"
+
 }
 
 User.prototype = {

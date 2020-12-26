@@ -93,43 +93,21 @@
         <div id="preloader1" class="modal-backdrop fade " style="display: none;z-index:100000;height:10000px"></div>
 
         <div class="container   redirectClass" style="min-width:100%" id='main_body_container'>
-
+            <div class="container" id='mainBodyDivForAll'>
+                <div class="col-12 text-center">
+                    <img src="https://i.pinimg.com/originals/35/b2/5a/35b25ac379b8e771bbd3fd956f4d31bb.gif">
+                </div>
+            </div>
         </div>
-        
-         <div class="container" id='mainBodyDivForAll'>
 
-        </div>
+
     </body>
 </html>
 <script>
 
     $(document).ready(function () {
-        Utility.setParamOnLoad();
-        init4Core();
-        new Project().loadMainProjectList();
-        init();
-    });
-
-
-    $(document).ready(function () {
-        Utility.setParamOnLoad();
-        var bid = Utility.getParamFromUrl('bid');
-        global_var.current_project_id = Utility.getParamFromUrl('pid');
-        
-        global_var.projectToggleWithSync = false;
-
-        new Project().toggleProjectDetails();
-        getAllGuiClassList();
-        getInputClassRelByProject();
-        getInputAttributeByProject();
-        getProjectDescriptionByProject();
-        getJsCodeListByProject();
-          getInputActionRelByProject();
-          getJsCodeByProject();
-
-        var body = new UserStory().genGUIDesignHtmlById(bid);
-        $('#main_body_container').html(body);
-        initOnloadActionOnGUIDesign();
+        $('#main_body_container').html('<div class="col-12 text-center"><img src="resource/img/loader2.gif"></div>')
+        p();
     });
 </script>
 

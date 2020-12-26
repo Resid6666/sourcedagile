@@ -1,5 +1,6 @@
 package utility;
-    
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,11 +23,19 @@ public class FileUpload {
     public synchronized String uploadImage(String base64String, String ext, String filename) throws QException {
 //        System.out.println("1");
         String userId = "111111";
+        String domainzad = "commonzad";
         try {
             userId = SessionManager.getCurrentUserId();
+            domainzad = SessionManager.getCurrentDomain();
         } catch (Exception e) {
-
         }
+        String downloadPath = this.getUploadPath() + "/" + domainzad  + "/";
+        File theDir = new File(downloadPath);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+        
+        
         String id = IdGenerator.getIdType3();
         long num = Long.parseLong(id) + 214521;
         String hexId = QUtility.convertDecimalToHex(num);
@@ -37,7 +46,9 @@ public class FileUpload {
             byte[] imageByteArray = Base64.decodeBase64(base64String);
 
             // Write Image into File system - Make sure you update the path
-            String fname = this.getUploadPath() + fileName;
+            
+            
+            String fname = downloadPath +   fileName;
             imageOutFile = new FileOutputStream(fname);
             imageOutFile.write(imageByteArray);
             imageOutFile.close();
@@ -50,7 +61,7 @@ public class FileUpload {
         return QDate.getCurrentDate() + QDate.getCurrentTime() + "temp_file.png";
     }
 
-    public String getUploadPath() {
+    public static String getUploadPath() {
         String file = "";
         try {
 //            GeneralProperties prop = new GeneralProperties();
@@ -64,14 +75,13 @@ public class FileUpload {
         }
         return file;
     }
-    
-    
+
     public String getUploadPathPrivate() {
         String file = "";
         try {
 //            GeneralProperties prop = new GeneralProperties();
 //            file = prop.coreFullPath() + Config.getUploadPath();
-            file = Config.getUploadPath()+"private/";
+            file = Config.getUploadPath() + "private/";
 //            System.out.println("file uploaded------->" + file);
 
             return file;

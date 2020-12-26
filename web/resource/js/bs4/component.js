@@ -738,6 +738,7 @@ var Component = {
 //                            .attr("sa-tableselectedfield", )
                             .addClass("component-table-input-class")
                             .attr("pdid", inputId)
+//                            .attr("sa-data-table-row-id","")
                             .val(val)
                             .append(val);
 

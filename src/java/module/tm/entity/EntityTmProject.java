@@ -9,10 +9,6 @@ import utility.CoreEntity;
  */
 public class EntityTmProject extends CoreEntity {
 
-    public static String ID = "id";
-    public static String STATUS = "status";
-    public static String INSERT_DATE = "insertDate";
-    public static String MODIFICATION_DATE = "modificationDate";
     public static String PROJECT_NAME = "projectName";
     public static String START_DATE = "startDate";
     public static String END_DATE = "endDate";
@@ -21,7 +17,39 @@ public class EntityTmProject extends CoreEntity {
     public static String DESCRIPTION = "description";
     public static String PROJECT_CODE = "projectCode";
     private String projectCode = "";
+    public static String SHOW_IN_MENU = "showInMenu";
+    private String showInMenu = "";
+    public static String FK_TRIGGER_BACKLOG_ID = "fkTriggerBacklogId";
+    private String fkTriggerBacklogId = "";
+    public static String MENU_ICON = "menuIcon";
+    private String menuIcon = "";
 
+    public String getShowInMenu() {
+        return showInMenu;
+    }
+
+    public void setShowInMenu(String showInMenu) {
+        this.showInMenu = showInMenu;
+    }
+
+    public String getFkTriggerBacklogId() {
+        return fkTriggerBacklogId;
+    }
+
+    public void setFkTriggerBacklogId(String fkTriggerBacklogId) {
+        this.fkTriggerBacklogId = fkTriggerBacklogId;
+    }
+
+    public String getMenuIcon() {
+        return menuIcon;
+    }
+
+    public void setMenuIcon(String menuIcon) {
+        this.menuIcon = menuIcon;
+    }
+
+    
+    
     private String projectName = "";
     private String startDate = "";
     private String endDate = "";

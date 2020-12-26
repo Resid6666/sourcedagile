@@ -190,6 +190,76 @@ public class TmModel {
     /////////////////////////////////////////
     //// type code here
     ///////////////////////////////////////////////
+    public Carrier getModulePermissionListByOwn(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmUserPermission ent = new EntityTmUserPermission();
+        ent.setFkProjectId("-1");
+        ent.setPermissionType("mdl");
+        ent.setFkUserId(SessionManager.getCurrentUserId());
+        carrier = EntityManager.select(ent);
+
+        return carrier;
+    }
+
+    public Carrier changeProjectTriggerStoryCardInMenu(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("id", cp.hasValue(carrier, "id"));
+        carrier.addController("backlogId", cp.hasValue(carrier, "backlogId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmProject entRole = new EntityTmProject();
+        entRole.setId(carrier.get("id"));
+        EntityManager.select(entRole);
+
+        entRole.setFkTriggerBacklogId(carrier.get("backlogId"));
+        EntityManager.update(entRole);
+
+        return carrier;
+    }
+
+    public Carrier changeProjectShowInMenu(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("id", cp.hasValue(carrier, "id"));
+        carrier.addController("showValue", cp.hasValue(carrier, "showValue"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmProject entRole = new EntityTmProject();
+        entRole.setId(carrier.get("id"));
+        EntityManager.select(entRole);
+
+        entRole.setShowInMenu(carrier.get("showValue"));
+        EntityManager.update(entRole);
+
+        return carrier;
+    }
+
+    public Carrier changeProjectIconInMenu(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("id", cp.hasValue(carrier, "id"));
+        carrier.addController("icon", cp.hasValue(carrier, "icon"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmProject entRole = new EntityTmProject();
+        entRole.setId(carrier.get("id"));
+        EntityManager.select(entRole);
+
+        entRole.setMenuIcon(carrier.get("icon"));
+        EntityManager.update(entRole);
+
+        return carrier;
+    }
+
     public Carrier addRolePermissionToUser(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkUserId", cp.hasValue(carrier, "fkUserId"));
@@ -5147,7 +5217,7 @@ public class TmModel {
     }
 
     public static Carrier getProjectList(Carrier carrier) throws QException {
-        EntityTmProjectList ent = new EntityTmProjectList();
+        EntityTmProject ent = new EntityTmProject();
         ent.setId(getMyProjects());
         ent.addSortBy("projectName");
         ent.setSortByAsc(true);
@@ -5386,12 +5456,21 @@ public class TmModel {
     public static Carrier getProjectList4Modal(Carrier carrier) throws QException {
         String proIds = getProlectListByPermission();
 
-        EntityTmProjectList ent = new EntityTmProjectList();
+        EntityTmProject ent = new EntityTmProject();
         ent.setId(proIds);
         ent.setProjectName(carrier.getValue("projectName").toString());
         ent.addSortBy("projectName");
         ent.setSortByAsc(true);
         carrier = EntityManager.select(ent);
+
+        String backlogId = carrier.getValueLine(ent.toTableName(), EntityTmProject.FK_TRIGGER_BACKLOG_ID);
+        if (backlogId.length() > 6) {
+            EntityTmBacklog entBL = new EntityTmBacklog();
+            entBL.setId(backlogId);
+            Carrier cr = EntityManager.select(entBL);
+            carrier.mergeCarrier(ent.toTableName(), new String[]{EntityTmProject.FK_TRIGGER_BACKLOG_ID},
+                    cr, entBL.toTableName(), new String[]{"id"}, new String[]{"backlogName"}, "", true);
+        }
 
         carrier.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
         carrier.addTableRowCount(CoreLabel.RESULT_SET,
@@ -6119,6 +6198,9 @@ public class TmModel {
         ent.setId(carrier.get("id"));
         EntityManager.select(ent);
         EntityManager.setEntityValue(ent, carrier.get("type"), carrier.get("value"));
+        ent.setUpdatedBy(SessionManager.getCurrentUserId());
+        ent.setLastUpdatedDate(QDate.getCurrentDate());
+        ent.setLastUpdatedTime(QDate.getCurrentTime());
         if (ent.getTaskOrderNo().length() == 0) {
             ent.setTaskOrderNo("0");
         }
@@ -9059,9 +9141,10 @@ public class TmModel {
         EntityTmInputTableComp ent = new EntityTmInputTableComp();
         ent.setId(fkInputTableId);
         ent.setFkProjectId(fkProjectId);
-
         ent.setSortByAsc(true);
         Carrier crOut = EntityManager.select(ent);
+        
+        
         String tn = ent.toTableName();
         int rc = crOut.getTableRowCount(tn);
         for (int i = 0; i < rc; i++) {
@@ -9544,18 +9627,17 @@ public class TmModel {
         entTask.setFkBacklogId(backlogId);
         Carrier cr = EntityManager.select(entTask);
 
-        String userIds = entBL.getFkOwnerId() + CoreLabel.IN + entBL.getCreatedBy();
-        userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.FK_ASSIGNEE_ID) + CoreLabel.IN;
-        userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.CREATED_BY);
+        String userIds = entBL.getFkOwnerId() + CoreLabel.IN + entBL.getCreatedBy() + CoreLabel.IN;
+        userIds += entTaskNew.getFkAssigneeId() + CoreLabel.IN
+                + entTaskNew.getCreatedBy() + CoreLabel.IN
+                + entTaskNew.getUpdatedBy() + CoreLabel.IN;
+//        userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.FK_ASSIGNEE_ID) + CoreLabel.IN;
+//        userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.CREATED_BY);
 
         if (userIds.length() > 6) {
             EntityCrUserList entUser = new EntityCrUserList();
             entUser.setId(userIds);
             Carrier crUser = EntityManager.select(entUser);
-
-            String url = Config.getProperty("task.notify.on.create.url");
-            String mailBody = Config.getProperty("task.notify.on.create.body");
-            String mailSubject = Config.getProperty("task.notify.on.create.subject");
 
             String storyCardName = entBL.getBacklogName();
             String taskName = entTaskNew.getTaskName();
@@ -9578,6 +9660,10 @@ public class TmModel {
             String tn = entUser.toTableName();
             int rc = crUser.getTableRowCount(tn);
             for (int i = 0; i < rc; i++) {
+                String url = Config.getProperty("task.notify.on.create.url");
+                String mailBody = Config.getProperty("task.notify.on.create.body");
+                String mailSubject = Config.getProperty("task.notify.on.create.subject");
+
                 EntityManager.mapCarrierToEntity(crUser, tn, i, entUser);
 
                 String userFullname = entUser.getUserPersonName();
@@ -9588,7 +9674,103 @@ public class TmModel {
                 mailSubject = mailSubject.replaceAll("@taskName", taskName)
                         .replaceAll("@assigneeName", assigneeName);
 
-                mailBody = mailBody.replaceAll(" @userFullname", userFullname)
+                mailBody = mailBody.replaceAll("@userFullname", userFullname)
+                        .replaceAll("@taskName", taskName)
+                        .replaceAll("@assigneeName", assigneeName)
+                        .replaceAll("@createdByName", createdByName)
+                        .replaceAll("@storyCard", storyCardName)
+                        .replaceAll("@url", url);
+
+                String email = entUser.getEmail1();
+                if (email.trim().length() > 3) {
+                    MailSender.sendMailInThread(email, mailSubject, mailBody, "");
+                }
+
+            }
+        }
+
+    }
+
+    private static void sendMailNotificationOnDublicate(String taskId, String backlogId) throws QException {
+
+        if (taskId.length() == 0) {
+            return;
+        }
+
+        EntityTmBacklogTask entTaskNew = new EntityTmBacklogTask();
+        entTaskNew.setId(taskId);
+        EntityManager.select(entTaskNew);
+
+        String userIds = "";
+        String backlogName = "";
+        String backlogRelId = "";
+        String fkProjectId = "";
+
+        String assigneeName = "";
+        if (entTaskNew.getFkAssigneeId().length() > 1) {
+            EntityCrUserList entUserAssingee = new EntityCrUserList();
+            entUserAssingee.setId(entTaskNew.getFkAssigneeId());
+            EntityManager.select(entUserAssingee);
+            assigneeName = entUserAssingee.getUserPersonName();
+
+            userIds += entTaskNew.getFkAssigneeId() + CoreLabel.IN;
+        }
+
+        String createdByName = "";
+        if (entTaskNew.getCreatedBy().length() > 1) {
+            EntityCrUserList entUserAssingee = new EntityCrUserList();
+            entUserAssingee.setId(entTaskNew.getCreatedBy());
+            EntityManager.select(entUserAssingee);
+            createdByName = entUserAssingee.getUserPersonName();
+
+            userIds += entTaskNew.getCreatedBy() + CoreLabel.IN;
+        }
+
+        if (backlogId.length() > 4) {
+
+            EntityTmBacklogTask entTask = new EntityTmBacklogTask();
+            entTask.setFkBacklogId(backlogId);
+            Carrier cr = EntityManager.select(entTask);
+
+            EntityTmBacklog entBL = new EntityTmBacklog();
+
+            entBL.setId(backlogId);
+            EntityManager.select(entBL);
+            backlogName = entBL.getBacklogName();
+            backlogRelId = entBL.getId();
+            fkProjectId = entBL.getFkProjectId();
+
+            userIds = entBL.getFkOwnerId() + CoreLabel.IN + entBL.getCreatedBy() + CoreLabel.IN;
+            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.FK_ASSIGNEE_ID) + CoreLabel.IN;
+            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.CREATED_BY);
+        }
+
+        if (userIds.length() > 6) {
+            EntityCrUserList entUser = new EntityCrUserList();
+            entUser.setId(userIds);
+            Carrier crUser = EntityManager.select(entUser);
+
+            String url = Config.getProperty("task.notify.on.create.url");
+            String mailBody = Config.getProperty("task.notify.on.create.body");
+            String mailSubject = Config.getProperty("task.notify.on.create.subject");
+
+            String storyCardName = backlogName;
+            String taskName = entTaskNew.getTaskName();
+
+            String tn = entUser.toTableName();
+            int rc = crUser.getTableRowCount(tn);
+            for (int i = 0; i < rc; i++) {
+                EntityManager.mapCarrierToEntity(crUser, tn, i, entUser);
+
+                String userFullname = entUser.getUserPersonName();
+
+                url = url.replaceAll("@backlogId", backlogRelId)
+                        .replaceAll("@projectId", fkProjectId);
+
+                mailSubject = mailSubject.replaceAll("@taskName", taskName)
+                        .replaceAll("@assigneeName", assigneeName);
+
+                mailBody = mailBody.replaceAll("@userFullname", userFullname)
                         .replaceAll("@taskName", taskName)
                         .replaceAll("@assigneeName", assigneeName)
                         .replaceAll("@createdByName", createdByName)
@@ -9612,16 +9794,15 @@ public class TmModel {
         }
 
         EntityTmBacklogTask entTaskNew = new EntityTmBacklogTask();
+        entTaskNew.setStatus("D");
         entTaskNew.setId(taskId);
         EntityManager.select(entTaskNew);
-
-        String url = "No URL";
-        String mailBody = Config.getProperty("task.notify.on.delete.body");
-        String mailSubject = Config.getProperty("task.notify.on.delete.subject");
 
         String storyCardName = "";
         String taskName = entTaskNew.getTaskName();
         String assigneeName = " No one";
+        String bid = "";
+        String pid = "";
 
         String userIds = "";
         if (entTaskNew.getFkAssigneeId().length() > 1) {
@@ -9634,9 +9815,9 @@ public class TmModel {
         }
 
         String createdByName = "";
-        if (entTaskNew.getCreatedBy().length() > 1) {
+        if (entTaskNew.getUpdatedBy().length() > 1) {
             EntityCrUserList entUserAssingee = new EntityCrUserList();
-            entUserAssingee.setId(entTaskNew.getCreatedBy());
+            entUserAssingee.setId(entTaskNew.getUpdatedBy());
             EntityManager.select(entUserAssingee);
             createdByName = entUserAssingee.getUserPersonName();
 
@@ -9649,18 +9830,17 @@ public class TmModel {
             EntityManager.select(entBL);
 
             storyCardName = entBL.getBacklogName();
+            bid = entBL.getId();
+            pid = entBL.getFkProjectId();
 
             EntityTmBacklogTask entTask = new EntityTmBacklogTask();
             entTask.setFkBacklogId(backlogId);
             Carrier cr = EntityManager.select(entTask);
 
-            userIds += entBL.getFkOwnerId() + CoreLabel.IN + entBL.getCreatedBy();
-            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.FK_ASSIGNEE_ID) + CoreLabel.IN;
-            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.CREATED_BY);
+            userIds += entBL.getFkOwnerId() + CoreLabel.IN + entBL.getCreatedBy() + CoreLabel.IN;
+//            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.FK_ASSIGNEE_ID) + CoreLabel.IN;
+//            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.CREATED_BY);
 
-            url = Config.getProperty("task.notify.on.delete.url");
-            url = url.replaceAll("@backlogId", entBL.getId())
-                    .replaceAll("@projectId", entBL.getFkProjectId());
         }
 
         if (userIds.length() > 6) {
@@ -9671,6 +9851,14 @@ public class TmModel {
             String tn = entUser.toTableName();
             int rc = crUser.getTableRowCount(tn);
             for (int i = 0; i < rc; i++) {
+                String url = "No URL";
+                String mailBody = Config.getProperty("task.notify.on.delete.body");
+                String mailSubject = Config.getProperty("task.notify.on.delete.subject");
+
+                url = Config.getProperty("task.notify.on.delete.url");
+                url = url.replaceAll("@backlogId", bid)
+                        .replaceAll("@projectId", pid);
+
                 EntityManager.mapCarrierToEntity(crUser, tn, i, entUser);
 
                 String userFullname = entUser.getUserPersonName();
@@ -9678,7 +9866,7 @@ public class TmModel {
                 mailSubject = mailSubject.replaceAll("@taskName", taskName)
                         .replaceAll("@assigneeName", assigneeName);
 
-                mailBody = mailBody.replaceAll(" @userFullname", userFullname)
+                mailBody = mailBody.replaceAll("@userFullname", userFullname)
                         .replaceAll("@taskName", taskName)
                         .replaceAll("@assigneeName", assigneeName)
                         .replaceAll("@createdByName", createdByName)
@@ -9709,32 +9897,30 @@ public class TmModel {
         entTaskNew.setId(taskId);
         EntityManager.select(entTaskNew);
 
-        String url = "No URL";
-        String mailBody = Config.getProperty("task.notify.on.change.body");
-        String mailSubject = Config.getProperty("task.notify.on.change.subject");
+        String userIds = entTaskNew.getFkAssigneeId() + CoreLabel.IN
+                + entTaskNew.getCreatedBy() + CoreLabel.IN
+                + entTaskNew.getUpdatedBy() + CoreLabel.IN;
 
-        String storyCardName = "";
+        String bid = "";
+        String pid = "";
+
+        String storyCardName = " No Story Card Attached";
         String taskName = entTaskNew.getTaskName();
         String assigneeName = " No one";
 
-        String userIds = "";
-        if (entTaskNew.getFkAssigneeId().length() > 1) {
+        if (entTaskNew.getFkAssigneeId().length() > 2) {
             EntityCrUserList entUserAssingee = new EntityCrUserList();
             entUserAssingee.setId(entTaskNew.getFkAssigneeId());
             EntityManager.select(entUserAssingee);
             assigneeName = entUserAssingee.getUserPersonName();
-
-            userIds += entTaskNew.getFkAssigneeId() + CoreLabel.IN;
         }
 
-        String createdByName = "";
-        if (entTaskNew.getUpdatedBy().length() > 1) {
+        String createdByName = "No one";
+        if (entTaskNew.getUpdatedBy().length() > 2) {
             EntityCrUserList entUserAssingee = new EntityCrUserList();
             entUserAssingee.setId(entTaskNew.getUpdatedBy());
             EntityManager.select(entUserAssingee);
             createdByName = entUserAssingee.getUserPersonName();
-
-            userIds += entTaskNew.getUpdatedBy() + CoreLabel.IN;
         }
 
         if (backlogId.length() > 0) {
@@ -9742,20 +9928,19 @@ public class TmModel {
             entBL.setId(backlogId);
             EntityManager.select(entBL);
 
+            bid = entBL.getId();
+            pid = entBL.getFkProjectId();
+
             storyCardName = entBL.getBacklogName();
 
             EntityTmBacklogTask entTask = new EntityTmBacklogTask();
             entTask.setFkBacklogId(backlogId);
             Carrier cr = EntityManager.select(entTask);
 
-            userIds += entBL.getFkOwnerId() + CoreLabel.IN + entBL.getCreatedBy();
-            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.FK_ASSIGNEE_ID) + CoreLabel.IN;
-            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.CREATED_BY);
+            userIds += entBL.getFkOwnerId() + CoreLabel.IN + entBL.getCreatedBy() + CoreLabel.IN;
+//            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.FK_ASSIGNEE_ID) + CoreLabel.IN;
+//            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.CREATED_BY);
 
-            url = Config.getProperty("task.notify.on.change.url");
-            url = url.replaceAll("@backlogId", entBL.getId())
-                    .replaceAll("@taskId", taskId)
-                    .replaceAll("@projectId", entBL.getFkProjectId());
         }
 
         if (userIds.length() > 6) {
@@ -9766,6 +9951,16 @@ public class TmModel {
             String tn = entUser.toTableName();
             int rc = crUser.getTableRowCount(tn);
             for (int i = 0; i < rc; i++) {
+
+                String url = "No URL";
+                String mailBody = Config.getProperty("task.notify.on.change.body");
+                String mailSubject = Config.getProperty("task.notify.on.change.subject");
+
+                url = Config.getProperty("task.notify.on.change.url");
+                url = url.replaceAll("@backlogId", bid)
+                        .replaceAll("@taskId", taskId)
+                        .replaceAll("@projectId", pid);
+
                 EntityManager.mapCarrierToEntity(crUser, tn, i, entUser);
 
                 String userFullname = entUser.getUserPersonName();
@@ -9773,7 +9968,7 @@ public class TmModel {
                 mailSubject = mailSubject.replaceAll("@taskName", taskName)
                         .replaceAll("@assigneeName", assigneeName);
 
-                mailBody = mailBody.replaceAll(" @userFullname", userFullname)
+                mailBody = mailBody.replaceAll("@userFullname", userFullname)
                         .replaceAll("@taskName", taskName)
                         .replaceAll("@assigneeName", assigneeName)
                         .replaceAll("@createdByName", createdByName)
@@ -9801,13 +9996,12 @@ public class TmModel {
         entTaskNew.setId(taskId);
         EntityManager.select(entTaskNew);
 
-        String url = "No URL";
-        String mailBody = Config.getProperty("task.notify.on.newcomment.body");
-        String mailSubject = Config.getProperty("task.notify.on.newcomment.subject");
-
         String storyCardName = "";
         String taskName = entTaskNew.getTaskName();
         String assigneeName = " No one";
+
+        String backlogIdRel = "";
+        String projectIdRel = "";
 
         String userIds = "";
         if (entTaskNew.getFkAssigneeId().length() > 1) {
@@ -9833,6 +10027,9 @@ public class TmModel {
             entBL.setId(backlogId);
             EntityManager.select(entBL);
 
+            backlogIdRel = entBL.getId();
+            projectIdRel = entBL.getFkProjectId();
+
             storyCardName = entBL.getBacklogName();
 
             EntityTmBacklogTask entTask = new EntityTmBacklogTask();
@@ -9841,10 +10038,6 @@ public class TmModel {
 
             userIds += entBL.getFkOwnerId() + CoreLabel.IN + entBL.getCreatedBy();
 
-            url = Config.getProperty("task.notify.on.newcomment.url");
-            url = url.replaceAll("@backlogId", entBL.getId())
-                    .replaceAll("@taskId", taskId)
-                    .replaceAll("@projectId", entBL.getFkProjectId());
         }
 
         if (userIds.length() > 6) {
@@ -9855,6 +10048,15 @@ public class TmModel {
             String tn = entUser.toTableName();
             int rc = crUser.getTableRowCount(tn);
             for (int i = 0; i < rc; i++) {
+                String url = "No URL";
+                String mailBody = Config.getProperty("task.notify.on.newcomment.body");
+                String mailSubject = Config.getProperty("task.notify.on.newcomment.subject");
+
+                url = Config.getProperty("task.notify.on.newcomment.url");
+                url = url.replaceAll("@backlogId", backlogIdRel)
+                        .replaceAll("@taskId", taskId)
+                        .replaceAll("@projectId", projectIdRel);
+
                 EntityManager.mapCarrierToEntity(crUser, tn, i, entUser);
 
                 String userFullname = entUser.getUserPersonName();
@@ -9862,7 +10064,7 @@ public class TmModel {
                 mailSubject = mailSubject.replaceAll("@taskName", taskName)
                         .replaceAll("@assigneeName", assigneeName);
 
-                mailBody = mailBody.replaceAll(" @userFullname", userFullname)
+                mailBody = mailBody.replaceAll("@userFullname", userFullname)
                         .replaceAll("@taskName", taskName)
                         .replaceAll("@assigneeName", assigneeName)
                         .replaceAll("@createdByName", createdByName)
@@ -9870,9 +10072,10 @@ public class TmModel {
                         .replaceAll("@storyCard", storyCardName)
                         .replaceAll("@url", url);
 
-                String email = entUser.getEmail1();
+                String email = "mail";
+                String em = email.replace("mail", entUser.getEmail1().toLowerCase());
                 if (email.trim().length() > 3) {
-                    MailSender.sendMailInThread(email, mailSubject, mailBody, "");
+                    MailSender.sendMailInThread(em, mailSubject, mailBody, "");
                 }
 
             }
@@ -10094,7 +10297,7 @@ public class TmModel {
         //commentleride copy paste olmalidir
         getTaskList4Short(entNew.getId()).copyTo(carrier);
 
-        sendMailNotificationOnCreate(ent.getId(), ent.getFkBacklogId());
+        sendMailNotificationOnDublicate(ent.getId(), ent.getFkBacklogId());
 
         return carrier;
     }
@@ -10284,6 +10487,10 @@ public class TmModel {
         EntityTmBacklogTask entity = new EntityTmBacklogTask();
         entity.setId(carrier.getValue(EntityTmBacklogTask.ID).toString());
         EntityManager.select(entity);
+
+        entity.setUpdatedBy(SessionManager.getCurrentUserId());
+        EntityManager.update(entity);
+
         EntityManager.delete(entity);
 
         carrier.setValue("isSourced", "");
@@ -11948,6 +12155,47 @@ public class TmModel {
 
         for (int i = 0; i < rc; i++) {
             EntityManager.mapCarrierToEntity(c, tn, i, ent);
+            if (ent.getInputType().equals("TBL")   || ent.getInputType().equals("TAB")
+                    ) {
+                continue;
+//                if (ent.getFkRelatedCompId().length()>0){
+//                    EntityTmInputTableComp entTC = new EntityTmInputTableComp();
+//                    entTC.setId(ent.getFkRelatedCompId());
+//                    entTC.setEndLimit(0);
+//                    EntityManager.select(entTC);
+////                    String oldInputTableId = entTC.getId();
+//                    
+//                    EntityManager.insert(entTC);
+//                    ent.setFkRelatedCompId(entTC.getId());
+                    
+//                    EntityTmRelTableInput entTI = new EntityTmRelTableInput();
+//                    entTI.setFkTableId(oldInputTableId);
+//                    Carrier crTI = EntityManager.select(entTI);
+//                    
+//                    String tnTI = entTI.toTableName();
+//                    int rcTI = crTI.getTableRowCount(tnTI);
+//                    for (int k=0;k<rcTI;k++){
+//                        EntityManager.mapCarrierToEntity(crTI,tn,k, entTI);
+//                        entTI.setFkTableId(entTC.getId());
+//                        EntityManager.insert(entTI);
+//                    }
+//                }
+//                 
+//            }else if (ent.getInputType().equals("TAB") 
+////                    || ent.getInputType().equals("TAB")
+//                    ) {
+//                if (ent.getFkRelatedCompId().length()>0){
+//                    EntityTmInputTabComp entTC = new EntityTmInputTabComp();
+//                    entTC.setId(ent.getFkRelatedCompId());
+//                    entTC.setEndLimit(0);
+//                    EntityManager.select(entTC);
+////                    String oldInputTableId = entTC.getId();
+//                    
+//                    EntityManager.insert(entTC);
+//                    ent.setFkRelatedCompId(entTC.getId());
+//                }
+//                 
+            }
             String oldId = ent.getId();
             ent.setFkBacklogId(newId);
             ent.setFkProjectId(projectId);

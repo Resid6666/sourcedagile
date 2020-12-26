@@ -70,11 +70,27 @@ public class MailSender {
         emailExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                try {
-                    sendMail(recipient, subject, body, toCC);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                boolean f = false;
+                int idx = 1;
+                do {
+                    try {
+                        idx++;
+                        sendMail(recipient, subject, body, toCC);
+                        f = false;
+                    } catch (Exception e) {
+                        f = idx <= 10;
+                        e.printStackTrace();
+                        try {
+                            Thread.sleep(10000);
+                        } catch (InterruptedException ex) {
+                            f = false;
+                            Logger.getLogger(MailSender.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    if (idx > 10) {
+                        break;
+                    }
+                } while (f);
             }
         });
     }
@@ -147,7 +163,6 @@ public class MailSender {
 //        transport.close();
 //
 //        System.out.println("mail-qaranti-6");
-
     }
 
 //    public static String getSubjectOfRegistration(){
