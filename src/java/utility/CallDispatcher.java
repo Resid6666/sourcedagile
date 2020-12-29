@@ -14,7 +14,6 @@ import label.CoreLabel;
 import org.ehcache.Cache;
 import org.ehcache.Status;
 
-
 /**
  *
  * @author 02483577
@@ -26,52 +25,62 @@ public class CallDispatcher {
     static String SERVICE = "Service";
     static String DISPATCHER_LABEL = "Dispatcher";
 
-    
     public static void main(String[] args) {
         // TODO code application logic here
         System.out.println("zad shey oldu");
 
     }
-    
-     public static String callService(String json){
-         Carrier carrier = new Carrier();
-         carrier.fromJson(json);
-         System.out.println(carrier.toXML());
+
+    public static String callService(String json) {
+        Carrier carrier = new Carrier();
+        carrier.fromJson(json);
+        System.out.println(carrier.toXML());
+
+        return json;
+    }
+
+    public static String callServiceManual(Carrier carrier) throws Exception {
+
+        String entity = "";
+        String serviceName = carrier.getServiceName();
+        String module = getModuleName(serviceName);
+        createKeyValuePairInCarrier(carrier);
+        carrier = executeDispatcher(module, carrier);
+        entity = carrier.getJson();
         
-         
-         return json;
-     }
-    
-    public static Response callService(Carrier carrier) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, Exception {
-        Cache<String, String> serviceCache = CacheUtil.cacheManager
-                .getCache("serviceCache", String.class, String.class);
+        return entity;
+    }
+
+    public static Response callService(Carrier carrier) throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, Exception {
+//        
+//        Cache<String, String> serviceCache = CacheUtil.cacheManager
+//                .getCache("serviceCache", String.class, String.class);
         //serviceCache.put("dd", "bb");
         String entity = "";
-        String cacheKey = carrier.getCacheKey();
+//        String cacheKey = carrier.getCacheKey();
         String serviceName = carrier.getServiceName();
-        boolean isServiceCachable = false;/*serviceName.equals("serviceCrGetAttributeList") 
+//        boolean isServiceCachable = false;
+        /*serviceName.equals("serviceCrGetAttributeList") 
                 || serviceName.equals("serviceCrGetAttributeList")
                 || serviceName.equals("serviceCrGetModuleList")
                 || serviceName.equals("serviceCrGetSubmoduleList")
                 || serviceName.equals("serviceCrGetEntityLabelList");*/
-        
-        if (isServiceCachable && CacheUtil.cacheManager.getStatus()==Status.AVAILABLE 
-                && serviceCache.containsKey(cacheKey)) {
-            entity = serviceCache.get(cacheKey);
-        } else {
-            String module = getModuleName(serviceName);
-            createKeyValuePairInCarrier(carrier);
-            carrier = executeDispatcher(module, carrier);
-            entity = carrier.getJson();
-            if (isServiceCachable && CacheUtil.cacheManager.getStatus()==Status.AVAILABLE 
-                    && !carrier.hasError()) {
-                serviceCache.put(cacheKey, entity);
-            }
-        }
-        
-        
-        
-        
+
+//        if (isServiceCachable && CacheUtil.cacheManager.getStatus()==Status.AVAILABLE 
+//                && serviceCache.containsKey(cacheKey)) {
+//            entity = serviceCache.get(cacheKey);
+//        } else {
+        String module = getModuleName(serviceName);
+        createKeyValuePairInCarrier(carrier);
+        carrier = executeDispatcher(module, carrier);
+        entity = carrier.getJson();
+//            if (isServiceCachable && CacheUtil.cacheManager.getStatus()==Status.AVAILABLE 
+//                    && !carrier.hasError()) {
+//                serviceCache.put(cacheKey, entity);
+//            }
+//        }
+
 //        if (carrier.hasError()) {
 //            entity = carrier.getErrorJson();
 //        } else {
@@ -92,7 +101,7 @@ public class CallDispatcher {
             ArrayList exc = new ArrayList();
             getIncAndExc(inc, exc, carrier);
 
-            String classname =  "module." +module.toLowerCase(Locale.ENGLISH) +"."+ QUtility.fcLetter(module) + DISPATCHER_LABEL;
+            String classname = "module." + module.toLowerCase(Locale.ENGLISH) + "." + QUtility.fcLetter(module) + DISPATCHER_LABEL;
             Class<?> c = Class.forName(classname);
             Object obj = c.newInstance();
             carrier = (Carrier) c.getMethod("callService", Carrier.class).invoke(obj, carrier);
@@ -101,17 +110,17 @@ public class CallDispatcher {
         } catch (InvocationTargetException ex) {
             ex.getCause().printStackTrace();
             throw new QException(new Object() {
-                
+
             }.getClass().getEnclosingClass().getName(),
                     new Object() {
-            }.getClass().getEnclosingMethod().getName(), ex.getCause());
+                    }.getClass().getEnclosingMethod().getName(), ex.getCause());
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException ex) {
             ex.printStackTrace();
             throw new QException(new Object() {
-                
+
             }.getClass().getEnclosingClass().getName(),
                     new Object() {
-            }.getClass().getEnclosingMethod().getName(), ex);
+                    }.getClass().getEnclosingMethod().getName(), ex);
         }
     }
 
@@ -130,7 +139,7 @@ public class CallDispatcher {
             throw new QException(new Object() {
             }.getClass().getEnclosingClass().getName(),
                     new Object() {
-            }.getClass().getEnclosingMethod().getName(), ex);
+                    }.getClass().getEnclosingMethod().getName(), ex);
         }
 
     }
@@ -168,7 +177,7 @@ public class CallDispatcher {
             throw new QException(new Object() {
             }.getClass().getEnclosingClass().getName(),
                     new Object() {
-            }.getClass().getEnclosingMethod().getName(), ex);
+                    }.getClass().getEnclosingMethod().getName(), ex);
         }
 
     }
@@ -192,7 +201,7 @@ public class CallDispatcher {
             throw new QException(new Object() {
             }.getClass().getEnclosingClass().getName(),
                     new Object() {
-            }.getClass().getEnclosingMethod().getName(), ex);
+                    }.getClass().getEnclosingMethod().getName(), ex);
         }
 
     }

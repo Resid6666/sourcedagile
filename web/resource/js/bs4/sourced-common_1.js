@@ -15189,17 +15189,25 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
             Toaster.showError("Task is not selected.")
         }
 
-        var json = {kv: {}};
-        try {
-            json.kv.cookie = getToken();
-        } catch (err) {
-        }
-        json.kv.comment = $('#addComment4Task_comment').val();
-        json.kv.commentType = $('#addComment4Task_commenttype').val();
-        json.kv.estimatedHours = $('#addComment4Task_commentestimationhours').val();
-        json.kv.fileName = fileName + global_var.vertical_seperator + global_var.current_upload_canvas;
-        json.kv.fkBacklogId = global_var.current_backlog_id;
-        json.kv.fkTaskId = global_var.current_us_task_id;
+        this.addCommentInput4TaskDetails($('#addComment4Task_comment').val(),
+        $('#addComment4Task_commenttype').val(),
+         $('#addComment4Task_commentestimationhours').val(),
+                 fileName+ global_var.vertical_seperator + global_var.current_upload_canvas,
+                 global_var.current_backlog_id,
+                 global_var.current_us_task_id
+                 
+        
+        )
+        
+    },
+    addCommentInput4TaskDetails:function(comment,commentType,estimatedHours,fileName,fkBacklogId,fkTaskId){
+      var json = initJSON();
+        json.kv.comment = comment;
+        json.kv.commentType =commentType ;
+        json.kv.estimatedHours =estimatedHours;
+        json.kv.fileName = fileName ;
+        json.kv.fkBacklogId = fkBacklogId; 
+        json.kv.fkTaskId = fkTaskId ;
         json.kv.add2jira = $('#addTaskComment_add2jira').is(":checked") ? "1" : "0";
         var data = JSON.stringify(json);
         var that = this;
@@ -15226,7 +15234,7 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
             error: function () {
 //                Toaster.showError("error");
             }
-        });
+        });  
     },
     addCommentInput: function (fileName) {
         var json = {kv: {}};

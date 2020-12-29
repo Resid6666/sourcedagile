@@ -6217,10 +6217,26 @@ public class TmModel {
         } catch (Exception e) {
         }
 
+        temporarySetStatusInYelo(ent.getId(),ent.getTaskStatus());
+        
         String fieldName = getUpdatedFieldName(carrier.get("type"));
         sendMailNotificationOnChange(ent.getId(), ent.getFkBacklogId(), fieldName);
 
+        
         return carrier;
+    }
+
+    private static void temporarySetStatusInYelo(String taskId, String status) {
+        if (taskId.length() <= 2 || status.length() == 0) {
+            return;
+        }
+
+        String ln = "update " + SessionManager.getCurrentDomain() + ".customer_request_new_story_card set request_status='" + status + "' where fk_related_task_id='" + taskId + "'";
+        try {
+            EntityManager.executeUpdateByQuery(ln);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static String getUpdatedFieldName(String fieldType) {
@@ -9143,8 +9159,7 @@ public class TmModel {
         ent.setFkProjectId(fkProjectId);
         ent.setSortByAsc(true);
         Carrier crOut = EntityManager.select(ent);
-        
-        
+
         String tn = ent.toTableName();
         int rc = crOut.getTableRowCount(tn);
         for (int i = 0; i < rc; i++) {
@@ -12155,8 +12170,7 @@ public class TmModel {
 
         for (int i = 0; i < rc; i++) {
             EntityManager.mapCarrierToEntity(c, tn, i, ent);
-            if (ent.getInputType().equals("TBL")   || ent.getInputType().equals("TAB")
-                    ) {
+            if (ent.getInputType().equals("TBL") || ent.getInputType().equals("TAB")) {
                 continue;
 //                if (ent.getFkRelatedCompId().length()>0){
 //                    EntityTmInputTableComp entTC = new EntityTmInputTableComp();
@@ -12167,7 +12181,7 @@ public class TmModel {
 //                    
 //                    EntityManager.insert(entTC);
 //                    ent.setFkRelatedCompId(entTC.getId());
-                    
+
 //                    EntityTmRelTableInput entTI = new EntityTmRelTableInput();
 //                    entTI.setFkTableId(oldInputTableId);
 //                    Carrier crTI = EntityManager.select(entTI);

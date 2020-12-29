@@ -49,6 +49,34 @@ var moduleList = {
 };
 var dgui = {};
 
+function testMandelo() {
+    var json = initJSON();
+
+    json.kv.mandelo ='insertNewZadendo';
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceIoCoreMandelo",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            console.log(JSON.stringify(res));
+        }
+
+    });
+}
+
+
+$(document).on('click', '.sa-tab-action-zad', function (evt) {
+     var id = $(this).find('a').first().attr('href');
+     $(id).find('.sa-onloadclick').each(function(){
+         $(this).click();
+     })
+});
+
 
 $(document).on('click', '.manualProject', function (evt) {
     showProgressAlternative();
@@ -61,7 +89,7 @@ $(document).on('click', '.manualProject', function (evt) {
 
         var bid = $(this).attr('tid');
         global_var.current_project_id = $(this).attr("pid");
-
+        global_var.current_modal="";
         global_var.projectToggleWithSync = false;
 
         new Project().toggleProjectDetails();
@@ -78,6 +106,7 @@ $(document).on('click', '.manualProject', function (evt) {
 
         var body = (dgui[bid]) ? dgui[bid] : new UserStory().genGUIDesignHtmlById(bid);
         $('#mainBodyDivForAll').html(body);
+        
         initOnloadActionOnGUIDesign();
     } catch (ee) {
     }
@@ -113,7 +142,7 @@ function p() {
 
 
         var body = (dgui[bid]) ? dgui[bid] : new UserStory().genGUIDesignHtmlById(bid);
-        $('#main_body_container').html(body);
+        $('#mainBodyDivForAll').html(body);
         initOnloadActionOnGUIDesign();
     } catch (ee) {
     }
@@ -1579,6 +1608,22 @@ function getGUIDataByStoryCardList(el, selectedFieldsList) {
     return res;
 }
 
+function triggerAPIWithoutOnload(el, apiId, data) {
+    var res = {};
+    if (data) {
+        res = data;
+    }
+    var initData = getGUIDataByStoryCard(el);
+    var finalRes = $.extend(initData, res);
+    finalRes = LeftMergeOfObjers(finalRes, res);
+
+    var out = be.callApi(apiId, finalRes, el);
+//    if ($(el).attr('sa-triggersetvalue') === '1') {
+
+    triggerAPIAfter(el, apiId, out, finalRes)
+
+}
+
 function triggerAPI(el, apiId, data) {
     var res = {};
     if (data) {
@@ -1594,8 +1639,8 @@ function triggerAPI(el, apiId, data) {
     triggerAPIAfter(el, apiId, out, finalRes)
 
     //call oncload action
-    if (!$(el).hasClass('sa-onloadclick') || $(el).hasClass('sa-onloadchange')) {
-        initOnloadActionOnGUIDesign();
+    if (!$(el).hasClass('sa-onloadclick')) {
+        initOnloadActionOnGUIDesign4OnClick();
     }
 //    }
 }
@@ -2049,7 +2094,7 @@ function getJsCodeByProject() {
                             st += '}';
 
                             var sc = $('<script>').append(st);
-                            $('#mainBodyDivForAll').append(sc);
+                            $('head').append(sc);
 
                         } else if (o.fnType === 'event') {
                             if (!o.fnEvent || !o.fnEventObject) {
@@ -2061,7 +2106,7 @@ function getJsCodeByProject() {
                             st += '})';
 
                             var sc = $('<script>').append(st);
-                            $('#mainBodyDivForAll').append(sc);
+                            $('head').append(sc);
 
                         }
                     } catch (err) {

@@ -203,6 +203,7 @@ var Component = {
             }
         },
         addClassToElement: function (el, comp) {
+            
             try {
                 var classElList = cr_comp_input_classes[comp.id];
                 if (classElList) {
@@ -215,22 +216,22 @@ var Component = {
 
 
 
-                        var classBody = cr_gui_classes[classId].classBody;
-                        try {
-                            if (classBody.length > 1) {
-                                var r = classBody.split(/\r*\n/);
-                                for (var j = 0; j < r.length; j++) {
-                                    try {
-                                        var key = r[j].split(':')[0];
-                                        var val = r[j].split(':')[1];
-                                        val = val.replace(";", "");
-                                        el.css(key, val);
-                                    } catch (err) {
-                                    }
-                                }
-                            }
-                        } catch (err) {
-                        }
+//                        var classBody = cr_gui_classes[classId].classBody;
+//                        try {
+//                            if (classBody.length > 1) {
+//                                var r = classBody.split(/\r*\n/);
+//                                for (var j = 0; j < r.length; j++) {
+//                                    try {
+//                                        var key = r[j].split(':')[0];
+//                                        var val = r[j].split(':')[1];
+//                                        val = val.replace(";", "");
+//                                        el.css(key, val);
+//                                    } catch (err) {
+//                                    }
+//                                }
+//                            }
+//                        } catch (err) {
+//                        }
                     }
                 }
             } catch (err) {
@@ -871,7 +872,8 @@ var Component = {
             var ul = $('<ul class="nav nav-tabs">').attr("role", "tablist")
             var idx = 0;
             for (var i in usList) {
-                var li = $('<li class="nav-item">');
+                var li = $('<li class="nav-item">')
+                        .addClass("sa-tab-action-zad");
                 var usId = usList[i].trim();
                 var usName = SACore.GetBacklogname(usId);
                 var active = (idx === 0) ? " active " : "";

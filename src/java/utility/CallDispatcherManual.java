@@ -10,15 +10,17 @@ package utility;
  * @author Anar
  */
 public class CallDispatcherManual {
-    
-     public static void main(String[] arg) {
-//         Carrier cr = new Carrier();
-         System.out.println("zad shey olmadi amma oldu");
-         String json = "{kv:{'name':'Anar'}}";
-         try{
-            CallDispatcher.callService(json);
-         }catch(Exception e){
-         }
+
+    public static void main(String[] arg) throws Exception {
+        Carrier cr = new Carrier();
+        String json = arg[0];
+
+        cr.fromJson(json);
+        cr.setServiceName(cr.get("serviceName"));
+
+        String res = CallDispatcher.callServiceManual(cr);
+        System.out.println(res);
+
     }
-    
+
 }

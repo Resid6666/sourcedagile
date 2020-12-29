@@ -244,7 +244,9 @@ function insertNewTaskDetail4Bug(taskName, backlogId, assgineeId, taskStatus, pr
     if (!projectId) {
         return;
     }
-
+    
+    var id = "";
+    
     backlogId = (backlogId) ? backlogId : "-1";
     assgineeId = (assgineeId) ? assgineeId : "-1";
     taskStatus = (taskStatus) ? taskStatus : "new";
@@ -264,6 +266,7 @@ function insertNewTaskDetail4Bug(taskName, backlogId, assgineeId, taskStatus, pr
         crossDomain: true,
         async: false,
         success: function (res) {
+            id = res.kv.id;
             SATask.updateTaskByRes(res);
             SACore.updateBacklogByRes(res);
         },
@@ -271,6 +274,7 @@ function insertNewTaskDetail4Bug(taskName, backlogId, assgineeId, taskStatus, pr
             Toaster.showError(('somethingww'));
         }
     });
+    return id;
 }
 
 $(document).on("change", '.bug-filter', function (e) {
