@@ -209,7 +209,8 @@ public class SQLGenerator {
             st = (crin.hasIsCountField() || crin.hasIsMaximumField() || crin.hasIsMinimumField()
                     || crin.hasIsSumField() || crin.hasIsAverageField())
                     ? ""
-                    : selectFieldNameGeneratorByMethodnames(crin, methods);
+                    :" count(id) ";
+//                    : selectFieldNameGeneratorByMethodnames(crin, methods);
         }
 
         return st;

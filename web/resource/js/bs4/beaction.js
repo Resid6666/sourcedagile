@@ -6,7 +6,7 @@
 
 var be = {
 
-    callApi: function (apiId, data,element) {
+    callApi: function (apiId, data, element, asyncData) {
         var res = {};
         if (SACore.GetBacklogDetails(apiId, "isApi") !== '1') {
             return;
@@ -18,13 +18,13 @@ var be = {
         if (actionType === 'C') {
             res = this.callInsertAPI(apiId, data);
         } else if (actionType === 'R') {
-            res = this.callSelectAPI(apiId, data,element);
+            res = this.callSelectAPI(apiId, data, element, asyncData);
         } else if (actionType === 'U') {
             res = this.callUpdateAPI(apiId, data);
         } else if (actionType === 'D') {
             res = this.callDeleteAPI(apiId, data);
         } else {
-            res = this.callContainerAPI(apiId, data);
+            res = this.callContainerAPI(apiId, data, element, asyncData);
         }
 
         return res;
@@ -33,7 +33,7 @@ var be = {
         var res = this.GetGUIDataByStoryCard(storyCardId);
         this.callInsertAPI(apiId, res);
     },
-    callContainerAPI: function (apiId, data) {
+    callContainerAPI: function (apiId, data, element, asyncData) {
         if (!data) {
             data = {};
         }
@@ -41,7 +41,16 @@ var be = {
         var inputList = be.ExecAPI.GetInputsByAPI(apiId);
         var pureData = be.ExecAPI.SetInputValuesOnStoryCard(inputList, data);
 
-        var res = this.ExecAPI.CallContainerServices(apiId, pureData);
+        var res = this.ExecAPI.CallContainerServices(apiId, pureData, element, asyncData);
+
+        //call function
+        try {
+            if (asyncData && asyncData.fn) {
+                var res = eval(asyncData.fn)(element, res, asyncData);
+            }  
+        } catch (err) {
+            console.log(err);
+        }
         return res;
     },
 
@@ -83,7 +92,7 @@ var be = {
         return res;
     },
 
-    callSelectAPI: function (apiId, data,element) {
+    callSelectAPI: function (apiId, data, element, asyncData) {
         if (!data) {
             data = {};
         }
@@ -92,7 +101,7 @@ var be = {
         var pureData = be.ExecAPI.SetInputValuesOnStoryCard(inputList, data);
 
         var innerData = this.ExecAPI.SetSelectObjects(apiId);
-        var res = this.ExecAPI.CallSelectServices(apiId, pureData, innerData,element);
+        var res = this.ExecAPI.CallSelectServices(apiId, pureData, innerData, element, asyncData);
         return res;
     },
     GetGUIDataByStoryCard: function (storyCardId) {
@@ -369,7 +378,7 @@ var be = {
             innerData.DELETE_OBJ_PAIR = DELETE_OBJ_PAIR;
             return innerData;
         },
-        CallSelectServices: function (apiId, data, innerData,element) {
+        CallSelectServices: function (apiId, data, innerData, element, asyncData) {
             var res = {};
             var SELECT_OBJ = innerData.SELECT_OBJ;
             var SELECT_OBJ_PAIR = innerData.SELECT_OBJ_PAIR;
@@ -383,7 +392,7 @@ var be = {
 
 
             //call External Api
-            var extData = be.ExecAPI.CallExternalApiServices(apiId, data);
+            var extData = be.ExecAPI.CallExternalApiServices(apiId, data, innerData, element, asyncData);
             var t = $.extend(inputKV, extData);
             inputKV = t;
 
@@ -432,6 +441,7 @@ var be = {
                             out = be.ExecAPI.SetKeysAsAlians4Select(output.kv, SELECT_OBJ_PAIR);
                             out1 = be.ExecAPI.SetKeysAsAlians4Select(output.kv, SELECT_OBJ_PAIR_GROUP);
                             out = $.extend(out, out1);
+                            out['selectedField'] = output.kv.selectedField;
                             try {
 
                                 var rc = (output.tbl[0].r && output.tbl[0].r.length > 0)
@@ -462,7 +472,7 @@ var be = {
                             } catch (e) {
                             }
                         } else {
-                            be.ExecAPI.CallSelectServiceAsync(json,SELECT_OBJ_PAIR,SELECT_OBJ_PAIR_GROUP,element,apiId);
+                            be.ExecAPI.CallSelectServiceAsync(json, SELECT_OBJ_PAIR, SELECT_OBJ_PAIR_GROUP, element, apiId, asyncData);
                         }
 
                     } catch (err) {
@@ -574,13 +584,13 @@ var be = {
             }
             return inputList;
         },
-        CallContainerServices: function (apiId, data) {
+        CallContainerServices: function (apiId, data, element, asyncData) {
 
             //create initial variable as output of the API for insert
             var outputKV = data;
 
             //call External Api
-            var extData = be.ExecAPI.CallExternalApiServices(apiId, outputKV);
+            var extData = be.ExecAPI.CallExternalApiServices(apiId, outputKV, element, asyncData);
             var t = $.extend(outputKV, extData);
             outputKV = t;
 
@@ -738,7 +748,7 @@ var be = {
             }
             return res;
         },
-        CallExternalApiServices: function (apiId, data) {
+        CallExternalApiServices: function (apiId, data, element, asyncData) {
             var outData = {};
             var extApiList = (cr_project_desc_by_backlog[apiId])
                     ? cr_project_desc_by_backlog[apiId]
@@ -766,7 +776,7 @@ var be = {
                     }
 
                     if (o.fkRelatedApiId) {
-                        var res = be.callApi(o.fkRelatedApiId, outData);
+                        var res = be.callApi(o.fkRelatedApiId, outData, element, asyncData);
                         if (res._table) {
                             var mergeData = mergeTableData(res._table, outData._table);
                             res._table = mergeData;
@@ -917,7 +927,7 @@ var be = {
             });
             return rs;
         },
-        CallSelectServiceAsync: function (dataJSON,SELECT_OBJ_PAIR,SELECT_OBJ_PAIR_GROUP,element,apiId) {
+        CallSelectServiceAsync: function (dataJSON, SELECT_OBJ_PAIR, SELECT_OBJ_PAIR_GROUP, element, apiId, asyncData) {
             var rs = "";
             var that = this;
             delete dataJSON._table;
@@ -936,8 +946,8 @@ var be = {
                     out = be.ExecAPI.SetKeysAsAlians4Select(output.kv, SELECT_OBJ_PAIR);
                     out1 = be.ExecAPI.SetKeysAsAlians4Select(output.kv, SELECT_OBJ_PAIR_GROUP);
                     out = $.extend(out, out1);
+                    out.selectedField = output.kv.selectedField;
                     try {
-
                         var rc = (output.tbl[0].r && output.tbl[0].r.length > 0)
                                 ? output.tbl[0].r.length
                                 : 0;
@@ -963,15 +973,27 @@ var be = {
                         }
                     } catch (e) {
                     }
-                     triggerAPIAfter(element, apiId, out)
+
+                    //call function
+                    try {
+                        if (asyncData && asyncData.fn) {
+                            var res = eval(asyncData.fn)(element, out, asyncData);
+                        } else {
+                            var id = $(element).attr('id');
+                            var el1 = document.getElementById(id);
+                            triggerAPIAfter(el1, apiId, out);
+                        }
+                    } catch (err) {
+                        console.log(err);
+                    }
+
+
                 }
             });
             return rs;
         }
     },
-    ShowKVAtGUI:function(){
-        
-    },
+
     AddDbDescriptionField: function (apiId) {
         var data = {};
         var outputList = SACore.GetBacklogDetails(apiId, "inputIds").split(',');

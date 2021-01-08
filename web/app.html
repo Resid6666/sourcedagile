@@ -15,7 +15,7 @@
         <link rel="stylesheet" href="resource/css/bs4/jquery-ui.css">
         <link rel="stylesheet" href="resource/css/bs4/dragtable.css">
         <link rel="stylesheet" href="resource/css/bs4/print.css">
-  
+
 
         <link rel="stylesheet" href="resource/froala/css/froala_editor.pkgd.min.css"> 
         <link rel="stylesheet" type="text/css" href="resource/froala/css/froala_editor.css">
@@ -836,9 +836,9 @@
                                 <span class="description-main" style="margin-top: 19px;">Permission</span>
                             </a>
                         </div>
-                        
+
                         <div class="  project-item-zad   "  >
-                             
+
                         </div>
 
 
@@ -6453,6 +6453,8 @@
                                 <option value="icon">Icon</option>
                                 <option value="btn">Button</option>
                                 <option value="hdn">Hidden</option>
+                                <option value="fhtml">Free HTML</option>
+                                <option value="fcomp">Free Component</option>
                                 <option value="sctn">Section</option>
                                 <option value="tab">Tab</option>
                             </select>
@@ -6489,12 +6491,22 @@
                                 <option val="right" selected>Right</option>
                             </select>
                         </div>
-                        <div class="col-12 text-right">
-                            <br>
-                            <button class="form-control btn btn-primary" 
-                                    style="width1:160px;"
-                                    onclick="createNewInputComponent(this)">Add</button>
-                            <br><br>
+                        <div class="row">
+                            <div class="col-6 text-right">
+                                <br>
+                                <button class="form-control btn btn-primary" 
+                                        style="width1:160px;"
+                                        onclick="createNewInputComponent(this)">Add</button>
+
+
+                            </div>
+                            <div class="col-6 text-right">
+                                <br>
+
+                                <button class="form-control btn btn-outline-secondary"
+                                        onclick="closeNewInputComponent(this)">Cancel</button>
+
+                            </div>
                         </div>
 
 
@@ -7351,6 +7363,7 @@
                                 <h5>}</h5><br>
                             </div>
                             <div class="col-12 text-right">
+                                <a href="#" onclick="copyClassToModal(this)">Copy To</a>
                                 <a href="#" onclick="deleteGuiClass(this)">Delete</a>
                             </div>
                         </div>
@@ -7467,6 +7480,13 @@
                                 <span class="jscode-corepart"> }</span>  
                                 <span class="jscode-eventpart"> })</span>  
                             </div>
+                            <div class="col-6 text-left">
+                                <input onchange="updateJSChange4IsGlobal(this)" type='checkbox'>Is Global</input>
+
+                            </div>
+                            <div class="col-6 text-right">
+                                <a href="#" onclick="copyJsCodeClassTo()">Copy To</a>
+                            </div>
                             <div class="col-12 text-right">
                                 <a href="#" onclick="deleteJsCodeClass(this)">Delete</a>
                             </div>
@@ -7484,7 +7504,73 @@
     </div>
 </div>
 
+<div class="modal fade" id="copyClassCodeModal" tabindex="-1" role="dialog" aria-labelledby=""
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width: 80%;max-width: 80%" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="">Copy Class </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="font-size: 12px;">
+                <div class="row"  >
+                    <div class="col-8"  >
+                        <div class="col text-center"  > <h4>Class List</h4></div>
+                        <input class='checkAll4ClassCopyTo' type="checkbox"><b>Check All</b>
+                        <div class="row" id="copyClassCodeModal_jslist" >
+                        </div>
+                    </div>
+                    <div class="col-4"id="">
+                        <div class="col text-center"  > <h4>Project List</h4></div>
+                        <input class='checkAll4ClassCopyToProject' type="checkbox"><b>Check All</b>
+                        <div class="row" id="copyClassCodeModal_projectlist" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="copyClassCodeAction()"> Copy </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<div class="modal fade" id="copyJSCodeModal" tabindex="-1" role="dialog" aria-labelledby=""
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width: 80%;max-width: 80%" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="">Copy JS Code</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="font-size: 12px;">
+                <div class="row"  >
+                    <div class="col-8"  >
+                        <div class="col text-center"  > <h4>Function List</h4></div>
+                        <input class='checkAll4JsCopyTo' type="checkbox"><b>Check All</b>
+                        <div class="row" id="copyJSCodeModal_jslist" >
+                        </div>
+                    </div>
+                    <div class="col-4"id="">
+                        <div class="col text-center"  > <h4>Project List</h4></div>
+                        <input class='checkAll4JsCopyToProject' type="checkbox"><b>Check All</b>
+                        <div class="row" id="copyJSCodeModal_projectlist" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="copyJSCodeAction()"> Copy </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal fade" id="backlogInputPermissionModal" tabindex="-1" role="dialog" aria-labelledby=""
      aria-hidden="true">

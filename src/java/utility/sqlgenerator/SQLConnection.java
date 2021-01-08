@@ -132,7 +132,6 @@ public class SQLConnection {
             String line = "";
             String query = arg;
             for (int i = 0; i < values.size(); i++) {
-
                 if (!values.get(i).toString().trim().equals("")) {
                     String val = values.get(i).toString().trim();
 //                    val = val.trim().
@@ -259,7 +258,7 @@ public class SQLConnection {
         }
     }
 
-    public static Carrier execDeleteSql(String arg) throws  Exception {
+    public static Carrier execDeleteSql(String arg) throws Exception {
         try {
             Connection conn = SessionManager.getCurrentConnection();
             conn.setCatalog(SessionManager.getCurrentDomain());
@@ -362,11 +361,23 @@ public class SQLConnection {
 
     public static Carrier convertResultSetToCarrier(ResultSet rs, String tableName) throws QException {
         String[] colNames = getColumnNames(rs);
+
+        String cols = "";
+        for (int i = 0; i < colNames.length; i++) {
+            cols +=  convertTableFieldNameToEntityfieldName(colNames[i]);
+            cols += (i < colNames.length - 1) ? "," : "";
+        }
+        
+
         Carrier qCarry1 = new Carrier();
+        qCarry1.setSelectedField(cols);
+        
         try {
             int row = 0;
+
             while (rs.next()) {
                 for (int i = 0; i <= colNames.length - 1; i++) {
+
                     String vl = rs.getString(colNames[i]) == null ? "" : rs.getString(colNames[i]).trim();
                     String fieldName = convertTableFieldNameToEntityfieldName(colNames[i]);
                     qCarry1.setValue(tableName, row, fieldName, vl);

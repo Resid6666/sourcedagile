@@ -73,11 +73,15 @@ public class IoModel {
         ControllerPool cp = new ControllerPool();
         carrier.addController("entity", cp.hasValue(carrier, "entity"));
         carrier.addController("entityDb", cp.hasValue(carrier, "entityDb"));
+//        carrier.addController("selectedField", cp.hasValue(carrier, "selectedField"));
         if (carrier.hasError()) {
             return carrier;
         }
+        
+        
 
         Carrier cout = EntityManager.select(carrier);
+      
 
         String tn = carrier.getEntityFullname();
         int rc = cout.getTableRowCount(tn);

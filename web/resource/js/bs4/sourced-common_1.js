@@ -10035,6 +10035,7 @@ class="us-ipo-input-table-tr"  pid="' + id + '" itable="' + replaceTags(Replace2
         });
         return st;
     },
+
     genGUIDesignHtmlById: function (backlogId, hide) {
         if (backlogId.length === 0) {
             return "";
@@ -10168,7 +10169,13 @@ class="us-ipo-input-table-tr"  pid="' + id + '" itable="' + replaceTags(Replace2
         closeModal('userstory-gui-input-component-res-sus-analytic');
         var backlog = SACore.GetBacklogDetails(popupBacklogId, 'param1')// this.getBacklogCoreInfoById(popupBacklogId);
         var canvasCSS = Component.ReplaceCSS(SACore.GetBacklogDetails(popupBacklogId, 'param1'));
-        var html = this.genGUIDesignHtmlById(popupBacklogId);
+
+
+//        var html = this.genGUIDesignHtmlById(popupBacklogId);
+        var resTmp = SAInput.toJSONByBacklog(popupBacklogId);
+        var html = this.getGUIDesignHTMLPure(resTmp);
+
+
         var bcode = $(el).closest('div.redirectClass').attr("bcode");
         bcode = (bcode === undefined) ? "" : bcode;
         var padeId = generatePopupModalNew(html, canvasCSS, bcode, popupBacklogId);
@@ -11130,11 +11137,8 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
 //            return;
 //        }
 
-        var json = {kv: {}};
-        try {
-            json.kv.cookie = getToken();
-        } catch (err) {
-        }
+        var json = initJSON();
+
         json.kv.fkProjectId = global_var.current_project_id;
         json.kv.asc = 'backlogName';
         var that = this;
@@ -11147,8 +11151,13 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
             crossDomain: true,
             async: global_var.projectToggleWithSync,
             success: function (res) {
-//                global_var.related_SUS_status = 'C';
-                that.loadSUS4Relation4SectionDetails(res);
+                try {
+                    that.loadSUS4Relation4SectionDetails(res);
+                } catch (err) {
+                }
+//                queue4ProLoad.loadSUS4Relation4Section = true;
+//                executeCoreOfManualProSelection();
+		 
             },
             error: function () {
                 Toaster.showError(('somethingww'));
@@ -11936,6 +11945,11 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
         return json;
     },
     load: function () {
+        
+        if (!ifQueue4ProLoadDone()){
+            return;
+        }
+        
         $('#container-us-body').html('');
         $('.us-checkbox-list').first().prop("checked", false);
         $('.assignSprintAndLabel').attr("style", "pointer-events:none;color:gray;");
@@ -12049,11 +12063,7 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
     loadDetailsOnProjectSelect: function () {
         showProgress();
 
-        var json = {kv: {}};
-        try {
-            json.kv.cookie = getToken();
-        } catch (err) {
-        }
+        var json = initJSON();
         json.kv.fkProjectId = global_var.current_project_id;
         var that = this;
         var data = JSON.stringify(json);
@@ -12063,12 +12073,19 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
             data: data,
             contentType: "application/json",
             crossDomain: true,
-            async: false,
+            async: true,
             beforeSend: function () {
                 showProgress();
             },
             success: function (res) {
-                SACore.LoadBacklog(res);
+                try {
+                    SACore.LoadBacklog(res);
+                } catch (err) {
+
+                }
+                queue4ProLoad.loadDetailsOnProjectSelect = true;
+                executeCoreOfManualProSelection();
+		
 
                 hideProgress();
             },
@@ -12134,11 +12151,7 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
         });
     },
     loadInputDetailsOnProjectSelect: function () {
-        var json = {kv: {}};
-        try {
-            json.kv.cookie = getToken();
-        } catch (err) {
-        }
+        var json = initJSON();
         json.kv.fkProjectId = global_var.current_project_id;
         var that = this;
         var data = JSON.stringify(json);
@@ -12148,20 +12161,23 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
             data: data,
             contentType: "application/json",
             crossDomain: true,
-            async: false,
+            async: true,
             success: function (res) {
-                SAInput.LoadInput(res);
-//                that.load();
-//                that.refreshCurrentBacklog();
+                try {
+                    SAInput.LoadInput(res);
+                } catch (err) {
+
+                }
+
+                queue4ProLoad.loadInputDetailsOnProjectSelect = true;
+                executeCoreOfManualProSelection();
+		
             }
         });
     },
     loadInputDescDetailsOnProjectSelect: function () {
-        var json = {kv: {}};
-        try {
-            json.kv.cookie = getToken();
-        } catch (err) {
-        }
+        var json = initJSON();
+
         json.kv.fkProjectId = global_var.current_project_id;
         var that = this;
         var data = JSON.stringify(json);
@@ -12173,16 +12189,20 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
             crossDomain: true,
             async: global_var.projectToggleWithSync,
             success: function (res) {
-                SAInputDesc.LoadInputDescription(res);
+                try {
+                    SAInputDesc.LoadInputDescription(res);
+                } catch (err) {
+                }
+                queue4ProLoad.loadInputDescDetailsOnProjectSelect = true;
+                executeCoreOfManualProSelection();
+		
+
             }
         });
     },
     loadDependencyOnProjectSelect: function () {
-        var json = {kv: {}};
-        try {
-            json.kv.cookie = getToken();
-        } catch (err) {
-        }
+        var json = initJSON();
+
         json.kv.fkProjectId = global_var.current_project_id;
         var that = this;
         var data = JSON.stringify(json);
@@ -12194,17 +12214,20 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
             crossDomain: true,
             async: global_var.projectToggleWithSync,
             success: function (res) {
-                SADependency.LoadDependency(res);
+                try {
+                    SADependency.LoadDependency(res);
+                } catch (err) {
+                }
+                queue4ProLoad.loadDependencyOnProjectSelect = true;
+                executeCoreOfManualProSelection();
+		
             }
         });
     },
 
     loadBacklogLabelOnProjectSelect: function () {
-        var json = {kv: {}};
-        try {
-            json.kv.cookie = getToken();
-        } catch (err) {
-        }
+        var json = initJSON();
+
         json.kv.fkProjectId = global_var.current_project_id;
         var that = this;
         var data = JSON.stringify(json);
@@ -12216,8 +12239,14 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
             crossDomain: true,
             async: global_var.projectToggleWithSync,
             success: function (res) {
-                SABacklogLabel.Load(res);
-                SABacklogLabel.LoadLabelBacklogDep(res);
+                try {
+                    SABacklogLabel.Load(res);
+                    SABacklogLabel.LoadLabelBacklogDep(res);
+                } catch (err) {
+                }
+                queue4ProLoad.loadBacklogLabelOnProjectSelect = true;
+                executeCoreOfManualProSelection();
+		
             }
         });
     },
@@ -14037,7 +14066,9 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
         Utility.addParamToUrl('current_us_task_id', global_var.current_us_task_id);
         $('#gui_component_main_view').focus();
 
-        this.getSendToApiListByStoryCard(id);
+        fillRelatedApi4InputEvent();
+
+//        this.getSendToApiListByStoryCard(id);
 //        this.getBacklogTaskStats();
     },
 
@@ -14096,6 +14127,8 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
     },
 
     getSendToApiListByStoryCard: function (storyCardId) {
+
+
         var outputList = SACore.GetBacklogDetails(storyCardId, "inputIds").split(',');
 
 
@@ -15190,24 +15223,24 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
         }
 
         this.addCommentInput4TaskDetails($('#addComment4Task_comment').val(),
-        $('#addComment4Task_commenttype').val(),
-         $('#addComment4Task_commentestimationhours').val(),
-                 fileName+ global_var.vertical_seperator + global_var.current_upload_canvas,
-                 global_var.current_backlog_id,
-                 global_var.current_us_task_id
-                 
-        
-        )
-        
+                $('#addComment4Task_commenttype').val(),
+                $('#addComment4Task_commentestimationhours').val(),
+                fileName + global_var.vertical_seperator + global_var.current_upload_canvas,
+                global_var.current_backlog_id,
+                global_var.current_us_task_id
+
+
+                )
+
     },
-    addCommentInput4TaskDetails:function(comment,commentType,estimatedHours,fileName,fkBacklogId,fkTaskId){
-      var json = initJSON();
+    addCommentInput4TaskDetails: function (comment, commentType, estimatedHours, fileName, fkBacklogId, fkTaskId) {
+        var json = initJSON();
         json.kv.comment = comment;
-        json.kv.commentType =commentType ;
-        json.kv.estimatedHours =estimatedHours;
-        json.kv.fileName = fileName ;
-        json.kv.fkBacklogId = fkBacklogId; 
-        json.kv.fkTaskId = fkTaskId ;
+        json.kv.commentType = commentType;
+        json.kv.estimatedHours = estimatedHours;
+        json.kv.fileName = fileName;
+        json.kv.fkBacklogId = fkBacklogId;
+        json.kv.fkTaskId = fkTaskId;
         json.kv.add2jira = $('#addTaskComment_add2jira').is(":checked") ? "1" : "0";
         var data = JSON.stringify(json);
         var that = this;
@@ -15234,7 +15267,7 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
             error: function () {
 //                Toaster.showError("error");
             }
-        });  
+        });
     },
     addCommentInput: function (fileName) {
         var json = {kv: {}};
@@ -21869,6 +21902,7 @@ Project.prototype = {
 
 //        this.showProjectDetailsMain4Permission(global_var.current_project_id);
 //        hideProgress();
+        clearQueue4ProLoad();
         this.toggleProjectDetails();
 
 
@@ -21893,6 +21927,9 @@ Project.prototype = {
         getUsers();
         getDBStructure4Select();
     },
+
+   
+
     showProjectDetailsMain4Permission: function (projectId) {
         if (!projectId) {
             return;

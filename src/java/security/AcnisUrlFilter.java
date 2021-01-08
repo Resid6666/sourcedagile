@@ -61,18 +61,18 @@ public class AcnisUrlFilter implements Filter {
                 if ("apdtok".equals(cookie.getName())) {
                     token = cookie.getValue();
                     if (token != null) {
-                        EntityCrUser user = null;
+                        EntityCrUser user = new EntityCrUser();
 
                         try {
                             user = SessionHandler.getTokenFromCookie(token);
+
+                            SessionManager.setUserName(Thread.currentThread().getId(), user.getUsername());
+                            SessionManager.setLang(Thread.currentThread().getId(), user.selectLang());
+                            SessionManager.setDomain(Thread.currentThread().getId(), user.selectDomain());
+                            SessionManager.setUserId(Thread.currentThread().getId(), user.getId());
+                            SessionManager.setCompanyId(Thread.currentThread().getId(), user.selectCompanyId());
                         } catch (JoseException ex) {
                         }
-
-                        SessionManager.setUserName(Thread.currentThread().getId(), user.getUsername());
-                        SessionManager.setLang(Thread.currentThread().getId(), user.selectLang());
-                        SessionManager.setDomain(Thread.currentThread().getId(), user.selectDomain());
-                        SessionManager.setUserId(Thread.currentThread().getId(), user.getId());
-                        SessionManager.setCompanyId(Thread.currentThread().getId(), user.selectCompanyId());
                     }
                     break;
                 }
@@ -94,7 +94,6 @@ public class AcnisUrlFilter implements Filter {
 //        System.out.println("web service token->>" + token);  
 //        String urlLink[] = Config.getProperty("url.none.auth.link").split(",");
 //        ArrayUtils.contains(res, arg);
-
         if (url.trim().length() == 0 || url.trim().equals("/tsn/")
                 || url.trim().equals("/tsn1/")
                 || url.trim().equals("/tsn2/") || url.trim().equals("/")) {

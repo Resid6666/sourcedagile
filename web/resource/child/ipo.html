@@ -1,21 +1,63 @@
 <div class="row us-sub-menu-body us-sm-detail" style="display: block;" id="smb-details-ipo">
-    <div class="row" style="height: 10vh;padding-top:20px;">
-        <div class="col-5 text-right">
-            <h6 id="smb-general-main-info">Current User Story</h6>
+    <div class="porjectNameProto">
+        <div class="col-7 ">
+            <p id="smb-general-main-info">Current User Story</p>
 
         </div>
-        <div class="col-1 text-left" style="padding:0px;margin:0px;padding-top:10px">
-            <i class="live-prototype-show-story-card fa fa-window-maximize" style="font-size: 10px;cursor: pointer;"></i>
-            <i class="live-prototype-show-live fa fa-eye" style="font-size: 10px;cursor: pointer;"></i>
+        <div class="col-5 ">
+            <button class="btn  btn-outline-secondary live-prototype-show-story-card"><i class="live-prototype-show-story-card1 fa fa-window-maximize" style="font-size: 10px;cursor: pointer;"></i></button>    
+            <button class="btn btn-outline-secondary live-prototype-show-live"><i class="live-prototype-show-live1 fa fa-eye" style="font-size: 10px;cursor: pointer;"></i></button>  
 
         </div>
-        <div class="col-6 text-right">
+        <div class="col-12 ">
             <span style="font-size: 12px;"> 
                 <a href="#" id="smb-general-main-previous-us" 
                    onclick="new UserStory().redirectUserStoryCore('20072217020507941241')"></a>
             </span>
         </div>
     </div>
+    <div class="toolbar">
+        <ul class=" cf">
+            <li value="cbox" title="checkbox"><a  class="inptadd"  href="#"><img src="resource/img/checkbox.png" alt=""></a></li>
+            <li value="txt" title="input"><a class="inptadd"  href="#"><img src="resource/img/input.png" alt=""></a></li>
+            <li value="date" title="date"><a  class="inptadd" href="#"><img src="resource/img/calendar.png" alt=""></a></li>
+            <li value="file" title="file picker"><a  class="inptadd" href="#"><img src="resource/img/attachment-clip.png" alt=""></a></li>
+            <li value="rbtn" title="Radio Button"><a  class="inptadd" href="#"><img src="resource/img/radio-on-button.png" alt=""></a></li>
+            <li value="cmb" title="Select Box"><a  class="inptadd" href="#"><img src="resource/img/select.png" alt=""></a></li>
+            <li value="ytube" title="Youtube"><a  class="inptadd" href="#"><img src="resource/img/youtube.png" alt=""></a></li>
+            <li value="img" title="Image"><a  class="inptadd" href="#"><img src="resource/img/upload.png" alt=""></a></li>
+            <li value="lbl" title="Label"><a  class="inptadd" href="#"><img src="resource/img/price-tag.png" alt=""></a></li>
+            <li value="txa" title="TextArea"><a  class="inptadd" href="#"><img src="resource/img/text.png" alt=""></a></li>
+            <li value="mcmb" title="Multi Select Box"><a  class="inptadd" href="#"><img src="resource/img/favourites-selection.png" alt=""></a></li>
+            <li value="irbtn" title="Inner Radio Button"><a  class="inptadd" href="#"><img src="resource/img/radio-button-selection.png" alt=""></a></li>
+            <li value="icbox" title="Inner CheckBox select"><a  class="inptadd" href="#"><img src="resource/img/checkbox-selected.png" alt=""></a></li>
+            <!--  <li><a href="#"><img src="resource/img/checkbox.png" alt=""></a></li>
+             <li ><a href="#"><img src="resource/img/checkbox.png" alt=""></a></li> -->
+            <li value="hr" title="Inner Line"><a class="inptadd"  href="#"><img src="resource/img/substract.png" alt=""></a></li>
+            <li value="btn" title="Button"><a class="inptadd"  href="#"><img src="resource/img/push.png" alt=""></a></li>
+            <li value="icon" title="Icons"><a  class="inptadd" href="#"><img src="resource/img/plugin.png" alt=""></a></li>
+            <li value="iedit" title="Inner edit"><a  class="inptadd" href="#"><img src="resource/img/edit.png" alt=""></a></li>
+            <li value="hlink" title="Hiperlink"><a  class="inptadd" href="#"><img src="resource/img/link.png" alt=""></a></li>
+            <li value="hdn" title="Hidden"><a class="inptadd"  href="#"><img src="resource/img/visibility.png" alt=""></a></li>
+            <li value="fhtml" title="Free Html"><a  class="inptadd" href="#"><img src="resource/img/html5.png" alt=""></a></li>
+            <li value="fcomp" title="Free Component"><a class="inptadd"  href="#"><img src="resource/img/web.png" alt=""></a></li>
+
+            <li value="sctn" title="Section"><a onclick="addSectionAsInput()" href="#"><img src="resource/img/sections.png" alt=""></a></li>
+            <li value="tab" title="Tabs"><a onclick="addTabAsInput()" href="#"><img src="resource/img/tabs.png" alt=""></a></li>
+            <li value="Tbl" title="Table"><a href="#" onclick="addTableAsInput()"><img src="resource/img/table.png" alt=""></a></li>
+
+
+        </ul>
+        <div class="editsect" >
+            <!--  <button class="btn dragToolbar"><i class="fas fa-arrows-alt"></i></button> -->
+            <button class="btn verticalBtn"><i class="fas fa-grip-vertical"></i></button>
+            <button class="btn horizontalBtn"><i class="fas fa-grip-horizontal"></i></button>
+            <button class="btn minimzeBtn"><i class="fas fa-window-minimize"></i></button>
+
+        </div>
+        <div role="button" class=" btn btn-secondary maximizeBtn"><i class="fas fa-plus"></i></div>
+    </div>
+
     <!-- start 10.08.2020 -->
 
     <!-- <div class="row zoom-section"> -->
@@ -100,7 +142,45 @@
 
         <!-- end 10.08.2020 -->
 
+        <div class="draggablePopup ui-draggable" style="display: none;">
+            <div class="closePopupIn">
+                <button><i class="fas fa-times"></i></button>
+            </div>
+            <div id="ipo-tab-setting-inputAdd" class="tab-pane" style="max-height1: 81vh;">               
 
+                <div class="ipo-divider ipo-1-hisse only-gui-design">
+
+                    <table class=" table-hover spilted input-name-add-table" id="tblIPOList">
+                        <thead>
+                            <tr class="input-name-checkbox">
+                                <th></th>
+                                <th>
+                                    <input type="checkbox" id="us_input_list_check_all" onclick="new UserStory().toggleAllInput(this)">
+                                </th>
+                                <th>
+                                    <input type="text" style="height: 0px;" class="input-name" onchange="new UserStory().insertNewInput()" id="us-ipo-inputname" placeholder="Please Enter Input Name!">
+                                </th>
+
+                                <th>
+                                    <button class="btn newin dropdown-toggle fa fa-ellipsis-h description-delete-btn" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:grey;width:10px;padding: 4px 17px 4px 5px;margin-bottom: 5px;" aria-hidden="true">
+                                    </button>
+                                    <div class="dropdown-menu " aria-labelledby="dropdownMenuLink">
+                                        <button class="dropdown-item firstbut " data-toggle="modal" data-target="#createTableForm" onclick="new UserStory().createTableFormModal()" style="font-size: 12px;">Create Table Form</button>
+                                        <button class="dropdown-item firstbut " data-toggle="modal" data-target="#copyMoveInputsModal" onclick="new UserStory().copyMoveInputsModal()" style="font-size: 12px;">Copy/Move</button>
+                                        <button class="dropdown-item firstbut " onclick="new UserStory().deleteInputs()" style="font-size: 12px;">Delete</button>
+                                    </div>
+                                </th>
+
+                            </tr>
+
+                        </thead>
+                        <tbody style="cursor:pointer"><tr class="us-ipo-input-tr new-input-row active" id="ipo_tr_20111611165309125337" pid="20111611165309125337" iname="Name" itable=""><td>1</td><td><input type="checkbox" id="checkbox_20111611165309125337" onclick="makeClassActive( & quot; 20111611165309125337 & quot; )" class="us-input-list-item-check-box-class" value="20111611165309125337"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr trashbtn" pid="20111611165309125337" iname="Name" "="" itable="">Name</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20111611165309125337')"><i class="fa fa-trash dust-bin" aria-hidden="true"></i></a></td></tr><tr><td></td><td></td><td></td><td></td></tr></tbody>
+                    </table>
+
+                </div>
+            </div>
+
+        </div>
 
         <!-- </div> -->
 
@@ -214,7 +294,7 @@
                 <div class="col-1 order-2 tool-panel-col" style="height1: 81vh;">
                     <ul class="nav nav-tabs tool-panel" role="tablist" style="display: inline-block;">
                         <li class="nav-item gui-design-is-api" id="input-btn-icon" >
-                            <a class="nav-link nav-link-custom tool-item"  data-toggle="tab" href="#ipo-tab-setting-inputAdd" >
+                            <a class="nav-link nav-link-custom tool-item"   href="#ipo-tab-setting-inputAdd" >
                                 <i class="far fa-address-card"></i>
                                 <br>
                                 <span>Input</span>
@@ -325,40 +405,7 @@
                     <div class="tab-content">
 
                         <div class="tab-content tab-content-style">
-                            <div id="ipo-tab-setting-inputAdd" class="container tab-pane" style="max-height1: 81vh;">
-                                <div class="ipo-divider ipo-1-hisse only-gui-design">
-                                    <table class=" table-hover spilted input-name-add-table" id="tblIPOList" >
-                                        <thead>
-                                            <tr class="input-name-checkbox">
-                                                <th></th>
-                                                <th>
-                                                    <input type="checkbox" id="us_input_list_check_all" onclick="new UserStory().toggleAllInput(this)">
-                                                </th>
-                                                <th>
-                                                    <input type="text" style="height: 0px;" class="input-name" onchange="new UserStory().insertNewInput()" id="us-ipo-inputname" placeholder="Please Enter Input Name!">
-                                                </th>
 
-                                                <th>
-                                                    <button class="btn newin dropdown-toggle fa fa-ellipsis-h description-delete-btn" 
-                                                            href="#" role="button" id="dropdownMenuLink" 
-                                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                                            style="color:grey;width:10px;padding: 4px 17px 4px 5px;margin-bottom: 5px;">
-                                                    </button>
-                                                    <div class="dropdown-menu " aria-labelledby="dropdownMenuLink">
-                                                        <button class="dropdown-item firstbut " data-toggle="modal" data-target="#createTableForm" onclick="new UserStory().createTableFormModal()" style="font-size: 12px;">Create Table Form</button>
-                                                        <button class="dropdown-item firstbut " data-toggle="modal" data-target="#copyMoveInputsModal" onclick="new UserStory().copyMoveInputsModal()" style="font-size: 12px;">Copy/Move</button>
-                                                        <button class="dropdown-item firstbut "   onclick="new UserStory().deleteInputs()" style="font-size: 12px;">Delete</button>
-                                                    </div>
-                                                </th>
-
-                                            </tr>
-
-                                        </thead>
-                                        <tbody style="cursor:pointer"><tr class="us-ipo-input-tr new-input-row active" id="ipo_tr_200706173015031210315" pid="200706173015031210315" iname="jjjjcc" itable=""><td>1</td><td><input type="checkbox" id="checkbox_200706173015031210315" onclick="makeClassActive( & quot; 200706173015031210315 & quot; )" class="us-input-list-item-check-box-class" value="200706173015031210315"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="200706173015031210315" iname="jjjjcc">jjjjcc</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '200706173015031210315')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr class="us-ipo-input-tr new-input-row" id="ipo_tr_20070817371101176613" pid="20070817371101176613" iname="name" itable=""><td>2</td><td><input type="checkbox" id="checkbox_20070817371101176613" onclick="makeClassActive( & quot; 20070817371101176613 & quot; )" class="us-input-list-item-check-box-class" value="20070817371101176613"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="20070817371101176613" iname="name">name</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20070817371101176613')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr class="us-ipo-input-tr new-input-row" id="ipo_tr_20071111100407774901" pid="20071111100407774901" iname="mmvmv" itable=""><td>3</td><td><input type="checkbox" id="checkbox_20071111100407774901" onclick="makeClassActive( & quot; 20071111100407774901 & quot; )" class="us-input-list-item-check-box-class" value="20071111100407774901"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="20071111100407774901" iname="mmvmv">mmvmv</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20071111100407774901')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr class="us-ipo-input-tr new-input-row" id="ipo_tr_200713084204005710681" pid="200713084204005710681" iname="gggg" itable=""><td>4</td><td><input type="checkbox" id="checkbox_200713084204005710681" onclick="makeClassActive( & quot; 200713084204005710681 & quot; )" class="us-input-list-item-check-box-class" value="200713084204005710681"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="200713084204005710681" iname="gggg">gggg</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '200713084204005710681')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr class="us-ipo-input-tr new-input-row" id="ipo_tr_20071311015204756754" pid="20071311015204756754" iname="surname" itable=""><td>5</td><td><input type="checkbox" id="checkbox_20071311015204756754" onclick="makeClassActive( & quot; 20071311015204756754 & quot; )" class="us-input-list-item-check-box-class" value="20071311015204756754"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="20071311015204756754" iname="surname">surname</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20071311015204756754')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr class="us-ipo-input-tr new-input-row" id="ipo_tr_20071311015207744813" pid="20071311015207744813" iname="image" itable=""><td>6</td><td><input type="checkbox" id="checkbox_20071311015207744813" onclick="makeClassActive( & quot; 20071311015207744813 & quot; )" class="us-input-list-item-check-box-class" value="20071311015207744813"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="20071311015207744813" iname="image">image</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20071311015207744813')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr class="us-ipo-input-tr new-input-row" id="ipo_tr_20071311015602091560" pid="20071311015602091560" iname="jfjfj" itable=""><td>7</td><td><input type="checkbox" id="checkbox_20071311015602091560" onclick="makeClassActive( & quot; 20071311015602091560 & quot; )" class="us-input-list-item-check-box-class" value="20071311015602091560"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="20071311015602091560" iname="jfjfj">jfjfj</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20071311015602091560')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr class="us-ipo-input-tr new-input-row" id="ipo_tr_20071320042401054148" pid="20071320042401054148" iname="jjjj" itable=""><td>8</td><td><input type="checkbox" id="checkbox_20071320042401054148" onclick="makeClassActive( & quot; 20071320042401054148 & quot; )" class="us-input-list-item-check-box-class" value="20071320042401054148"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="20071320042401054148" iname="jjjj">jjjj</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20071320042401054148')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr class="us-ipo-input-tr new-input-row" id="ipo_tr_20071320055204566422" pid="20071320055204566422" iname="hhhhfhf" itable=""><td>9</td><td><input type="checkbox" id="checkbox_20071320055204566422" onclick="makeClassActive( & quot; 20071320055204566422 & quot; )" class="us-input-list-item-check-box-class" value="20071320055204566422"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="20071320055204566422" iname="hhhhfhf">hhhhfhf</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20071320055204566422')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr class="us-ipo-input-tr new-input-row" id="ipo_tr_20071320074001006039" pid="20071320074001006039" iname="ggg" itable=""><td>10</td><td><input type="checkbox" id="checkbox_20071320074001006039" onclick="makeClassActive( & quot; 20071320074001006039 & quot; )" class="us-input-list-item-check-box-class" value="20071320074001006039"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="20071320074001006039" iname="ggg">ggg</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20071320074001006039')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr class="us-ipo-input-tr new-input-row" id="ipo_tr_20071320092200927981" pid="20071320092200927981" iname="jjjj" itable=""><td>11</td><td><input type="checkbox" id="checkbox_20071320092200927981" onclick="makeClassActive( & quot; 20071320092200927981 & quot; )" class="us-input-list-item-check-box-class" value="20071320092200927981"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="20071320092200927981" iname="jjjj">jjjj</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20071320092200927981')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr class="us-ipo-input-tr new-input-row" id="ipo_tr_20071320123207125049" pid="20071320123207125049" iname="jjj" itable=""><td>12</td><td><input type="checkbox" id="checkbox_20071320123207125049" onclick="makeClassActive( & quot; 20071320123207125049 & quot; )" class="us-input-list-item-check-box-class" value="20071320123207125049"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="20071320123207125049" iname="jjj">jjj</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20071320123207125049')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr class="us-ipo-input-tr new-input-row" id="ipo_tr_20071409144607013424" pid="20071409144607013424" iname="name" itable=""><td>13</td><td><input type="checkbox" id="checkbox_20071409144607013424" onclick="makeClassActive( & quot; 20071409144607013424 & quot; )" class="us-input-list-item-check-box-class" value="20071409144607013424"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="20071409144607013424" iname="name">name</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20071409144607013424')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr class="us-ipo-input-tr new-input-row" id="ipo_tr_20071409144809799801" pid="20071409144809799801" iname="surname" itable=""><td>14</td><td><input type="checkbox" id="checkbox_20071409144809799801" onclick="makeClassActive( & quot; 20071409144809799801 & quot; )" class="us-input-list-item-check-box-class" value="20071409144809799801"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="20071409144809799801" iname="surname">surname</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20071409144809799801')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr class="us-ipo-input-tr new-input-row" id="ipo_tr_20071409145205177818" pid="20071409145205177818" iname="middlename" itable=""><td>15</td><td><input type="checkbox" id="checkbox_20071409145205177818" onclick="makeClassActive( & quot; 20071409145205177818 & quot; )" class="us-input-list-item-check-box-class" value="20071409145205177818"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="20071409145205177818" iname="middlename">middlename</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20071409145205177818')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr class="us-ipo-input-tr new-input-row" id="ipo_tr_20071517544200563416" pid="20071517544200563416" iname="sadfasdfasdf" itable=""><td>16</td><td><input type="checkbox" id="checkbox_20071517544200563416" onclick="makeClassActive( & quot; 20071517544200563416 & quot; )" class="us-input-list-item-check-box-class" value="20071517544200563416"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr" pid="20071517544200563416" iname="sadfasdfasdf">sadfasdfasdf</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20071517544200563416')"><i class="fa fa-trash dust-bin"></i></a></td></tr><tr><td></td><td></td><td></td><td></td></tr></tbody>
-                                    </table>
-
-                                </div>
-                            </div>
                             <div id="ipo-tab-setting-animation" class="container tab-pane" style="max-height1: 81vh;">
                                 <div class="ipo-divider ipo-1-hisse only-gui-design">
                                     <br><br>

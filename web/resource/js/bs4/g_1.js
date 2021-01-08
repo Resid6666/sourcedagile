@@ -21,9 +21,11 @@ $(function () {
     $(document).on("click", '.live-prototype-switch', function (e) {
         $("#live-prototype-show-key").toggle(600);
     });
-    
- 
 
+
+    $(document).on('click', '.closePopupIn', function (event) {
+        $(this).parent().hide('fast')
+    });
 
 
     $(document).on("change", ".input-on-off input", function (e) {
@@ -387,32 +389,56 @@ $(document).on("click", "#canvas-btn-icon", function () {
 
 })
 //  5. tool panel-input-add
+//11.12.2020 Revan
 $(document).on("click", "#input-btn-icon", function () {
-    $('#ipo-tab-setting-inputAdd').addClass('active');
-    ch5++;
-    ch = 0;
-    ch2 = 0;
-    ch3 = 0;
-    ch4 = 0;
-    ch6 = 0;
-    $('#gui-desigin-component-view-main-div-id').css('display', 'block');
-    $('.home_icon_menu-item').css('right', '27%');
-    $('.home_icon_menu-open-button').css('right', '27%');
-    $('#guid-desigin-main-div-id').removeClass('col-11');
-    $('#guid-desigin-main-div-id').addClass('col-8');
-    if (ch5 == 2) {
-        ch5 = 0;
+    $('.draggablePopup').toggle('fast');
+    $('.draggablePopup').draggable({
+        containment: "parent"
+    });
+})
 
-        $('#gui-desigin-component-view-main-div-id').css('display', 'none');
-        $('#ipo-tab-setting-inputAdd').removeClass('active');
-        $('.home_icon_menu-item').css('right', '7%');
-        $('.tool-item').removeClass('active');
-        $('.home_icon_menu-open-button').css('right', '7%');
-        $('#guid-desigin-main-div-id').removeClass('col-8');
-        $('#guid-desigin-main-div-id').addClass('col-11');
-    }
+var popUpt = `<div   class="popup-Elements" data-toggle="modal" data-target="#exampleModal" id="popup-btn" >
+  <span class="editBtnLVSect deleteBTn" title="Delete Input"><i class="fas fa-trash-alt"></i></span>
+
+  </div>`
+
+
+$(document).on("mouseenter", ".draggable", function () {
+
+
+    $(".popup-Elements").remove();
+
+    $("[data-edit='dataText']").removeAttr("data-edit");
+    $(this).attr("data-edit", "dataText");
+    $(this).append(popUpt)
+
+
 
 })
+
+
+$(document).on("dblclick", " img", function () {
+    $("#full-image").attr("src", $(this).attr("src"));
+    $('#image-viewer').show();
+});
+
+$(document).on("click", "#image-viewer .close", function () {
+    $('#image-viewer').hide();
+});
+$(document).on("click", ".viewbtnIpo", function () {
+
+    if (window.opener) {
+        window.opener.location.href = 'viewer.html';
+    } else {
+        window.open('viewer.html', 'Test');
+    }
+
+    window.close();
+});
+
+
+//Revan
+
 //  6. tool panel-animation
 $(document).on("click", "#animation-icon", function () {
     $('#ipo-tab-setting-animation').addClass('active');
@@ -544,9 +570,93 @@ $(document).on("click", ".openNavhide", function () {
 
 })
 
-function addNewBug(el){
+
+
+
+setTimeout(function () {
+    $(".toolbar").draggable({});
+    console.log("QWqwdqwd");
+}, 3200);
+
+$(document).on("click", ".cf li .inptadd", function () {
+
+    let valin = $(this).parent().attr('value');
+
+
+
+    addInputAsInput();
+
+
+    setTimeout(function () {
+        $('#addNewComponentModal').find('#exampleModal-new-input-name').focus();
+
+    }, 700);
+    $('#addNewComponentModal').find('#exampleModal-new-component-type').val(valin);
+
+})
+
+$(document).on('keypress', '#exampleModal-new-input-name', function (event) {
+
+    if (event.keyCode == 13) {
+
+        createNewInputComponent(this);
+
+
+    }
+
+});
+
+function closeNewInputComponent() {
+
+    $('#addNewComponentModal').modal('hide');
+}
+
+
+$(document).on("click", ".toolbar .minimzeBtn", function () {
+
+    $('.toolbar .cf').css('display', 'none');
+    $('.toolbar .editsect').css('display', 'none');
+    $('.toolbar .maximizeBtn').css('display', 'block');
+
+
+});
+
+$(document).on("click", ".toolbar .maximizeBtn", function () {
+
+    $('.toolbar .cf').css('display', 'flex');
+    $('.toolbar .editsect').css('display', 'flex');
+    $('.toolbar .maximizeBtn').css('display', 'none');
+
+});
+$(document).on("click", ".toolbar .horizontalBtn", function () {
+
+    $('.toolbar .cf').css('width', 'auto');
+    $('.toolbar .cf').css('height', '30px');
+    $('.toolbar .horizontalBtn').css('display', 'none');
+    $('.toolbar .verticalBtn').css('display', 'block');
+
+
+});
+
+$(document).on("click", ".toolbar .verticalBtn", function () {
+
+    $('.toolbar .cf').css('width', '60px');
+    $('.toolbar .cf').css('height', 'auto');
+    $('.toolbar .horizontalBtn').css('display', 'block');
+    $('.toolbar .verticalBtn').css('display', 'none');
+
+});
+
+
+
+
+
+
+
+
+function addNewBug(el) {
     var bugDesc = $('#id').val();
-     if (!(bugDesc))
+    if (!(bugDesc))
         return;
 
     var json = {kv: {}};
@@ -586,3 +696,6 @@ function addNewBug(el){
         }
     });
 }
+
+
+

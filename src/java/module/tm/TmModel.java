@@ -190,6 +190,73 @@ public class TmModel {
     /////////////////////////////////////////
     //// type code here
     ///////////////////////////////////////////////
+    
+     public Carrier copyClassCodeAction(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fnList", cp.hasValue(carrier, "fnList"));
+        carrier.addController("projectList", cp.hasValue(carrier, "projectList"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String fnList[] = carrier.get("fnList").split(",");
+        String projectList[] = carrier.get("projectList").split(",");
+        
+        for (String fn : fnList){
+            if (fn.length()==0){
+                    continue;
+                }
+            
+            EntityTmGuiClass   ent =  new EntityTmGuiClass();
+            ent.setId(fn);
+            EntityManager.select(ent);
+            
+            for (String pro : projectList  ){
+                if (  pro.length()==0){
+                    continue;
+                }
+                
+                ent.setFkProjectId(pro);
+                    EntityManager.insert(ent);
+            }
+        }
+
+        return carrier;
+    }
+    
+    public Carrier copyJSCodeAction(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fnList", cp.hasValue(carrier, "fnList"));
+        carrier.addController("projectList", cp.hasValue(carrier, "projectList"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String fnList[] = carrier.get("fnList").split(",");
+        String projectList[] = carrier.get("projectList").split(",");
+        
+        for (String fn : fnList){
+            if (fn.length()==0){
+                    continue;
+                }
+            
+            EntityTmJsCode ent =  new EntityTmJsCode();
+            ent.setId(fn);
+            EntityManager.select(ent);
+            
+            for (String pro : projectList  ){
+                if (  pro.length()==0){
+                    continue;
+                }
+                
+                ent.setFkProjectId(pro);
+                    EntityManager.insert(ent);
+            }
+        }
+
+        return carrier;
+    }
+
     public Carrier getModulePermissionListByOwn(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
 
@@ -652,6 +719,21 @@ public class TmModel {
 
         return carrier;
     }
+    
+        public static Carrier getGlobalFunctionNamesByProject(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmJsCode ent = new EntityTmJsCode();
+        ent.addSortBy("fnDescription");
+        ent.setFnType("core");
+        ent.setSortByAsc(true);
+        ent.setIsGlobal("1");
+        carrier = EntityManager.select(ent);
+        return carrier;
+    }
 
     public static Carrier getFunctionNamesByProject(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
@@ -666,7 +748,6 @@ public class TmModel {
         ent.setSortByAsc(true);
         ent.setFkProjectId(carrier.get("fkProjectId"));
         carrier = EntityManager.select(ent);
-
         return carrier;
     }
 
@@ -827,6 +908,22 @@ public class TmModel {
 
         EntityTmJsCode ent = new EntityTmJsCode();
         ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.addSortBy(EntityTmJsCode.FN_DESCRIPTION);
+        ent.setSortByAsc(true);
+        carrier = EntityManager.select(ent);
+
+        return carrier;
+    }
+    
+     public static Carrier getJsGlobalCodeList(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmJsCode ent = new EntityTmJsCode();
+        ent.setIsGlobal("1");
         ent.addSortBy(EntityTmJsCode.FN_DESCRIPTION);
         ent.setSortByAsc(true);
         carrier = EntityManager.select(ent);
@@ -6217,12 +6314,11 @@ public class TmModel {
         } catch (Exception e) {
         }
 
-        temporarySetStatusInYelo(ent.getId(),ent.getTaskStatus());
-        
+        temporarySetStatusInYelo(ent.getId(), ent.getTaskStatus());
+
         String fieldName = getUpdatedFieldName(carrier.get("type"));
         sendMailNotificationOnChange(ent.getId(), ent.getFkBacklogId(), fieldName);
 
-        
         return carrier;
     }
 
@@ -12217,11 +12313,69 @@ public class TmModel {
 
             setNewBacklogHistory4InputNew(ent);
 
+            copyInputAttributesByInputId(oldId, ent.getId(), ent.getFkBacklogId(), ent.getFkProjectId());
+            copyInputRelatedEvenByInputId(oldId, ent.getId(), ent.getFkProjectId());
+            copyInputClassesByInputId(oldId, ent.getId(), ent.getFkProjectId());
             copyInputDescriptionByBacklogId(oldId, ent.getId(), projectId);
 
         }
         increaseBacklogInputCount(newId, rc);
 
+    }
+
+    private void copyInputRelatedEvenByInputId(String inputId, String newId, String projectId) throws QException {
+        if (inputId.trim().length() == 0) {
+            return;
+        }
+
+        EntityTmInputActionRel ent = new EntityTmInputActionRel();
+        ent.setFkInputId(inputId);
+        Carrier c = EntityManager.select(ent);
+        String tn = ent.toTableName();
+        int rc = c.getTableRowCount(tn);
+        for (int i = 1; i <= rc; i++) {
+            EntityManager.mapCarrierToEntity(c, tn, rc - i, ent);
+            ent.setFkProjectId(projectId);
+            ent.setFkInputId(newId);
+            EntityManager.insert(ent);
+        }
+    }
+
+    private void copyInputClassesByInputId(String inputId, String newId, String projectId) throws QException {
+        if (inputId.trim().length() == 0) {
+            return;
+        }
+
+        EntityTmInputClassRelation ent = new EntityTmInputClassRelation();
+        ent.setFkInputId(inputId);
+        Carrier c = EntityManager.select(ent);
+        String tn = ent.toTableName();
+        int rc = c.getTableRowCount(tn);
+        for (int i = 1; i <= rc; i++) {
+            EntityManager.mapCarrierToEntity(c, tn, rc - i, ent);
+            ent.setFkProjectId(projectId);
+            ent.setFkInputId(newId);
+            EntityManager.insert(ent);
+        }
+    }
+
+    private void copyInputAttributesByInputId(String inputId, String newId, String backlogId, String projectId) throws QException {
+        if (inputId.trim().length() == 0) {
+            return;
+        }
+
+        EntityTmInputAttributes ent = new EntityTmInputAttributes();
+        ent.setFkInputId(inputId);
+        Carrier c = EntityManager.select(ent);
+        String tn = ent.toTableName();
+        int rc = c.getTableRowCount(tn);
+        for (int i = 1; i <= rc; i++) {
+            EntityManager.mapCarrierToEntity(c, tn, rc - i, ent);
+            ent.setFkProjectId(projectId);
+            ent.setFkBacklogId(backlogId);
+            ent.setFkInputId(newId);
+            EntityManager.insert(ent);
+        }
     }
 
     private void copyInputDescriptionByBacklogId(String inputId, String newId, String projectId) throws QException {

@@ -203,7 +203,7 @@ var Component = {
             }
         },
         addClassToElement: function (el, comp) {
-            
+
             try {
                 var classElList = cr_comp_input_classes[comp.id];
                 if (classElList) {
@@ -351,7 +351,7 @@ var Component = {
                 .addClass(comp.addTooltip ? 'tooltipMan' : "") //muveqqeti baglayaq
                 .addClass('component-class')
                 .addClass('component-container-dashed')
-                .addClass('col-' + comp.cellNo);
+                .addClass('col-lg-' + comp.cellNo);
 
         if (global_var.current_modal === 'loadLivePrototype') {
             div.attr('ondragover', 'allowDrop(event)')
@@ -633,7 +633,7 @@ var Component = {
             return thead;
         },
         TableEmptyMessage: function (tableId) {
-            var msg = '<div class="col-12" style="padding:30px;text-align:center">' +
+            var msg = '<div class="col-lg-12" style="padding:30px;text-align:center">' +
                     '<h5> No columns (inputs) have been entered on this table</h5>' +
                     '<i class="fa fa-plus" title="Add new column" onclick="fillInputTableColumnsCombo(\'' + tableId + '\')" \n\
                     style="font-size: 30px; color: rgb(213, 214, 218); cursor: pointer;" aria-hidden="true"></i>'
@@ -733,6 +733,11 @@ var Component = {
                         val = Component.GetComponentHtmlNew(comp);
                     }
 
+
+
+
+
+
                     var td12 = $("<td>")
                             .css("min-width", "70px")
                             .addClass("component-input-class")
@@ -742,6 +747,21 @@ var Component = {
 //                            .attr("sa-data-table-row-id","")
                             .val(val)
                             .append(val);
+
+                    //manage input relation with API 
+                    //add dependency for API Call classes and attributes
+                    //as sa_data_table_col_rel_{apiId}_{inputId}
+                    var dependentBacklogId = SAInput.getInputDetails(inputId, "fkDependentBacklogId");
+                    var dependentInputId = SAInput.getInputDetails(inputId, "fkDependentOutputId");
+                    var inputSelectedField4Rel = SAInput.getInputDetails(dependentInputId, 'inputName');
+
+                    if (dependentBacklogId && dependentBacklogId.length > 0) {
+                        td12.attr("rel_api", dependentBacklogId)
+                                .attr('rel_core_inputid', inputId)
+                                .attr('rel_core_selected_field', inputSelectedField4Rel)
+                                .addClass("has_table_relation_td")
+                                .addClass("sa_data_table_col_rel_" + dependentBacklogId + "_" + inputId);
+                    }
 
                     if (global_var.current_modal !== 'loadLivePrototype' &&
                             pairShowColumn[inputId].trim() === '1') {
@@ -763,7 +783,7 @@ var Component = {
     },
     InputTable: function (comp) {
         var elDiv = (global_var.current_modal === 'loadLivePrototype' && comp.showProperties)
-                ? $('<div class="col-12 text-right">')
+                ? $('<div class="col-lg-12 text-right">')
                 .attr("id", "comp_id_" + comp.id)
                 .css("padding-top", "15px")
                 .append(" &nbsp;")
@@ -928,7 +948,7 @@ var Component = {
         },
         GenPropertiesLine: function (comp) {
             var elDiv = (global_var.current_modal === 'loadLivePrototype' && comp.showProperties)
-                    ? $('<div class="col-12 text-right">')
+                    ? $('<div class="col-lg-12 text-right">')
                     .attr("id", "comp_id_" + comp.id)
                     .css("padding-top", "15px")
                     .append(" &nbsp;")
@@ -1024,7 +1044,7 @@ var Component = {
             return thead;
         },
         TabEmptyMessage: function (tableId) {
-            var msg = '<div class="col-12" style="padding:30px;text-align:center">' +
+            var msg = '<div class="col-lg-12" style="padding:30px;text-align:center">' +
                     '<h5> No User Stories have been entered on this tab</h5>' +
                     '<i class="fa fa-plus" title="Add new column" onclick="addUserStoryToTabModal(\'' + tableId + '\')" \n\
                     style="font-size: 30px; color: rgb(213, 214, 218); cursor: pointer;" aria-hidden="true"></i>'
@@ -1146,7 +1166,7 @@ var Component = {
     Image: function (comp) {
         var div = Component.ContainerDiv(comp);
 
-        var emptyMsg = $('<div class="col-12 text-center">')
+        var emptyMsg = $('<div class="col-lg-12 text-center">')
                 .css("border", "1px solid gray")
                 .append($('<h5>').append("No Image"))
                 .append((comp.showProperties) ? $("<i class='fa fa-plus'>")
@@ -1177,9 +1197,11 @@ var Component = {
         var star = Component.AddMandatoryStar(comp);
         var el = $('<input></input>')
                 .addClass("form-control")
+                .attr("sa-type","filepicker")
                 .attr('style', gui_component.defaultCSS.FilePicker + Component.ReplaceCSS(comp.css))
                 .attr('type', 'file')
                 .attr('value', comp.content);
+         
         Component.ComponentEvent.Init(el, comp);
         var div = Component.ContainerDiv(comp);
         if (comp.withLabel === true) {
@@ -1190,12 +1212,15 @@ var Component = {
             div.append(comp.isLabelInTop ? "<br>" : "");
         }
 
-        div.append(el);
+
+        div.append($('<form><form>').append(el));
+        div.append('<div id="progress_bar_new"></div>');
         return  $('<div></div>').append(div).html();
     },
     Date: function (comp) {
         var star = Component.AddMandatoryStar(comp);
         var el = $('<input></input>')
+                .attr('sa-type', "date")
                 .addClass("form-control")
                 .attr('style', gui_component.defaultCSS.Date + Component.ReplaceCSS(comp.css))
                 .attr('type', 'date')
@@ -1256,17 +1281,9 @@ var Component = {
         var star = Component.AddMandatoryStar(comp);
         var select = $('<select></select>')
                 .addClass("form-control")
+                .attr("sa-type", 'select')
                 .attr('style', gui_component.defaultCSS.SelectBox + Component.ReplaceCSS(comp.css));
-        if (comp.content) {
-            var r = comp.content.split(/\r*\n/);
-            for (var i = 0; i < r.length; i++) {
-                select.append($('<option></option>').append(r[i]));
-            }
-        } else {
-            for (var i = 1; i < 4; i++) {
-                select.append($('<option></option>').append('Value ' + (i)));
-            }
-        }
+
         Component.ComponentEvent.Init(select, comp);
         var div = Component.ContainerDiv(comp);
         if (comp.withLabel === true) {
@@ -1283,6 +1300,17 @@ var Component = {
         if (selectFromBacmkogId) {
             var selectedField = SAInput.GetInputName(selectFromInputId)
             triggerAPI2Fill(select, selectFromBacmkogId, selectedField);
+        } else {
+            if (comp.content) {
+                var r = comp.content.split(/\r*\n/);
+                for (var i = 0; i < r.length; i++) {
+                    select.append($('<option></option>').append(r[i]));
+                }
+            } else {
+                for (var i = 1; i < 4; i++) {
+                    select.append($('<option></option>').append('Value ' + (i)));
+                }
+            }
         }
 
         div.append(select);
@@ -1377,6 +1405,7 @@ var Component = {
             var r = comp.content.split(/\r*\n/);
             for (var i = 0; i < r.length; i++) {
                 var el = $('<input></input>')
+                        .attr('sa-type', 'checkbox')
                         .attr('type', 'checkbox')
                         .attr('checked', true)
                         ;
@@ -1394,6 +1423,7 @@ var Component = {
             for (var i = 1; i <= 3; i++) {
                 var el = $('<input></input>')
                         .attr('type', 'checkbox')
+                        .attr('sa-type', 'checkbox')
                         .attr('name', 'optradio')
                         .attr('checked', true);
                 Component.ComponentEvent.Init(el, comp);
@@ -1463,6 +1493,7 @@ var Component = {
         var star = Component.AddMandatoryStar(comp);
         var div = Component.ContainerDiv(comp);
         var el = $('<input></input>')
+                .attr('sa-type', 'checkbox')
                 .attr('type', 'checkbox');
         Component.ComponentEvent.Init(el, comp);
         div.append(el)
@@ -1528,7 +1559,7 @@ var Component = {
         var star = Component.AddMandatoryStar(comp);
         var el = $("<div>");
 
-        if (comp.content.length > 1) {
+        if (comp.content && comp.content.length > 1) {
             el = $(replaceTagsReverse(comp.content));
         }
         el.attr('style', Component.ReplaceCSS(comp.css))
@@ -1567,7 +1598,7 @@ var Component = {
     SectionAction: {
         GetPropertiesSection: function (comp) {
             var elDiv = (global_var.current_modal === 'loadLivePrototype' && comp.showProperties)
-                    ? $('<div class="col-12 text-right">')
+                    ? $('<div class="col-lg-12 text-right">')
                     .addClass("live-prototype-component-properties")
                     .css("display", "none")
                     .attr("id", "comp_id_" + comp.id)
@@ -1588,7 +1619,7 @@ var Component = {
             return elDiv;
         },
         SectionEmptyMessage: function (tableId) {
-            var msg = '<div class="col-12" style="padding:30px;text-align:center">' +
+            var msg = '<div class="col-lg-12" style="padding:30px;text-align:center">' +
                     '<h5> No User Story has been entered on this section</h5>' +
                     '<i class="fa fa-plus" title="Add User Story" onclick="fillSectionUserStory(\'' + tableId + '\')" \n\
                     style="font-size: 30px; color: rgb(213, 214, 218); cursor: pointer;" aria-hidden="true"></i>'
@@ -1596,7 +1627,7 @@ var Component = {
             return msg;
         },
         FreeEmptyEmptyMessage: function () {
-            var msg = '<div class="col-12" style="padding:30px;text-align:center">' +
+            var msg = '<div class="col-lg-12" style="padding:30px;text-align:center">' +
                     '<h5> No HTML Content has been entered on this component</h5>' +
                     '</div>';
             return msg;

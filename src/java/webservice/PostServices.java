@@ -484,11 +484,18 @@ public class PostServices {
             SessionManager.setConnection(Thread.currentThread().getId(), conn);
 
             long serviceTime = System.currentTimeMillis();
+            
+            try {
+                System.out.println("json srv->" + json);
+                Cookie cookie = headers.getCookies().get("apdtok");
+                cs = cookie.getValue();
+            } catch (Exception e) {
+                cs = c.getValue("cookie").toString().replace("apdtok=", "");
+            }
+            
 
             EntityCrUser user = null;
-// System.out.println("ok 2 - 5"+"  "+servicename);
             user = SessionHandler.getTokenFromCookie(cs);
-// System.out.println("ok 2 - 6"+"  "+servicename);
             SessionManager.setUserName(Thread.currentThread().getId(), user.getUsername());
             SessionManager.setLang(Thread.currentThread().getId(), user.selectLang());
             SessionManager.setDomain(Thread.currentThread().getId(), user.selectDomain());

@@ -1093,6 +1093,16 @@ function init4Core() {
     loadModulePermission();
 }
 
+function init4ManualProjectLoad() {
+
+
+    $('[data-toggle="tooltip"]').tooltip();
+ 
+    new User().loadPersonalUserOnInit();
+    new Project().loadUserList4Combo();
+    loadModulePermission();
+}
+
 function loadModulePermission() {
     var json = initJSON();
     var that = this;
@@ -1616,6 +1626,18 @@ function GetTagLineVal(text, tag) {
     return st;
 }
 
+
+function GetConvertedDateByElement(element) {
+    var date = new Date($(element).val());
+    var day = date.getDate();
+    day = day.toString(10).length === 1 ? '0' + day : day;
+    var month = date.getMonth() + 1;
+    month = month.toString(10).length === 1 ? '0' + month : month;
+    var year = date.getFullYear();
+    var d = year + "" + month + '' + day;
+    return d;
+}
+
 function GetConvertedDate(componentId) {
     var date = new Date($('#' + componentId).val());
     var day = date.getDate();
@@ -1637,6 +1659,30 @@ function ConvertedDateToStringDate(date) {
     return d;
 }
 
+
+function SetConvertedTimeByElement(element, time) {
+    try {
+        var s = time.substring(4, 6);
+        var m = time.substring(2, 4);
+        var h = time.substring(0, 2);
+        var d = h + ":" + m + ":" + s;
+        $(element).val(d);
+        $(element).text(d);
+    } catch (e) {
+    }
+}
+
+function SetConvertedDateByElement(element, date) {
+    try {
+        var day = date.substring(6, 8);
+        var month = date.substring(4, 6);
+        var year = date.substring(0, 4);
+        var d = year + "-" + month + "-" + day;
+        $(element).val(d);
+        $(element).text(d);
+    } catch (e) {
+    }
+}
 
 function SetConvertedDate(componentId, date) {
     try {
@@ -1681,11 +1727,13 @@ function createNewInputComponent() {
 
     $('#us-ipo-inputname').val(inputName);
     global_var.input_insert_cellno = cellNo;
-    global_var.input_insert_orderno = orderNoNew;
+//    global_var.input_insert_orderno = orderNoNew;
     global_var.input_insert_component = componentType;
 
     new UserStory().insertNewInput();
     $('#exampleModal-new-input-name').val('');
+    $('#addNewComponentModal').modal('hide');
+    
 
 }
 

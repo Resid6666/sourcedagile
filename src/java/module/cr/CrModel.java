@@ -7186,50 +7186,7 @@ public class CrModel {
 
         insertRecordsOnActivation(entCompany.getCompanyDb(), entUser.getId());
 
-//        String id = "";
-//
-//        try {
-//            id = insertAdminUserOnActivateCompany(entCompany.getFkUserId(),
-//                    entCompany.getCompanyDb());
-//        } catch (Exception e) {
-//            f = false;
-//        }
-//        //generate insert script
-//        try {
-////                insertScriptOnActivateCompany(entCompany.getCompanyDb(), fkModuleId, id);
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//            f = false;
-//        }
-//
-//        //add default permission and add default payment within the permission section
-//        try {
-//            if (entCompany.getCompanyType().equals(EntityCrCompany.CompanyType.COMPANY.toString())) {
-//                addDefaultPermissionToActivateCompany(fkCompanyId);
-////                    System.out.println("addDefaultPermissionToActivateCompany done");
-////                    addDefaultModulePermissionToActivateCompany(fkModuleId, fkCompanyId);
-////                    System.out.println("addDefaultModulePermissionToActivateCompany done");
-//
-//            } else if (entCompany.getCompanyType().equals(EntityCrCompany.CompanyType.PERSONAL.toString())) {
-//                addDefaultPermissionToActivatePersonal(fkCompanyId);
-////                    System.out.println("addDefaultPermissionToActivatePersonal done");
-////                    addDefaultModulePermissionToActivatePersonal(fkModuleId, fkCompanyId);
-////                    System.out.println("addDefaultModulePermissionToActivatePersonal done");
-//            }
-//        } catch (Exception e) {
-//            f = false;
-//        }
-//        //activate account
-//        entCompany.setStatus(EntityCrCompany.CompanyStatus.ACTIVE.toString());
-//        entCompany.setFkUserId(id);
-//        EntityManager.update(entCompany);
-//
-//        //send email about activation
-//        sendActivationEmail(fkTempUserId, fkCompanyId, entCompany.getCompanyName());
-//
-//        if (!f) {
-//            throw new QException("error");
-//        }
+        
         return carrier;
 
     }
