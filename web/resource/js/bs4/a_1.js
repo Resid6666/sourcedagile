@@ -268,7 +268,7 @@ function p() {
     hideProgressAlternative();
 }
 
-$(document).on('change', ".saTypeFilePicherUploadFile1", function (e) {
+$(document).on('change', ".saTypeFilePicherUploadFile", function (e) {
     if ($(this).val().trim().length > 0) {
         uploadFile4Ipo($(this).attr('id'));
     }

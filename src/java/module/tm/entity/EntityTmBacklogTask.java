@@ -85,6 +85,16 @@ public class EntityTmBacklogTask extends CoreEntity {
     private String taskDueDate = "";
     public static String TASK_PRIORITY = "taskPriority ";
     private String taskPriority = "";
+    public static String FK_PARENT_TASK_ID = "fkParentTaskId";
+    private String fkParentTaskId = "";
+
+    public String getFkParentTaskId() {
+        return fkParentTaskId;
+    }
+
+    public void setFkParentTaskId(String fkParentTaskId) {
+        this.fkParentTaskId = fkParentTaskId;
+    }
 
     public String getTaskDueDate() {
         return taskDueDate;

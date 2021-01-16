@@ -55,7 +55,7 @@ public class AcnisUrlFilter implements Filter {
         String token = null;
 
         Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
+            if (cookies != null) {
             for (int i = 0; i < cookies.length; i++) {
                 Cookie cookie = cookies[i];
                 if ("apdtok".equals(cookie.getName())) {

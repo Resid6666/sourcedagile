@@ -83,13 +83,17 @@ public class PostServices {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-//        System.out.println("geldi");
         Carrier carrier = new Carrier();
-//        System.out.println("uploaded file json->" + jsonData);
         carrier.fromJson(jsonData);
+        String cs = SessionHandler.getTokenAsString(headers, jsonData);
 
-        Cookie cookie = headers.getCookies().get("apdtok");
-        String cs = cookie.getValue();
+        try {
+            Cookie cookie = headers.getCookies().get("apdtok");
+            cs = cookie.getValue();
+        } catch (Exception e) {
+            cs = carrier.getValue("cookie").toString().replace("apdtok=", "");
+        }
+
         EntityCrUser user = null;
 
         user = SessionHandler.getTokenFromCookie(cs);
@@ -484,7 +488,7 @@ public class PostServices {
             SessionManager.setConnection(Thread.currentThread().getId(), conn);
 
             long serviceTime = System.currentTimeMillis();
-            
+
             try {
                 System.out.println("json srv->" + json);
                 Cookie cookie = headers.getCookies().get("apdtok");
@@ -492,7 +496,6 @@ public class PostServices {
             } catch (Exception e) {
                 cs = c.getValue("cookie").toString().replace("apdtok=", "");
             }
-            
 
             EntityCrUser user = null;
             user = SessionHandler.getTokenFromCookie(cs);
@@ -702,7 +705,6 @@ public class PostServices {
     @Compress
     @Produces(value = MediaType.TEXT_HTML)
     public Response getContent(@Context HttpHeaders headers) {
-         
 
         Connection conn = null;
         try {
