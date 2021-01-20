@@ -1067,8 +1067,8 @@ INSERT INTO tm_backlog_history (`ID`, `STATUS`, `INSERT_DATE`, `MODIFICATION_DAT
 	VALUES ('20020911522607792185', 'A', '20200209', '', '19120318420602449317', '19120522323004812150', 'input_desc_new', '20200209', '115226', '@userId', '19120522323005513277', 'Only selected item should be there', '', '20020911522606012439', '<b>Input Description</b>:  "Only selected item should be there" for <b>Input Name</b>:  Sex;');    ####
 
 
-UPDATE apd_backlog.tm_backlog set backlog_no = 1 where backlog_no is null ; ####
-UPDATE apd_backlog.tm_backlog_task set task_order_no = 1 where task_order_no is null ;####
+UPDATE tm_backlog set backlog_no = 1 where backlog_no is null ; ####
+UPDATE tm_backlog_task set task_order_no = 1 where task_order_no is null ;####
  
  
 update  tm_backlog_task   a set fk_project_id = (select fk_project_id from tm_backlog where id = a.fk_backlog_id)  

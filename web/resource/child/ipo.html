@@ -1,148 +1,28 @@
 <div class="row us-sub-menu-body us-sm-detail" style="display: block;" id="smb-details-ipo">
-    <div class="porjectNameProto">
-        <div class="col-7 ">
+    <div class="col-lg-12 porjectNameProto">
+        <div class="col-5 text-right ">
+            <button class="btn  btn-outline-secondary live-prototype-show-story-card"><i class="live-prototype-show-story-card1 fa fa-window-maximize" style="font-size: 10px;cursor: pointer;"></i></button>    
+            <button class="btn btn-outline-secondary live-prototype-show-live"><i class="live-prototype-show-live1 fa fa-eye" style="font-size: 10px;cursor: pointer;"></i></button>  
+            <button class="btn btn-outline-secondary live-prototype-show-inputrelation"><i class="live-prototype-show-inputrelation1 fa fa-box" style="font-size: 10px;cursor: pointer;"></i></button>  
+
+        </div>
+        <div class="col-7 text-left">
             <p id="smb-general-main-info">Current User Story</p>
 
         </div>
-        <div class="col-5 ">
-            <button class="btn  btn-outline-secondary live-prototype-show-story-card"><i class="live-prototype-show-story-card1 fa fa-window-maximize" style="font-size: 10px;cursor: pointer;"></i></button>    
-            <button class="btn btn-outline-secondary live-prototype-show-live"><i class="live-prototype-show-live1 fa fa-eye" style="font-size: 10px;cursor: pointer;"></i></button>  
-
-        </div>
-        <div class="col-12 ">
-            <span style="font-size: 12px;"> 
-                <a href="#" id="smb-general-main-previous-us" 
-                   onclick="new UserStory().redirectUserStoryCore('20072217020507941241')"></a>
-            </span>
-        </div>
-    </div>
-    <div class="toolbar">
-        <ul class=" cf">
-            <li value="cbox" title="checkbox"><a  class="inptadd"  href="#"><img src="resource/img/checkbox.png" alt=""></a></li>
-            <li value="txt" title="input"><a class="inptadd"  href="#"><img src="resource/img/input.png" alt=""></a></li>
-            <li value="date" title="date"><a  class="inptadd" href="#"><img src="resource/img/calendar.png" alt=""></a></li>
-            <li value="file" title="file picker"><a  class="inptadd" href="#"><img src="resource/img/attachment-clip.png" alt=""></a></li>
-            <li value="rbtn" title="Radio Button"><a  class="inptadd" href="#"><img src="resource/img/radio-on-button.png" alt=""></a></li>
-            <li value="cmb" title="Select Box"><a  class="inptadd" href="#"><img src="resource/img/select.png" alt=""></a></li>
-            <li value="ytube" title="Youtube"><a  class="inptadd" href="#"><img src="resource/img/youtube.png" alt=""></a></li>
-            <li value="img" title="Image"><a  class="inptadd" href="#"><img src="resource/img/upload.png" alt=""></a></li>
-            <li value="lbl" title="Label"><a  class="inptadd" href="#"><img src="resource/img/price-tag.png" alt=""></a></li>
-            <li value="txa" title="TextArea"><a  class="inptadd" href="#"><img src="resource/img/text.png" alt=""></a></li>
-            <li value="mcmb" title="Multi Select Box"><a  class="inptadd" href="#"><img src="resource/img/favourites-selection.png" alt=""></a></li>
-            <li value="irbtn" title="Inner Radio Button"><a  class="inptadd" href="#"><img src="resource/img/radio-button-selection.png" alt=""></a></li>
-            <li value="icbox" title="Inner CheckBox select"><a  class="inptadd" href="#"><img src="resource/img/checkbox-selected.png" alt=""></a></li>
-            <!--  <li><a href="#"><img src="resource/img/checkbox.png" alt=""></a></li>
-             <li ><a href="#"><img src="resource/img/checkbox.png" alt=""></a></li> -->
-            <li value="hr" title="Inner Line"><a class="inptadd"  href="#"><img src="resource/img/substract.png" alt=""></a></li>
-            <li value="btn" title="Button"><a class="inptadd"  href="#"><img src="resource/img/push.png" alt=""></a></li>
-            <li value="icon" title="Icons"><a  class="inptadd" href="#"><img src="resource/img/plugin.png" alt=""></a></li>
-            <li value="iedit" title="Inner edit"><a  class="inptadd" href="#"><img src="resource/img/edit.png" alt=""></a></li>
-            <li value="hlink" title="Hiperlink"><a  class="inptadd" href="#"><img src="resource/img/link.png" alt=""></a></li>
-            <li value="hdn" title="Hidden"><a class="inptadd"  href="#"><img src="resource/img/visibility.png" alt=""></a></li>
-            <li value="fhtml" title="Free Html"><a  class="inptadd" href="#"><img src="resource/img/html5.png" alt=""></a></li>
-            <li value="fcomp" title="Free Component"><a class="inptadd"  href="#"><img src="resource/img/web.png" alt=""></a></li>
-
-            <li value="sctn" title="Section"><a onclick="addSectionAsInput()" href="#"><img src="resource/img/sections.png" alt=""></a></li>
-            <li value="tab" title="Tabs"><a onclick="addTabAsInput()" href="#"><img src="resource/img/tabs.png" alt=""></a></li>
-            <li value="Tbl" title="Table"><a href="#" onclick="addTableAsInput()"><img src="resource/img/table.png" alt=""></a></li>
 
 
-        </ul>
-        <div class="editsect" >
-            <!--  <button class="btn dragToolbar"><i class="fas fa-arrows-alt"></i></button> -->
-            <button class="btn verticalBtn"><i class="fas fa-grip-vertical"></i></button>
-            <button class="btn horizontalBtn"><i class="fas fa-grip-horizontal"></i></button>
-            <button class="btn minimzeBtn"><i class="fas fa-window-minimize"></i></button>
-
-        </div>
-        <div role="button" class=" btn btn-secondary maximizeBtn"><i class="fas fa-plus"></i></div>
     </div>
 
-    <!-- start 10.08.2020 -->
-
-    <!-- <div class="row zoom-section"> -->
-    <!-- input on off -->
-
-    <!-- <div class="col-3 inputonoffDiv">
-        <label class="switch input-on-off ">
-            <input type="checkbox" id="show_ipo_toggle">
-            <span class="slider round"></span>
-            <p >Inputs</p>
-        </label>
-    </div>  -->
-    <!-- <div class="col-8  text-left" > -->
-
-    <!-- <select id="ipo_zoom" onchange="new UserStory().setZoom4IPO()" style="border:0px;">
-        <option value="2">2%</option>
-        <option value="5">5%</option>
-        <option value="8">8%</option>
-        <option value="10">10%</option>
-        <option value="15">15%</option>
-        <option value="20">20%</option>
-        <option value="25">25%</option>
-        <option value="40">40%</option>
-        <option value="50">50%</option>
-        <option value="75">75%</option>
-        <option value="80">80%</option>
-        <option value="90">90%</option>
-        <option value="100" selected="">100%</option>
-        <option value="125">125%</option>
-        <option value="150">150%</option>
-        <option value="200">200%</option>
-    </select>
-    <i class="fa fa-search-plus" style="font-size:14px;cursor:pointer;" onclick="new UserStory().zoomIn()" aria-hidden="true"></i>
-    <i class="fa fa-search-minus" style="font-size:14px;cursor:pointer;" onclick="new UserStory().zoomOut()" aria-hidden="true"></i>
-    &nbsp; &nbsp; Actual Zoom: <b><span id="actual_zoom_id">100</span>%</b>
-    &nbsp; &nbsp;&nbsp; &nbsp; -->
-
-    <!-- <a href="#" onclick="new UserStory().showAllGUI()">All </a>
-    &nbsp; &nbsp;
-    <a href="#" onclick="new UserStory().showCurrentGUI()"> Current</a> -->
-
-    <!-- &nbsp; &nbsp; &nbsp; &nbsp;
-    <input type="checkbox" id="lp-draggable-mode"> Draggable Mode  -->
-
-    <!-- </div>
-    <div class="col-1  text-right" > -->
-
-    <!-- <input type="checkbox" id="gui_component_show_properties"
-              onchange="new UserStory().guiComponentShowProperties()">  -->
-    <!-- <label class="switch proporty">
-
-        <input type="checkbox" id="gui_component_show_properties" onchange="new UserStory().guiComponentShowProperties()">
-        <span class="slider round"></span>
-        <p>Properties</p>
-    </label> -->
 
 
-
-    <!-- </div>
-  </div> -->
     <div class="row" >
 
-        <!-- <div class="" id="ipo-1-hisse-input" >  -->
-
-        <!-- <div class=" input-add-table table-hide-show col-12 ipo-divider ipo-1-hisse only-gui-design "> -->
-        <!-- <div class="col-12 input-add-alt-menu "> 
-             <button class="btn newin dropdown-toggle fa fa-ellipsis-h description-delete-btn" 
-                     href="#" role="button" id="dropdownMenuLink" 
-                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-             </button>
-             <div class="dropdown-menu " aria-labelledby="dropdownMenuLink">
-                 <button class="dropdown-item firstbut " data-toggle="modal" data-target="#createTableForm" onclick="new UserStory().createTableFormModal()" style="font-size: 12px;">Create Table Form</button>
-                 <button class="dropdown-item firstbut " data-toggle="modal" data-target="#copyMoveInputsModal" onclick="new UserStory().copyMoveInputsModal()" style="font-size: 12px;">Copy/Move</button>
-                 <button class="dropdown-item firstbut "   onclick="new UserStory().deleteInputs()" style="font-size: 12px;">Delete</button>
-             </div>
-         </div>     -->
-
-
-
-        <!-- </div> -->
 
 
         <!-- end 10.08.2020 -->
 
-        <div class="draggablePopup ui-draggable" style="display: none;">
+        <div class="draggablePopup ui-draggable" id="inp_popUp" style="display: none;">
             <div class="closePopupIn">
                 <button><i class="fas fa-times"></i></button>
             </div>
@@ -181,7 +61,72 @@
             </div>
 
         </div>
+        <div class="draggablePopup ui-draggable" id="history_inp_popUp" style="display: none;">
+            <div class="closePopupIn">
+                <button><i class="fas fa-times"></i></button>
+            </div>
+            <div  class="tab-pane" style="max-height: 280px;overflow-y: scroll;  overflow-x: hidden;" >               
+                <div class='row' id="history_inp_popUp_zadsiyahisi">
 
+                    <div class="ipo-divider ipo-1-hisse only-gui-design">
+
+                        <table class=" table-hover spilted input-name-add-table" id="tblIPOList">
+
+                            <tbody style="cursor:pointer"><tr class="us-ipo-input-tr new-input-row active" id="ipo_tr_20111611165309125337" pid="20111611165309125337" iname="Name" itable=""><td>1</td><td><input type="checkbox" id="checkbox_20111611165309125337" onclick="makeClassActive( & quot; 20111611165309125337 & quot; )" class="us-input-list-item-check-box-class" value="20111611165309125337"></td><td ondblclick="new UserStory().toggleToEditIName(this)" class="us-ipo-input-name-tr trashbtn" pid="20111611165309125337" iname="Name" "="" itable="">Name</td><td><a href="#" onclick="new UserStory().deleteInputFromUSList(this, '20111611165309125337')"><i class="fa fa-trash dust-bin" aria-hidden="true"></i></a></td></tr><tr><td></td><td></td><td></td><td></td></tr></tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="toolbar">
+            <ul class=" cf">
+                <li value="cbox" title="checkbox"><a  class="inptadd"  href="#"><img src="resource/img/checkbox.png" alt=""></a></li>
+                <li value="txt" title="input"><a class="inptadd"  href="#"><img src="resource/img/input.png" alt=""></a></li>
+                <li value="date" title="date"><a  class="inptadd" href="#"><img src="resource/img/calendar.png" alt=""></a></li>
+                <li value="file" title="file picker"><a  class="inptadd" href="#"><img src="resource/img/attachment-clip.png" alt=""></a></li>
+                <li value="rbtn" title="Radio Button"><a  class="inptadd" href="#"><img src="resource/img/radio-on-button.png" alt=""></a></li>
+                <li value="cmb" title="Select Box"><a  class="inptadd" href="#"><img src="resource/img/select.png" alt=""></a></li>
+                <li value="ytube" title="Youtube"><a  class="inptadd" href="#"><img src="resource/img/youtube.png" alt=""></a></li>
+                <li value="img" title="Image"><a  class="inptadd" href="#"><img src="resource/img/upload.png" alt=""></a></li>
+                <li value="lbl" title="Label"><a  class="inptadd" href="#"><img src="resource/img/price-tag.png" alt=""></a></li>
+                <li value="txa" title="TextArea"><a  class="inptadd" href="#"><img src="resource/img/text.png" alt=""></a></li>
+                <li value="mcmb" title="Multi Select Box"><a  class="inptadd" href="#"><img src="resource/img/favourites-selection.png" alt=""></a></li>
+                <li value="irbtn" title="Inner Radio Button"><a  class="inptadd" href="#"><img src="resource/img/radio-button-selection.png" alt=""></a></li>
+                <li value="icbox" title="Inner CheckBox select"><a  class="inptadd" href="#"><img src="resource/img/checkbox-selected.png" alt=""></a></li>
+                <!--  <li><a href="#"><img src="resource/img/checkbox.png" alt=""></a></li>
+                 <li ><a href="#"><img src="resource/img/checkbox.png" alt=""></a></li> -->
+                <li value="hr" title="Inner Line"><a class="inptadd"  href="#"><img src="resource/img/substract.png" alt=""></a></li>
+                <li value="btn" title="Button"><a class="inptadd"  href="#"><img src="resource/img/push.png" alt=""></a></li>
+                <li value="icon" title="Icons"><a  class="inptadd" href="#"><img src="resource/img/plugin.png" alt=""></a></li>
+                <li value="iedit" title="Inner edit"><a  class="inptadd" href="#"><img src="resource/img/edit.png" alt=""></a></li>
+                <li value="hlink" title="Hiperlink"><a  class="inptadd" href="#"><img src="resource/img/link.png" alt=""></a></li>
+                <li value="hdn" title="Hidden"><a class="inptadd"  href="#"><img src="resource/img/visibility.png" alt=""></a></li>
+                <li value="fhtml" title="Free Html"><a  class="inptadd" href="#"><img src="resource/img/html5.png" alt=""></a></li>
+                <li value="fcomp" title="Free Component"><a class="inptadd"  href="#"><img src="resource/img/web.png" alt=""></a></li>
+
+                <li value="sctn" title="Section"><a onclick="addSectionAsInput()" href="#"><img src="resource/img/sections.png" alt=""></a></li>
+                <li value="tab" title="Tabs"><a onclick="addTabAsInput()" href="#"><img src="resource/img/tabs.png" alt=""></a></li>
+                <li value="Tbl" title="Table"><a href="#" onclick="addTableAsInput()"><img src="resource/img/table.png" alt=""></a></li>
+
+
+            </ul>
+            <div class="editsect" >
+                <!--  <button class="btn dragToolbar"><i class="fas fa-arrows-alt"></i></button> -->
+                <button class="btn verticalBtn"><i class="fas fa-grip-vertical"></i></button>
+                <button class="btn horizontalBtn"><i class="fas fa-grip-horizontal"></i></button>
+                <button class="btn minimzeBtn"><i class="fas fa-window-minimize"></i></button>
+
+            </div>
+            <div role="button" class=" btn btn-secondary maximizeBtn"><i class="fas fa-plus"></i></div>
+        </div>
+        <div class="row zoom-main-new" >
+            <a class="btnZoom zoom" onclick="new UserStory().zoomIn()"><i class="fa fa-plus" aria-hidden="true"></i></a>
+            <a class="btnZoom zoom-out" onclick="new UserStory().zoomOut()"><i class="fa fa-minus" aria-hidden="true"></i></a>
+            <a class="btnZoom zoom-refresh " onclick="new UserStory().zoomInit()"><i class="fa fa-arrows-alt" aria-hidden="true"></i></a>
+            <a class="btnZoom zoom-init " onclick="new UserStory().showAllGUI()"><i class="fa fa-refresh" aria-hidden="true"></i></a>
+
+        </div>
         <!-- </div> -->
 
         <!--diger 2-ci hisse-->
@@ -190,7 +135,7 @@
 
             <!--start 10.08.2020   -->
             <div class='row dragsection'>
-                <div class="col-11 gui-design-is-api main-design-page" id="guid-desigin-main-div-id" onwheel="new UserStory().mainGuiZoomWheel(event)">
+                <div class="col-12 gui-design-is-api main-design-page" id="guid-desigin-main-div-id" onwheel="new UserStory().mainGuiZoomWheel(event)">
 
                     <div class="row">
                         <br><br><br><br><br><br>
@@ -272,13 +217,7 @@
                             </div>
                             <!-- end    15.08.2020 -->
 
-                            <div class="row zoom-main-new" >
-                                <a class="btnZoom zoom" onclick="new UserStory().zoomIn()"><i class="fa fa-plus" aria-hidden="true"></i></a>
-                                <a class="btnZoom zoom-out" onclick="new UserStory().zoomOut()"><i class="fa fa-minus" aria-hidden="true"></i></a>
-                                <a class="btnZoom zoom-refresh " onclick="new UserStory().zoomInit()"><i class="fa fa-arrows-alt" aria-hidden="true"></i></a>
-                                <a class="btnZoom zoom-init " onclick="new UserStory().showAllGUI()"><i class="fa fa-refresh" aria-hidden="true"></i></a>
 
-                            </div>
 
                         </div>
 
@@ -298,6 +237,13 @@
                                 <i class="far fa-address-card"></i>
                                 <br>
                                 <span>Input</span>
+                            </a>
+                        </li>
+                        <li class="nav-item gui-design-is-api" id="History-btn-icon" >
+                            <a class="nav-link nav-link-custom tool-item"   href="#ipo-tab-setting-inputAdd" >
+                                <i class="fas fa-history"></i>
+                                <br>
+                                <span>History</span>
                             </a>
                         </li>
 
@@ -2025,90 +1971,9 @@
                                                             </table>
                                                         </fieldset>
 
-                                                        <fieldset class="border p-2">
-                                                            <legend class="w-auto w-auto-man">
-                                                                Attributes
-                                                            </legend>
-                                                            <table style="width:100%">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td style="padding:5px;">
-                                                                            <span class="col-form-label control-label">Name:</span>
-                                                                            <input type="text" id="gui_prop_in_attr_name" 
-                                                                                   style=" padding:0px;border-radius:4px;border:1px solid gray;width:100%">
-                                                                        </td>
-                                                                        <td style="padding:5px;">
-                                                                            <span class="col-form-label control-label">Value:</span>
-                                                                            <input type="text" id="gui_prop_in_attr_value" 
-                                                                                   style="padding:0px;border-radius:4px;border:1px solid gray;width:100%">
-                                                                        </td>
-                                                                        <td>
-                                                                            <i class="fa fa-plus" 
-                                                                               onclick="addInputAttributes(this)"
-                                                                               style="padding-top:20px; font-size:16px;cursor:pointer;"></i>
 
-                                                                        </td>
 
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                            <table style="width:100%;font-size: 11px; ">
-                                                                <tbody id="input_attributes_list_in_component">
 
-                                                                </tbody>
-                                                            </table>
-
-                                                        </fieldset>
-
-                                                        <fieldset class="border p-2">
-                                                            <legend class="w-auto w-auto-man">
-                                                                Class
-                                                            </legend>
-                                                            <table style="width:100%">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td style="padding:5px;">
-
-                                                                            <select   id="gui_prop_in_gui_class_list" 
-                                                                                      class="classListOnChange"
-                                                                                      style="padding:0px;border-radius:4px;border:1px solid gray;width:100%"></select>
-                                                                        </td>
-                                                                        <td style="width: 1%">
-                                                                            <i class="fa fa-plus" 
-                                                                               onclick="addGuiClassToInput(this)"
-                                                                               style="  font-size:16px;cursor:pointer;"></i>
-
-                                                                        </td>
-                                                                        <td style="width: 1%">
-                                                                            <i class="fa fa-bars" 
-                                                                               onclick="guiClassModal(this)"
-                                                                               style="  font-size:16px;cursor:pointer;"></i>
-
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr  class="input4NewClassAdding" style="display:none">
-                                                                        <td style="padding:5px;" colspan="2">
-
-                                                                            <input   id="gui_prop_in_gui_class_new" 
-                                                                                     style="padding:0px;border-radius:4px;border:1px solid gray;width:100%">
-                                                                        </td>
-                                                                        <td style="width: 1%">
-                                                                            <button class="buttons" 
-                                                                                    onclick="insertNewClassDirect(this)"
-                                                                                    style="   cursor:pointer;">Add</button>
-
-                                                                        </td>
-
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                            <table style="width:100%;font-size: 11px; ">
-                                                                <tbody id="input_class_list_in_component">
-
-                                                                </tbody>
-                                                            </table>
-
-                                                        </fieldset>
                                                     </div>
 
                                                 </div>
@@ -2153,4 +2018,70 @@
     </div>
 
 </div>
+
+
+<div class="modal fade" id="storyCardInputRelationModal" tabindex="-1" role="dialog" aria-labelledby=""
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="margin-top:10px;width: 60%;max-width: 60%" role="document">
+        <div class="modal-content" style="height:90vh;overflow-y: scroll;  overflow-x: hidden;">
+            <div class="modal-header">
+                <h5 class="modal-title" id=""> </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="font-size: 12px;">
+                <div class="row">
+                    <div class="col-lg-9" id="storyCardInputRelationModal_maindivid" 
+                         style="height:70vh;overflow-y: scroll;  overflow-x: hidden;">
+                    </div>
+
+                    <div class="col-lg-3"  >
+                        <div class="row">
+                            <div class="col-lg-12" >
+                                <select id='storyCardInputRelationModal_apilist' class="form-control"></select>
+                            </div>
+                            <div class="col-lg-12">
+                                <select id='storyCardInputRelationModal_inpuntypes' class="form-control">
+                                    <option value="both">Both</option>
+                                    <option value="input">Only Inputs</option>
+                                    <option value="output">Only Outputs</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-12" 
+                                 style="height:60vh;overflow-y: scroll;  overflow-x: hidden;">
+                                <table class="table table-hover" id="storyCardInputRelationModal_apiinoutlist">
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="storyCardFieldMgmtModal" tabindex="-1" role="dialog" aria-labelledby=""
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="margin-top:0px;width: 100%;max-width: 100%" role="document">
+        <div class="modal-content" style="height:99vh;overflow-y: scroll;  overflow-x: hidden;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="">Story Card Source Management</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="font-size: 12px;">
+                <div class="col-lg-12" id="storyCardFieldMgmtModal_maindivid">
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <!--end 10.08.2020 -->  

@@ -10,6 +10,7 @@ $(function () {
     //      }, 3000);
     //   });
 
+
     $(document).on("click", '#user-story-delete-story', function (e) {
         if ($(this).is(":checked")) {
             $("#user-story-delete-story").prop("readonly", true);
@@ -132,6 +133,7 @@ var dY = 0;
 var dX = 0;
 
 function dragResize() {
+    return;
     try {
         $(".draggable").draggable({
             t: 0,
@@ -391,10 +393,17 @@ $(document).on("click", "#canvas-btn-icon", function () {
 //  5. tool panel-input-add
 //11.12.2020 Revan
 $(document).on("click", "#input-btn-icon", function () {
-    $('.draggablePopup').toggle('fast');
-    $('.draggablePopup').draggable({
+    $('#inp_popUp').toggle('fast');
+    $('#inp_popUp').draggable({
         containment: "parent"
     });
+})
+$(document).on("click", "#History-btn-icon", function () {
+    $('#history_inp_popUp').toggle('fast');
+    $('#history_inp_popUp').draggable({
+        containment: "parent"
+    });
+    setBacklogHistory4View();
 })
 
 var popUpt = `<div   class="popup-Elements" data-toggle="modal" data-target="#exampleModal" id="popup-btn" >
@@ -558,25 +567,25 @@ $(document).ready(function () {
 });
 
 $(document).on("click", ".openNavshow", function () {
-    $('.overflow-container').css('display', 'block')
-    $('.hamburger').css('display', 'block')
+    $('#panelFirst1').css('display', 'block')
+    $('#panelSplit1').css('display', 'block')
 });
 
 $(document).on("click", ".openNavhide", function () {
     $("html").removeClass("openNav");
     $(".nav-toggle").removeClass("active");
-    $('.overflow-container').css('display', 'none')
-    $('.hamburger').css('display', 'none')
+    $('#panelFirst1').css('display', 'none')
+    $('#panelSplit1').css('display', 'none')
 
 })
 
 
 
 
-setTimeout(function () {
-    $(".toolbar").draggable({});
-    console.log("QWqwdqwd");
-}, 3200);
+//setTimeout(function () {
+//    $(".toolbar").draggable({});
+//    console.log("QWqwdqwd");
+//}, 3200);
 
 $(document).on("click", ".cf li .inptadd", function () {
 
@@ -696,6 +705,94 @@ function addNewBug(el) {
         }
     });
 }
+
+
+$(document).ready(function () {
+
+
+    let dats
+    let dats2
+    let draggedElementPid;
+    $(document).on('dragstart', ".apiListTd", function (ev) {
+        var datat = $(this).parent().attr('input-type');
+        dats = datat
+        if (datat === "OUT") {
+            $('.ApiOutTDspan').addClass('dropHereEvent');
+        } else {
+            $('.ApiInTDspan').addClass('dropHereEvent');
+        }
+        dats2 = $(this).text();
+        draggedElementPid = $(this).attr("pid");
+    })
+
+    $(document).on('dragend', ".apiListTd", function (ev) {
+        var datat = $(this).parent().attr('input-type');
+        if (datat === "OUT") {
+            $('.ApiOutTDspan').removeClass('dropHereEvent');
+        } else {
+            $('.ApiInTDspan').removeClass('dropHereEvent');
+        }
+    })
+
+
+    $(document).on('dragover', ".ApiOutTDspan", function (ev) {
+        if (dats === "OUT") {
+            ev.preventDefault();
+        }
+    })
+
+    $(document).on('dragover', ".ApiInTDspan", function (ev) {
+        if (dats === "IN") {
+            ev.preventDefault();
+        }
+    })
+
+    $(document).on('drop', ".ApiOutTDspan", function (ev) {
+        if (dats === "OUT") {
+//            $(this).text(dats2)
+//            alert('out kelbetin')
+
+            var id = $(this).attr('pid'),
+                    action = 'select',
+                    selectFromBacklogId = $('#storyCardInputRelationModal_apilist').val(),
+                    selectFromInputId = draggedElementPid;
+
+            addSourceOfRelationAsAPIDetails(id, action, selectFromBacklogId, selectFromInputId);
+
+            setInputListToInputRelation();
+        }
+
+    })
+
+    $(document).on('drop', ".ApiInTDspan", function (ev) {
+        if (dats === "IN") {
+//            $(this).text(dats2);
+//            alert('in kelbetin')
+
+            var id = $(this).attr('pid'),
+                    action = 'send',
+                    selectFromBacklogId = $('#storyCardInputRelationModal_apilist').val(),
+                    selectFromInputId = draggedElementPid;
+
+            addSourceOfRelationAsAPIDetails(id, action, selectFromBacklogId, selectFromInputId);
+
+            setInputListToInputRelation();
+        }
+    })
+
+    $(document).on('click', ".DeleteOutAPi", function (ev) {
+        $(this).parent().find('.ApiOutTDspan').text('Select from API');
+    })
+
+    $(document).on('click', ".DeleteINAPi", function (ev) {
+        $(this).parent().find('.ApiInTDspan').text('Send to API');
+    })
+
+
+
+
+})
+
 
 
 

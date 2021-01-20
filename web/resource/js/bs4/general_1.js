@@ -3,9 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
-
+ 
+ 
 var gui_component = {
     "defaultCSS": {
         "InputTable": "",
@@ -1088,7 +1087,7 @@ function init4Core() {
     new Project().loadUserList4Combo();
     new Notification().getNotificationCount();
     new Notification().setTime();
-    loadModulePermission();
+   
 }
 
 function init4ManualProjectLoad() {
@@ -1111,7 +1110,7 @@ function loadModulePermission() {
         data: data,
         contentType: "application/json",
         crossDomain: true,
-        async: true,
+        async: false,
         success: function (res) {
             var obj = res.tbl[0].r;
             for (var n = 0; n < obj.length; n++) {
@@ -1551,6 +1550,7 @@ function generatePopupModalNew(modalBody, style, triggerId, backlogId) {
     st += '  </div>';
     st += '</div>';
     $("#body_of_nature").append(st);
+    initSelectpickerComponent();
     $('#' + pageId).modal("show");
     $(document).on('hidden.bs.modal', '#' + pageId, function (evt) {
         $('#' + pageId).remove();
@@ -1746,7 +1746,7 @@ $(document).on('hide.bs.modal', '#exampleModal', function () {
 
 
 $(document).on('dblclick', '.component-class', function (evt) {
-    openComponentPropertiesModal();
+    openComponentPropertiesModal(this);
     $(this).click();
 });
 
@@ -1760,6 +1760,7 @@ function openComponentPropertiesModal(el) {
             $('#ipo-tab-setting-general').html()
     var rs = global_var.input_general_content_tab;
     $('#component-info-popup').html(rs);
+    $('#exampleModal-input-componentid').val('comp_id_'+$(el).attr('id'));
     $('#exampleModal-input-name').val(SAInput.GetInputName(global_var.current_us_input_id));
     $('#exampleModal-input-name').attr("pid", global_var.current_us_input_id);
     $('#ipo-tab-setting-general').html('')

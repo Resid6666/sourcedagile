@@ -731,4 +731,14 @@ function loadTaskCardDetails(taskId) {
     genCommentListOfTask();
 
     loadAssignedLabel(SATask.GetDetails(id, 'fkBacklogId'), SATask.GetDetails(id, 'taskVersion'));
+
+    //set parent task info
+   getParentTask();
+    
+    //set child task list
+     getChildTasks();
+     
+     //get sprint list;
+     getSprintNamesByTask()
+
 }

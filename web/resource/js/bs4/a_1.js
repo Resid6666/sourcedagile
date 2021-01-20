@@ -31,7 +31,7 @@ var cr_js_list = {};
 var moduleList = {
     "loadStoryCard": "Story Card",
     "loadLivePrototype": "Live Prototype",
-    "loadUserStoryMgmt": "User Story Management",
+    "loadStoryCardMgmt ": "Story Card Management",
     "loadDashboard": "Dashboard",
     "loadTaskManagement": "Task Management",
     "loadBugChange": "Issue Management",
@@ -48,8 +48,384 @@ var moduleList = {
     "loadOldVersion": "Old Version",
 };
 var dgui = {};
+var bhistory = [];
+var bhistorylist = [];
+
+var saViewIsPressed = false;
+var saInputTagIsPressed = false;
+
+
+
+$(document).on('change', '#storyCardInputRelationModal_inpuntypes', function () {
+    var val = $(this).val();
+
+    $('#storyCardInputRelationModal_apiinoutlist').find('tr').hide()
+
+    if (val === 'input') {
+        $('#storyCardInputRelationModal_apiinoutlist').find('tr[input-type="IN"]').show();
+    } else if (val === 'output') {
+        $('#storyCardInputRelationModal_apiinoutlist').find('tr[input-type="OUT"]').show();
+    } else if (val === 'both') {
+        $('#storyCardInputRelationModal_apiinoutlist').find('tr').show();
+    }
+})
+
+function showBacklogHistoryClick(el) {
+    var bid = $(el).attr('bid');
+    var pid = $(el).attr('pid');
+
+    if (pid === global_var.current_project_id) {
+        new UserStory().refreshCurrentBacklogById(bid);
+    } else {
+        global_var.current_backlog_id = bid;
+        Utility.addParamToUrl('current_backlog_id', bid);
+        $('#projectList').val(pid);
+        $('#projectList').change();
+
+    }
+}
+
+function fillBacklogHistory4View(backlogId) {
+
+    var kv = {};
+    kv.fkBacklogId = backlogId;
+    kv.backlogName = SACore.GetBacklogname(backlogId)
+    kv.fkProjectId = global_var.current_project_id;
+    kv.projectName = SACore.Project[global_var.current_project_id];
+
+
+
+    bhistory.push(kv);
+    setBacklogHistory4View();
+}
+
+function setBacklogHistory4View() {
+
+    var div = $('#history_inp_popUp_zadsiyahisi');
+    div.html('');
+
+    var temp = [];
+
+    for (var i = bhistory.length - 1; i >= 0; i--) {
+        var o = bhistory[i];
+
+        if (temp.includes(o.fkBacklogId)) {
+            continue;
+        }
+
+        var d = $('<div>')
+                .addClass("col-lg-12")
+
+                .append($('<a>')
+                        .attr("href", "#")
+                        .attr("pid", o.fkProjectId)
+                        .attr('bid', o.fkBacklogId)
+                        .attr("onclick", "showBacklogHistoryClick(this)")
+                        .text(o.backlogName))
+
+        temp.push(o.fkBacklogId);
+
+        div.append(d);
+    }
+}
+
+$(document).on('change', '#addFieldsOfTableAsInputModal-checkall', function () {
+    if ($(this).is(":checked")) {
+        $('#addFieldsOfTableAsInputModal').find('.fields-as-input').prop('checked', true)
+    } else {
+        $('#addFieldsOfTableAsInputModal').find('.fields-as-input').prop('checked', false)
+    }
+})
+
+
+$(document).on('change', '#addStoryCardInputsAsModal-checkall', function () {
+    if ($(this).is(":checked")) {
+        $('#addStoryCardInputsAsModal').find('.inputs-as-input').prop('checked', true)
+    } else {
+        $('#addStoryCardInputsAsModal').find('.inputs-as-input').prop('checked', false)
+    }
+})
+
+$(document).on('change', '#storyCardInputRelationModal_apilist', function (evt) {
+
+
+    var table = $('#storyCardInputRelationModal_apiinoutlist');
+    table.html('');
+
+    var json = initJSON();
+    json.kv.fkBacklogId = $(this).val();
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetInputOutputListByBacklogId",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            var obj = res.tbl[0].r;
+            for (var i in obj) {
+                var o = obj[i];
+
+                var t = o.inputType;
+                table.append($('<tr>')
+                        .attr('input-type', t)
+                        .append($('<td>')
+                                .addClass('apiListTd')
+                                .attr('pid', o.id)
+                                .attr('draggable', 'true')
+                                .text(o.inputName + ' (' + t + ')')))
+
+            }
+        }
+    });
+});
+
+function shiftTaskInfoOnTaskInfoModal(el) {
+    var taskId = $(el).attr('pid');
+    callTaskCard4BugTask(el, global_var.current_project_id, taskId);
+
+
+}
+
+
+function getParentTask() {
+    $('.task-mgmt-modal-parent-task').text("");
+
+
+    var json = initJSON();
+    json.kv.fkTaskId = global_var.current_us_task_id;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetParentTask",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            try {
+                var fkParentTaskId = res.kv.id;
+                if (fkParentTaskId) {
+                    var fkProjectId4 = res.kv.fkProjectId;
+                    var parentTaskName = res.kv.taskName;
+                    var orderNoSeq = res.kv.orderNoSeq;
+                    var projectCode = SACore.ProjectCore[fkProjectId4].projectCode;
+                    var nameFull = add3Dots2String(parentTaskName, 30) + " (" + projectCode.toUpperCase() + "-" + orderNoSeq + ") "
+                    $('.task-mgmt-modal-parent-task').each(function () {
+                        $(this).text(nameFull)
+                                .append(" ")
+                                .append($('<span>')
+                                        .addClass('us-item-status-' + res.kv.taskStatus)
+                                        .text(res.kv.taskStatus))
+                                .attr('pid', fkParentTaskId);
+                    })
+
+                }
+
+            } catch (err) {
+            }
+        }
+    });
+}
+
+function getChildTasks() {
+    var select = $('.task-mgmt-modal-child-task');
+    select.html('');
+
+    var json = initJSON();
+    json.kv.fkTaskId = global_var.current_us_task_id;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetChildTaskList",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            try {
+                var obj = res.tbl[0].r;
+                for (var n = 0; n < obj.length; n++) {
+                    var o = obj[n];
+
+                    //set parent task info
+
+
+                    var fkProjectId4 = o.fkProjectId;
+                    var projectCode = SACore.ProjectCore[fkProjectId4].projectCode;
+                    var nameFull = add3Dots2String(o.taskName, 30) + " (" + projectCode.toUpperCase() + "-" + o.orderNoSeq + ") "
+                    select.each(function () {
+                        $(this).append($('<a>')
+                                .attr('pid', o.id)
+                                .attr('onclick', 'shiftTaskInfoOnTaskInfoModal(this)')
+                                .text(nameFull))
+                                .append(" ")
+                                .append($('<span>')
+                                        .addClass('us-item-status-' + o.taskStatus)
+                                        .text(o.taskStatus))
+                                .append("<br>")
+                    })
+
+                }
+
+            } catch (err) {
+            }
+        }
+    });
+}
+
+function changeParentTaskModal() {
+    $('#change-parent-task-modal').modal('show');
+    var select = $('#change-parent-task-modal-parent-task-list');
+    select.html('');
+    select.append($('<option>').val('').text(''))
+
+    var json = initJSON();
+    json.kv['fkProjectId'] = global_var.current_project_id;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetTaskList4Short",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            try {
+                var obj = res.tbl[0].r;
+                for (var n = 0; n < obj.length; n++) {
+                    var o = obj[n];
+
+                    //set parent task info
+
+
+                    var fkProjectId4 = SATask.GetDetails(o.id, 'fkProjectId');
+                    var projectCode = SACore.ProjectCore[fkProjectId4].projectCode;
+                    var nameFull = o.taskName + " (" + projectCode.toUpperCase() + "-" + o.orderNoSeq + ") "
+                    select.append($('<option>').val(o.id).text(nameFull))
+                }
+                sortSelectBoxByElement(select);
+            } catch (err) {
+            }
+        }
+    });
+}
+
+function addParentTaskToTask() {
+    updateTask4ShortChangeDetails($('#change-parent-task-modal-parent-task-list').val(), 'fkParentTaskId');
+    $('#change-parent-task-modal').modal('hide');
+    $('#task-mgmt-modal-parent-task').text($('#change-parent-task-modal-parent-task-list option:selected').text())
+    $('#task-mgmt-modal-parent-task').attr("pid", $('#change-parent-task-modal-parent-task-list').val());
+}
+
+function createChildTask() {
+
+
+    var json = initJSON();
+    json.kv.fkTaskId = global_var.current_issue_id;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmCreateChildTask",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            Toaster.showMessage("Child task is created.");
+
+
+
+        }
+    });
+
+}
+
+
+function generateFileLine(name, cell) {
+
+    try {
+
+        cell = (cell === 'undefined' || !cell) ? 'col-6' : cell;
+
+        var div = $('<div></div>');
+
+        if (name.trim().length === 0) {
+            return;
+        }
+
+        var ind = name.lastIndexOf(".") + 1;
+        var fileFormat = name.substr(ind);
+        var fileUrlVar = fileUrl(name);
+
+
+        var div2 = $('<div></div>').addClass(cell);
+        var div12lik = $('<div></div>').addClass("col-12").addClass('file_upload_div');
+        if (global_var.image_formats.includes(fileFormat)) {
+            div12lik.append($('<img></img>')
+                    .attr('src', fileUrl(name))
+                    .addClass('comment_img')
+                    .attr('data-toggle', "modal")
+                    .attr('data-target', "#commentFileImageViewer")
+                    .attr('onclick', 'new UserStory().setCommentFileImageViewerUrl("' + name + '")')
+                    .attr('alt', name));
+//                    
+        } else if (global_var.video_formats.includes(fileFormat)) {
+            fileUrlVar = videoFileURL(name);
+
+            div12lik.append($('<a target="_blank"></a>')
+                    .attr("href", videoFileURL(name))
+                    .append($('<img></img>')
+                            .attr('src', fileUrlPrivate('video_player_logo.jpg'))
+                            .addClass('comment_img')
+                            .attr('alt', name)));
+//                    
+        } else if (fileFormat === 'pdf') {
+            fileUrlVar = pdfFileURL(name);
+
+            div12lik.append(
+                    $('<a target="_blank"></a>')
+                    .attr("href", pdfFileURL(name))
+                    .append($('<img></img>')
+                            .attr('src', fileUrlPrivate('pdf-logo.png'))
+                            .addClass('comment_img')
+                            .attr('alt', name)));
+        }
+        div12lik.append(' <b> ' + add3Dots2Filename(name) + '</b><br>');
+
+
+
+        div12lik.append($('<a target="_blank"></a>')
+                .attr("href", fileUrlVar)
+                .append($('<i class="fa fa-download"></i>'))
+                .append('  '))
+
+
+                ;
+        div2.append(div12lik);
+        div.append(div2);
+
+        var div_col = $('<div></div>').addClass("col").attr("style", "padding:0px;");
+        div_col.append(div);
+        return div.html();
+    } catch (err) {
+    }
+}
+
+
 var jsCodeIsLoaded = [];
 var jsGlobalCodeIsLoaded = [];
+
+
+
+
+
 
 var queue4ManulProject = {
     getAllGuiClassList: false,
@@ -305,6 +681,8 @@ function uploadFile4Ipo(id) {
     var pbDiv = $('#' + id).closest('div').find('#progress_bar_new');
     pbDiv.html('');
 
+    $('#' + id).attr('fname', '');
+
     for (var i = 0, f; f = files[i]; i++) {
 //            var file = files[0];
         var file = f;
@@ -343,6 +721,7 @@ function uploadFile4IpoCore(fileext, file_base_64, file_name, id) {
     d.file_name = file_name;
     conf = JSON.parse('{"kv":{}}');
     conf['kv'] = d;
+    conf.kv.cookie = getToken();
     var dat = JSON.stringify(conf);
     var finalname = "";
     $.ajax({
@@ -371,7 +750,7 @@ function uploadFile4IpoCore(fileext, file_base_64, file_name, id) {
             $('#pro_zad_' + idx).remove();
             $('#pro_zad_span' + idx)
                     .after($('<i class="fa fa-times">')
-                    .attr('pid',idx)
+                            .attr('pid', idx)
                             .attr('onclick', 'removeFilenameFromZad(this,\'' + finalname + '\')'));
 
 
@@ -381,8 +760,7 @@ function uploadFile4IpoCore(fileext, file_base_64, file_name, id) {
             st += (st) ? global_var.vertical_seperator + finalname
                     : finalname;
 
-            $('#' + id)
-                    .attr('fname', st);
+            $('#' + id).attr('fname', st);
 
         },
         error: function () {
@@ -400,7 +778,7 @@ function removeFilenameFromZad(el, filename) {
     $(el).closest('div.component-class')
             .find('.saTypeFilePicherUploadFile')
             .attr('fname', st);
-    
+
     var id = $(el).attr("pid");
     $('#pro_zad_span' + id).remove();
     $(el).remove();
@@ -1422,7 +1800,7 @@ function getModuleList4Permission() {
 }
 
 
-$(document).on("change", "#permission_userlist", function (e) {
+$(document).on("click", "#permission_userlist", function (e) {
     var id = $(this).val();
     getBodyOfPermissionByUser(id);
     getBodyOfModulePermissionByUser(id);
@@ -1742,14 +2120,17 @@ function getUserList4Permission() {
                 select.append(option);
             }
 
-            select.selectpicker('refresh');
-            select.change();
+
 
         },
         error: function () {
             Toaster.showError(('somethingww'));
         }
     });
+}
+
+function initSelectpickerComponent() {
+    $('.sa-selectpicker').selectpicker('refresh');
 }
 
 
@@ -2671,17 +3052,25 @@ function setValueOnCompAfterTriggerApi(el, data) {
         var val = "";
         var selectedFields = $(this).attr('sa-selectedfield').split(',');
         for (var i in selectedFields) {
-            var field = selectedFields[i].trim();
-            if (field.length > 0) {
-                if ($(this).attr('sa-type') === 'select'
-                        && $(this).attr('sa-load-ontrigger') === '1'
-                        && data.selectedField.split(',').includes(field)) {
+            try {
+                var field = selectedFields[i].trim();
+                if (field.length > 0) {
+                    if ($(this).attr('sa-type') === 'select'
+                            && $(this).attr('sa-load-ontrigger') === '1'
+                            && data.selectedField.split(',').includes(field)) {
 
-                    fillSelectBoxAfterSyncApiCall(this, data, field);
-                } else if (data[field]) {
-                    val = data[field];
-                    getComponentValueAfterTriggerApi(this, val);
+                        fillSelectBoxAfterSyncApiCall(this, data, field);
+                    } else if ($(this).attr('sa-type') === 'multiselect'
+                            && $(this).attr('sa-load-ontrigger') === '1'
+                            && data.selectedField.split(',').includes(field)) {
+
+                        fillSelectBoxAfterSyncApiCall(this, data, field);
+                    } else if (data[field]) {
+                        val = data[field];
+                        getComponentValueAfterTriggerApi(this, val);
+                    }
                 }
+            } catch (err) {
             }
         }
     })
@@ -2689,14 +3078,46 @@ function setValueOnCompAfterTriggerApi(el, data) {
 
 function getComponentValueAfterTriggerApi(el, val) {
     if ($(el).attr('sa-type') === 'date') {
-        SetConvertedDateByElement(el, val)
+        SetConvertedDateByElement(el, val);
     } else if ($(el).attr('sa-type') === 'time') {
-        SetConvertedTimeByElement(el, val)
+        SetConvertedTimeByElement(el, val);
+    } else if ($(el).attr('sa-type') === 'image') {
+        $(el).attr('src', fileUrl(val));
+        $(el).closest('div').find('.biyzad').remove();
+    } else if ($(el).attr('sa-type') === 'filepicker') {
+        $(el).attr('fname', val);
+
     } else if ($(el).attr('sa-type') === 'checkbox') {
         if (val === '1')
             $(el).prop('checked', true);
         else
             $(el).prop('checked', false);
+
+    } else if ($(el).attr('sa-type') === 'htmleditor') {
+
+        initHtmlFroalaEditor($(el).attr('id'), val);
+
+
+    } else if ($(el).attr('sa-type') === 'filelist') {
+        var res = val.split(global_var.vertical_seperator);
+        for (var i = 0; i < res.length; i++) {
+            try {
+                $(el).append(generateFileLine(res[i].trim(), "col-3"));
+            } catch (e) {
+            }
+        }
+
+
+    } else if ($(el).attr('sa-type') === 'multiselect') {
+
+        $.each(val.split(","), function (i, e) {
+            var id = $(el).attr('id');
+            $("#" + id + " option[value='" + e + "']").prop("selected", true);
+        });
+        $(el).selectpicker('refresh');
+
+    } else if ($(el).attr('sa-type') === 'htmlviewer') {
+        $(el).html(val);
 
     } else {
         $(el).val(val);
@@ -2710,6 +3131,67 @@ function getComponentValueAfterTriggerApi(el, val) {
     }
 }
 
+function initHtmlFroalaEditorByClass(className) {
+    $('.' + className).each(function () {
+        var id = $(this).attr('id');
+        initHtmlFroalaEditor(id);
+    })
+}
+
+function initHtmlFroalaEditor(elementId, val) {
+    var editor = new FroalaEditor('#' + elementId, {
+        tableStyles: {
+            class1: 'Dashed',
+            class2: 'None',
+        },
+
+        quickInsertButtons: ['table', 'ol', 'ul', 'image', "video"],
+        toolbarInline: true,
+        charCounterCount: false,
+        fileUpload: false,
+        pastePlain: false,
+        toolbarButtons: {
+            'moreText': {
+                'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'fontFamily', 'fontSize', 'textColor', 'backgroundColor', 'inlineClass', 'inlineStyle', 'clearFormatting']
+            },
+            'moreParagraph': {
+                'buttons': ['alignLeft', 'alignCenter', 'formatOLSimple', 'alignRight', 'alignJustify', 'formatOL', 'formatUL', 'paragraphFormat', 'paragraphStyle', 'lineHeight', 'outdent', 'indent', 'quote']
+            },
+            'moreRich': {
+                'buttons': ['insertVideo', 'insertImage', 'insertLink', 'insertTable', 'emoticons', 'fontAwesome', 'specialCharacters', 'embedly']
+            },
+            'moreMisc': {
+                'buttons': ['undo', 'redo', 'selectAll', 'html', ],
+                'align': 'right',
+                'buttonsVisible': 2
+            }
+        }
+    },
+            function () {
+
+                editor.html.set(val);
+            }
+    )
+}
+
+function getMultiSelectpickerValueById(elementId) {
+    return getMultiSelectpickerValue(document.getElementById(elementId))
+}
+
+function getMultiSelectpickerValue(el) {
+    var id = $(el).val();
+    var st = "";
+    for (var i = 0; i < id.length; i++) {
+        if (!id[i])
+            continue;
+        st += id[i]
+        if (i < id.length - 1) {
+            st += ','
+        }
+    }
+    return st;
+}
+
 function getGUIDataByStoryCard(el) {
     var res = {};
 
@@ -2721,7 +3203,14 @@ function getGUIDataByStoryCard(el) {
             val = $(this).is(":checked") ? "1" : "0";
         } else if ($(this).attr('sa-type') === 'filepicker') {
             val = ($(this).attr("fname")) ? $(this).attr("fname") : "";
+        } else if ($(this).attr('sa-type') === 'multiselect') {
+            val = getMultiSelectpickerValue(this);
+        } else if ($(this).attr('sa-type') === 'htmleditor') {
+            val = $(this).closest('div').find('.fr-element').html();
+            ;
         }
+
+
 
 
 
@@ -3122,6 +3611,53 @@ function getProjectDescriptionByProject() {
 }
 
 
+function getInputAttributeByProjectManual() {
+    if (!global_var.current_project_id) {
+
+        return;
+    }
+
+    var json = initJSON();
+    json.kv.fkProjectId = global_var.current_project_id;
+    var that = this;
+    var data = JSON.stringify(json);
+
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetInputAttributeListByProject",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            try {
+                cr_input_comp_attribute = {};
+
+                var obj = (res.tbl.length > 0) ? res.tbl[0].r : [];
+                for (var i = 0; i < obj.length; i++) {
+                    var o = obj[i];
+                    if (o.attrType === 'comp') {
+                        var kv = {};
+                        kv[o.attrName] = o.attrValue;
+                        if (!cr_input_comp_attribute[o.fkInputId]) {
+                            cr_input_comp_attribute[o.fkInputId] = [];
+                            cr_input_comp_attribute_kv[o.fkInputId] = {};
+                        }
+                        cr_input_comp_attribute[o.fkInputId].push(kv)
+                        cr_input_comp_attribute_kv[o.fkInputId][o.attrName] = o.attrValue;
+
+                    }
+
+                }
+            } catch (err) {
+            }
+
+
+        }
+    });
+}
+
+
 function getInputAttributeByProject() {
     if (!global_var.current_project_id) {
         queue4ManulProject.getInputAttributeByProject = true;
@@ -3181,6 +3717,50 @@ function getInputAttributeByProject() {
     });
 }
 
+
+function getInputActionRelByProjectMAnual2() {
+    if (!global_var.current_project_id) {
+
+
+        return;
+    }
+
+    var json = initJSON();
+    json.kv.fkProjectId = global_var.current_project_id;
+    var that = this;
+    var data = JSON.stringify(json);
+
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetInputActionRelListByProject",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            try {
+                cr_input_action_rel = {};
+                cr_input_action_rel_list = {};
+
+                var obj = (res.tbl.length > 0) ? res.tbl[0].r : [];
+                for (var i = 0; i < obj.length; i++) {
+                    var o = obj[i];
+                    if (!cr_input_action_rel[o.fkInputId]) {
+                        cr_input_action_rel[o.fkInputId] = [];
+                    }
+
+                    cr_input_action_rel[o.fkInputId].push(o.id);
+                    cr_input_action_rel_list[o.id] = o;
+                }
+            } catch (err) {
+            }
+
+
+
+        }
+    });
+}
+
 function getInputActionRelByProject() {
     if (!global_var.current_project_id) {
         queue4ManulProject.getInputActionRelByProject = true;
@@ -3221,6 +3801,47 @@ function getInputActionRelByProject() {
             }
             queue4ManulProject.getInputActionRelByProject = true;
             executeCoreOfManualProSelection();
+
+
+        }
+    });
+}
+function getInputClassRelByProjectManual() {
+    if (!global_var.current_project_id) {
+
+
+        return;
+    }
+
+    var json = initJSON();
+    json.kv.fkProjectId = global_var.current_project_id;
+    var that = this;
+    var data = JSON.stringify(json);
+
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetInputClassRelByProject",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+
+            try {
+                cr_comp_input_classes = {};
+
+
+                var obj = (res.tbl.length > 0) ? res.tbl[0].r : [];
+                for (var i = 0; i < obj.length; i++) {
+                    var o = obj[i];
+                    if (o.relType === 'comp') {
+                        cr_comp_input_classes[o.fkInputId] = (cr_comp_input_classes[o.fkInputId])
+                                ? cr_comp_input_classes[o.fkInputId] + "," + o.fkClassId
+                                : o.fkClassId;
+                    }
+                }
+            } catch (err) {
+            }
 
 
         }
@@ -3812,7 +4433,7 @@ function addGuiClassToInput(el) {
         async: true,
         success: function (res) {
             getInputCompClassList();
-            getInputClassRelByProject();
+            getInputClassRelByProjectManual();
             new UserStory().genGUIDesign();
         }
     });
@@ -3965,7 +4586,7 @@ function removeInputClassRel(el, relId) {
         success: function (res) {
             getInputCompClassList();
             getInputContaierClassList();
-            getInputClassRelByProject();
+            getInputClassRelByProjectManual();
             new UserStory().genGUIDesign();
         }
     });
@@ -4248,7 +4869,7 @@ function addInputAttributes(el) {
             $('#gui_prop_in_attr_name').val('');
             $('#gui_prop_in_attr_value').val('');
             getInputAttributeList(global_var.current_us_input_id);
-            getInputAttributeByProject();
+            getInputAttributeByProjectManual();
             new UserStory().genGUIDesign();
         }
     });
@@ -4348,7 +4969,7 @@ function removeInputAttribute(el, inputAttrId) {
         success: function (res) {
             getInputAttributeList(global_var.current_us_input_id);
             getInputAttributeList4Container(global_var.current_us_input_id);
-            getInputAttributeByProject();
+            getInputAttributeByProjectManual();
             new UserStory().genGUIDesign();
         },
         error: function () {
@@ -5711,7 +6332,7 @@ function addDatabaseRelationDetails(id, action, dbId, tableId, fieldId) {
             new UserStory().setUserStoryInputsInfoOnGeneralViewDetailsPure4SelectNew(res1);
             new UserStory().setStoryCardOutput(res1);
             if (SACore.GetCurrentBaklogIsApi() !== '1') {
-                st = that.getGUIDesignHTMLPure(res1);
+                st = new UserStory().getGUIDesignHTMLPure(res1);
             }
             $('#general-view-task-gui').html(st);
             $('#general-view-task-gui').attr('bid', SACore.GetCurrentBacklogId());
@@ -5767,7 +6388,7 @@ function addSourceOfRelationAsAPI4SendDetails(id, sendToBacklogId, sendToInputId
             new UserStory().setUserStoryInputsInfoOnGeneralViewDetailsPure4SelectNew(res1);
             new UserStory().setStoryCardOutput(res1);
             if (SACore.GetCurrentBaklogIsApi() !== '1') {
-                st = that.getGUIDesignHTMLPure(res1);
+                st = new UserStory().getGUIDesignHTMLPure(res1);
             }
             $('#general-view-task-gui').html(st);
             $('#general-view-task-gui').attr('bid', SACore.GetCurrentBacklogId());
@@ -5822,7 +6443,7 @@ function addSourceOfRelationAsAPIDetails(id, action, selectFromBacklogId, select
             new UserStory().setUserStoryInputsInfoOnGeneralViewDetailsPure4SelectNew(res1);
             new UserStory().setStoryCardOutput(res1);
             if (SACore.GetCurrentBaklogIsApi() !== '1') {
-                st = that.getGUIDesignHTMLPure(res1);
+                st = new UserStory().getGUIDesignHTMLPure(res1);
             }
             $('#general-view-task-gui').html(st);
             $('#general-view-task-gui').attr('bid', SACore.GetCurrentBacklogId());
@@ -6337,12 +6958,12 @@ function setMainBodyCSS() {
 }
 
 function commmonOnloadAction(el) {
-    $('.new-wrapper').css("left", "77px");
-    $('#mainBodyDivForAll').css("padding-left", "0px");
+    //  $('.new-wrapper').css("left", "77px");
+    //  $('#mainBodyDivForAll').css("padding-left", "0px");
     setMainBodyCSS();
     if (global_var.current_modal === 'loadSourceActivity') {
-        $('.new-wrapper').css("left", "-10px");
-        $('#mainBodyDivForAll').css("padding-left", "0px");
+        //  $('.new-wrapper').css("left", "-10px");
+        //  $('#mainBodyDivForAll').css("padding-left", "0px");
 
         $('#sad-diagram-projectlist').html($('#projectList').html());
         $('#sad-diagram-projectlist').val(global_var.current_project_id);
@@ -6355,8 +6976,8 @@ function commmonOnloadAction(el) {
     }
 
     if (global_var.current_modal === 'loadEntityDiagram') {
-        $('.new-wrapper').css("left", "-20px");
-        $('#mainBodyDivForAll').css("padding-left", "10px");
+        //   $('.new-wrapper').css("left", "-20px");
+        // $('#mainBodyDivForAll').css("padding-left", "10px");
     }
 
     if (global_var.current_modal === 'loadDashboard') {
@@ -7022,14 +7643,155 @@ $(document).on('click', '.live-prototype-show-story-card', function (evt) {
     if (global_var.current_modal !== "loadStoryCard") {
         var id = global_var.current_backlog_id;
         callStoryCard(id);
+
     }
 });
 
+
+
 $(document).on('click', '.live-prototype-show-live', function (evt) {
-    window.open('p.html?pid=' + global_var.current_project_id + '&bid=' + global_var.current_backlog_id, 'name');
+//    window.open('p.html?pid=' + global_var.current_project_id + '&bid=' + global_var.current_backlog_id, 'name');
+    $('#storyCardFieldMgmtModal').modal('show');
+    saViewIsPressed = true;
+    SCSourceManagement.Init(global_var.current_backlog_id);
+});
+
+
+$(document).on('click', '.live-prototype-show-inputrelation', function (evt) {
+//    window.open('p.html?pid=' + global_var.current_project_id + '&bid=' + global_var.current_backlog_id, 'name');
+    $('#storyCardInputRelationModal').modal('show');
+    setInputListToInputRelation();
+    setApiListToInputRelation();
+    saInputTagIsPressed = true;
+
 
 });
 
+function setInputListToInputRelation() {
+    var div = $('#storyCardInputRelationModal_maindivid');
+    div.html('');
+
+    var json = initJSON();
+    json.kv.fkBacklogId = global_var.current_backlog_id;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetInputList4Relation",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+
+            div.html('');
+            var table = $('<table>')
+                    .addClass('table table-hover');
+            var obj = res.tbl[0].r;
+            for (var i in obj) {
+                var o = obj[i];
+                var selectFromApi = SACore.GetBacklogname(o.selectFromBacklogId);
+                var selectFromInput = SAInput.GetInputName(o.selectFromInputId);
+                var selectFromZad = (selectFromInput)
+                        ? $('<a>')
+                        .attr("href", "#")
+                        .attr("onclick", "new UserStory().refreshCurrentBacklogById('" + o.selectFromBacklogId + "')")
+                        .append($('<span>')
+                                .text(selectFromApi + "." + selectFromInput))
+                        : $('<i>').css('color', "white").text("Select from API");
+
+                var sendToApi = SACore.GetBacklogname(o.sendToBacklogId);
+                var sendToInput = SAInput.GetInputName(o.sendToInputId);
+                var sendToZad = (sendToInput)
+                        ? $('<a>')
+                        .attr("href", "#")
+                        .attr("onclick", "new UserStory().refreshCurrentBacklogById('" + o.sendToBacklogId + "')")
+                        .append($('<span>')
+                                .text(sendToApi + "." + sendToInput))
+                        : $('<i>').css('color', "gray").text("Send to API");
+
+
+
+                var tr = $('<tr>')
+                        .append($('<td>')
+                                .append($('<span>')
+                                        .attr('pid', o.id)
+                                        .addClass('ApiOutTDspan')
+                                        .append(selectFromZad))
+                                .append($('<span>')
+                                        .attr('onclick', "deleteSelectFromApiOnInputRelation(this,'" + o.id + "')")
+                                        .addClass('DeleteOutAPi')
+                                        .addClass('RemoveApiTD'))
+                                )
+
+                        .append($('<td>')
+                                .append($('<i class="fa fa-chevron-right">'))
+                                .append($('<span>').text(" " + o.inputName + " "))
+                                .append($('<i class="fa fa-chevron-right">')))
+
+                        .append($('<td>')
+                                .append($('<span>')
+                                        .attr('pid', o.id)
+                                        .addClass('ApiInTDspan')
+                                        .append(sendToZad))
+                                .append($('<span>')
+                                        .attr('onclick', "deleteSendToApiOnInputRelation(this,'" + o.id + "')")
+                                        .addClass('DeleteINAPi')
+                                        .addClass('RemoveApiTD'))
+                                )
+
+
+                table.append(tr)
+            }
+            div.append(table);
+        }
+    });
+}
+
+function deleteSelectFromApiOnInputRelation(el, inputId) {
+    new UserStory().removeRelationSource(el, inputId);
+    setInputListToInputRelation();
+}
+
+function deleteSendToApiOnInputRelation(el, inputId) {
+    new UserStory().removeSendSaveTo(el, inputId);
+    setInputListToInputRelation();
+}
+
+
+function setApiListToInputRelation() {
+    var select = $('#storyCardInputRelationModal_apilist');
+    select.html('');
+
+    var json = initJSON();
+    json.kv.fkProjectId = global_var.current_project_id;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetApiList4Zad",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            select.html('');
+
+            var obj = res.tbl[0].r;
+            for (var i in obj) {
+                var o = obj[i];
+                select.append($('<option>').val(o.id).text(o.backlogName))
+            }
+
+            select.change();
+
+
+
+
+        }
+    });
+
+}
 
 $(document).on('click', '.redirectClass4CSS', function (evt) {
 //    var id = $(this).find('.redirectClass').attr('bid');
@@ -7042,6 +7804,7 @@ $(document).on('click', '.loadLivePrototype', function (evt) {
     global_var.current_modal = "loadLivePrototype";
     Utility.addParamToUrl('current_modal', global_var.current_modal);
     showToggleMain();
+
     var f = $(this).data('link');
     $.get("resource/child/" + f + ".html", function (html_string)
     {
@@ -7060,7 +7823,7 @@ $(document).on('click', '.loadLivePrototype', function (evt) {
         commmonOnloadAction(this);
         getGuiClassList();
         getJsCodeByProject();
-        getInputActionRelByProject();
+        getInputActionRelByProjectMAnual2();
 
 
     });
@@ -8238,7 +9001,7 @@ function showInputTableColumnComponent(el, tableId, inputId) {
 
 function readInputTableProperties(el, inputId) {
     global_var.current_us_input_id = inputId;
-    openComponentPropertiesModal();
+    openComponentPropertiesModal(el);
     $("#ipo_tr_" + inputId).click();
 }
 
@@ -9214,6 +9977,8 @@ function cloneTaskModal() {
     SACore.FillInCombo('cloneTask_backlog_id');
 }
 
+
+
 function changeUserStoryOfTaskModal() {
     $('#change-user-story-task-modal').modal('show');
 
@@ -9232,6 +9997,7 @@ function showUserStoryOfTaskCardModal(el) {
         return;
     }
 
+    $('.task-card-UserStory-edit-exit').click();
     var backlogId = $(el).attr("pid");
     if (!backlogId) {
         return;
@@ -12936,4 +13702,309 @@ var SourcedActivityDiagram = {
             return div;
         }
     },
+}
+
+
+
+var SCSourceManagement = {
+
+    DivId: "storyCardFieldMgmtModal_maindivid",
+    GetMainElement: function () {
+        return $('#' + SCSourceManagement.DivId);
+
+    },
+    Init: function (storyCardId) {
+        SCSourceManagement.GetMainElement().html('');
+
+        SCSourceManagement.FillInput(storyCardId);
+        SCSourceManagement.GetInputAttributes(storyCardId);
+
+        SCSourceManagement.FillLeftApi();
+        SCSourceManagement.FillRightApi();
+
+        SCSourceManagement.FillLeftEntity();
+        SCSourceManagement.FillRightEntity();
+
+
+        SCSourceManagement.FillLeftApiTriggers();
+
+    },
+    FillInput: function (storyCardId) {
+        var inputs = SACore.GetInputList(storyCardId);
+        var el = SCSourceManagement.GetMainElement();
+        for (var i in inputs) {
+            var inputId = inputs[i].trim();
+            var inputName = SAInput.GetInputName(inputId);
+            var div = $('<div>')
+                    .attr("pid", inputId)
+                    .addClass('sc-source-mgmt-input-div')
+                    .addClass("row")
+                    .addClass("text-center")
+                    .append($('<div>')
+                            .addClass('col-lg-5')
+                            .addClass('text-right')
+                            .addClass('sc-source-mgmt-div-4-field-left'))
+
+                    .append($('<div>')
+                            .addClass('col-lg-2')
+                            .addClass('sc-source-mgmt-div-4-input-list')
+                            .append($('<span>')
+                                    .addClass('sc-source-mgmt-input-list')
+                                    .addClass('sc-source-mgmt-input-list_' + inputId)
+                                    .attr('pid', inputId)
+                                    .text(inputName)))
+                    .append($('<div>')
+                            .addClass('col-lg-5')
+                            .addClass('text-left')
+                            .addClass('sc-source-mgmt-div-4-field-right'))
+
+            el.append(div);
+        }
+    },
+    FillLeftApi: function () {
+        $('.sc-source-mgmt-input-list').each(function () {
+            var inputId = $(this).attr("pid");
+            var o = SAInput.getInputObject(inputId);
+            var fkSelectFromBacklogId = o.selectFromBacklogId;
+            var fkSelectFromInputId = o.selectFromInputId;
+            var backlogName = SACore.GetBacklogname(fkSelectFromBacklogId);
+            var inputName = SAInput.GetInputName(fkSelectFromInputId);
+
+
+            $(this).closest('div.row').find('.sc-source-mgmt-attr-left-list-div-4-api-by-' + inputName)
+                    .append($('<span>')
+                            .addClass('sc-source-mgmt-attr-left-list-div-4-api-item')
+                            .addClass('sc-source-mgmt-attr-left-list-div-4-api-item-' + fkSelectFromInputId)
+                            .attr('bid', fkSelectFromBacklogId)
+                            .attr('pid', fkSelectFromInputId)
+                            .attr('field', inputName)
+                            .text(backlogName + "." + inputName + " (OUT)"))
+                    .append('<br>')
+                    .append($('<span>')
+                            .addClass('sc-source-mgmt-attr-left-list-div-4-api-item-triggers')
+                            .addClass('sc-source-mgmt-attr-left-list-div-4-api-item-triggers-' + fkSelectFromInputId)
+                            .attr('bid', fkSelectFromBacklogId)
+                            .attr('pid', fkSelectFromInputId)
+                            .attr('field', inputName)
+                            )
+
+                    ;
+
+
+        })
+    },
+    FillRightApi: function () {
+        $('.sc-source-mgmt-input-list').each(function () {
+            var inputId = $(this).attr("pid");
+            var o = SAInput.getInputObject(inputId);
+            var fkSendToBacklogId = o.sendToBacklogId;
+            var fkSendToInputId = o.sendToInputId;
+            var backlogName = SACore.GetBacklogname(fkSendToBacklogId);
+            var inputName = SAInput.GetInputName(fkSendToInputId);
+
+
+            $(this).closest('div.row').find('.sc-source-mgmt-attr-right-list-div-4-api-by-' + inputName)
+                    .append($('<span>')
+                            .addClass('sc-source-mgmt-attr-right-list-div-4-api-item')
+                            .addClass('sc-source-mgmt-attr-right-list-div-4-api-item-' + fkSendToInputId)
+                            .attr('bid', fkSendToBacklogId)
+                            .attr('pid', fkSendToInputId)
+                            .attr('field', inputName)
+                            .text(backlogName + "." + inputName + " (IN)"))
+                    .append('<br>')
+                    .append($('<span>')
+                            .addClass('sc-source-mgmt-attr-right-list-div-4-api-item-triggers')
+                            .addClass('sc-source-mgmt-attr-right-list-div-4-api-item-triggers-' + fkSendToInputId)
+                            .attr('bid', fkSendToBacklogId)
+                            .attr('pid', fkSendToInputId)
+                            .attr('field', inputName)
+                            )
+
+                    ;
+
+
+        })
+    },
+    FillLeftEntity: function () {
+        $('.sc-source-mgmt-attr-left-list-div-4-api-item').each(function () {
+            var bid = $(this).attr('bid');
+            var inputName = $(this).attr('field');
+            var inputIds = SACore.GetInputList(bid);
+
+            for (var i in inputIds) {
+                var inputId = inputIds[i].trim();
+                var o = SAInput.getInputObject(inputId);
+                if (o.inputName !== inputName)
+                    continue;
+
+                var dbName = SAEntity.GetDBDetails(o.selectFromDbId, 'dbName');
+                var tableName = SAEntity.GetTableDetails(o.selectFromTableId, 'tableName');
+                var fiedlName = SAEntity.GetFieldDetails(o.selectFromFieldId, 'fieldName');
+
+                var fieldZadi = (fiedlName) ? dbName + "." + tableName + "." + fiedlName : "";
+
+                $(this).closest('div.row').find('.sc-source-mgmt-attr-left-list-div-4-api-input-by-' + inputName)
+                        .append($('<span>')
+                                .addClass('sc-source-mgmt-attr-left-list-div-4-api-entity-item')
+                                .addClass('sc-source-mgmt-attr-left-list-div-4-api-entity-item-' + o.id)
+                                .attr('dbid', o.selectFromDbId)
+                                .attr('tableid', o.selectFromTableId)
+                                .attr('fieldid', o.selectFromFieldId)
+                                .attr('pid', o.id)
+                                .attr('field', inputName)
+                                .text(fieldZadi))
+            }
+        })
+    },
+    FillRightEntity: function () {
+        $('.sc-source-mgmt-attr-right-list-div-4-api-item').each(function () {
+            var bid = $(this).attr('bid');
+            var inputName = $(this).attr('field');
+            var inputIds = SACore.GetInputList(bid);
+
+            for (var i in inputIds) {
+                var inputId = inputIds[i].trim();
+                var o = SAInput.getInputObject(inputId);
+                if (o.inputName !== inputName)
+                    continue;
+
+                var dbName = SAEntity.GetDBDetails(o.sendToDbId, 'dbName');
+                var tableName = SAEntity.GetTableDetails(o.sendToTableId, 'tableName');
+                var fiedlName = SAEntity.GetFieldDetails(o.sendToFieldId, 'fieldName');
+                var fieldZadi = (fiedlName) ? dbName + "." + tableName + "." + fiedlName : "";
+
+                $(this).closest('div.row').find('.sc-source-mgmt-attr-right-list-div-4-api-input-by-' + inputName)
+                        .append($('<span>')
+                                .addClass('sc-source-mgmt-attr-right-list-div-4-api-entity-item')
+                                .addClass('sc-source-mgmt-attr-right-list-div-4-api-entity-item-' + o.id)
+                                .attr('dbid', o.sendToDbId)
+                                .attr('tableid', o.sendToTableId)
+                                .attr('fieldid', o.sendToFieldId)
+                                .attr('pid', o.id)
+                                .attr('field', inputName)
+                                .text(fieldZadi))
+            }
+        })
+    },
+    FillLeftApiTriggers: function () {
+        $('.sc-source-mgmt-attr-left-list-div-4-api-item-triggers').each(function () {
+            var bid = $(this).attr('bid');
+            SCSourceManagement.GetBacklogListBySendToApi(this, bid);
+        })
+    },
+    GetBacklogListBySendToApi: function (el, apiId) {
+        var json = initJSON();
+        json.kv.fkBacklogId = apiId;
+        var that = this;
+        var data = JSON.stringify(json);
+        $.ajax({
+            url: urlGl + "api/post/srv/serviceTmGetBacklogListBySendToApi",
+            type: "POST",
+            data: data,
+            contentType: "application/json",
+            crossDomain: true,
+            async: true,
+            success: function (res) {
+                var obj = res.tbl[0].r;
+                for (var i in obj) {
+                    var o = obj[i];
+
+                    var bid = SAInput.getInputDetails(o.fkInputId, "fkBacklogId");
+                    var backlogName = SACore.GetBacklogname(bid);
+                    var inputName = SAInput.GetInputName(o.fkInputId);
+                    var triggerLine = '"' + backlogName + '".' + inputName + '.' + o.actionType + "()"
+
+                    $(el).append($('<span>').text(triggerLine))
+                }
+            }
+        });
+    },
+    GetInputAttributes: function (storyCardId) {
+
+        var json = initJSON();
+        json.kv.fkBacklogId = storyCardId;
+        var that = this;
+        var data = JSON.stringify(json);
+        $.ajax({
+            url: urlGl + "api/post/srv/serviceTmGetInputAttributeListByBacklog",
+            type: "POST",
+            data: data,
+            contentType: "application/json",
+            crossDomain: true,
+            async: false,
+            success: function (res) {
+                var obj = res.tbl[0].r;
+                for (var i in obj) {
+                    var o = obj[i];
+
+                    var selectedFields = o.attrValue.split(',');
+                    for (var j in selectedFields) {
+                        var sf = selectedFields[j];
+
+                        $('.sc-source-mgmt-input-list_' + o.fkInputId)
+                                .first()
+                                .closest('div.row')
+                                .find('div.sc-source-mgmt-div-4-field-right')
+                                .append($('<div class="row">')
+
+                                        .append($('<div>')
+                                                .addClass("col-lg-3")
+                                                .addClass("sc-source-mgmt-attr-right-list-div")
+                                                .append($('<span>')
+                                                        .addClass('sc-source-mgmt-attr-right-list')
+                                                        .addClass('sc-source-mgmt-attr-right-list_' + o.id)
+                                                        .addClass('sc-source-mgmt-attr-right-list_field_' + sf)
+                                                        .attr('pid', o.id)
+                                                        .attr('field', sf)
+                                                        .text(sf)))
+
+                                        .append($('<div>')
+                                                .addClass("col-lg-5")
+                                                .addClass("sc-source-mgmt-attr-right-list-div-4-api")
+                                                .addClass("sc-source-mgmt-attr-right-list-div-4-api-by-" + sf))
+
+                                        .append($('<div>')
+                                                .addClass("col-lg-4")
+                                                .addClass("sc-source-mgmt-attr-right-list-div-4-api-input")
+                                                .addClass("sc-source-mgmt-attr-right-list-div-4-api-input-by-" + sf)
+                                                )
+
+                                        )
+
+                        $('.sc-source-mgmt-input-list_' + o.fkInputId)
+                                .first()
+                                .closest('div.row')
+                                .find('div.sc-source-mgmt-div-4-field-left')
+                                .append($('<div class="row">')
+
+                                        .append($('<div>')
+                                                .addClass("col-lg-4")
+                                                .addClass("sc-source-mgmt-attr-left-list-div-4-api-input")
+                                                .addClass("sc-source-mgmt-attr-left-list-div-4-api-input-by-" + sf)
+                                                )
+
+                                        .append($('<div>')
+                                                .addClass("col-lg-5")
+                                                .addClass("sc-source-mgmt-attr-left-list-div-4-api")
+                                                .addClass("sc-source-mgmt-attr-left-list-div-4-api-by-" + sf)
+                                                )
+
+
+                                        .append($('<div>')
+                                                .addClass("col-lg-3")
+                                                .addClass("sc-source-mgmt-attr-left-list-div")
+                                                .append($('<span>')
+                                                        .addClass('sc-source-mgmt-attr-left-list')
+                                                        .addClass('sc-source-mgmt-attr-left-list_' + o.id)
+                                                        .addClass('sc-source-mgmt-attr-left-list_field_' + sf)
+                                                        .attr('pid', o.id)
+                                                        .attr('field', sf)
+                                                        .text(sf))))
+                    }
+
+                }
+            }
+        });
+    }
+
 }

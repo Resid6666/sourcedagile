@@ -16,6 +16,7 @@ var bug_filter = {
     page_no: 1,
     sprint_id: '',
     label_id: '',
+    showChildTask: '1',
 }
 
 var sprintTaskIds = "";
@@ -24,6 +25,46 @@ var bugId = "";
 
 var coreBugList = {};
 var coreBugKV = {};
+
+function getSprintNamesByTask() {
+    var select = $('.task-mgmt-modal-sprintname');
+    select.html('');
+
+    var json = initJSON();
+    json.kv.fkBacklogTaskId = global_var.current_us_task_id;
+    var that = this;
+    var data = JSON.stringify(json);
+    $.ajax({
+        url: urlGl + "api/post/srv/serviceTmGetSprintNamesByTask",
+        type: "POST",
+        data: data,
+        contentType: "application/json",
+        crossDomain: true,
+        async: true,
+        success: function (res) {
+            var obj = res.tbl[0].r;
+            for (var i in obj) {
+                var o = obj[i];
+                var d = ((o.sprintStartDate) && (o.sprintEndDate))
+                        ? " (" + Utility.convertDate(o.sprintStartDate) + "-" + Utility.convertDate(o.sprintEndDate) + ")"
+                        : "";
+
+                var st = $('<span>')
+                        .text(o.sprintName)
+                        .append(d)
+                        .append("<br>")
+                        .attr("class", "lbl-item")
+                        .css("font-size", "12px")
+                        .attr("style", "font-size:12px;color:" + o.sprintColor)
+
+                select.append(st);
+            }
+
+//            new Label().load4Task()
+        }
+    });
+}
+
 $(document).on('click', '.bug-task-filter-checkbox-label', function (evt) {
 
     var rc = getLabelFilterCheckedCount();
@@ -129,12 +170,12 @@ $(document).on('click', '.assign-sprint-to-task-item', function (evt) {
     if ($(this).is(":checked")) {
         checked = '1';
     }
+    sprintZadininSheyeidlmesi(id, projectId, backlogId, sprintId, checked);
 
-    var json = {kv: {}};
-    try {
-        json.kv.cookie = getToken();
-    } catch (err) {
-    }
+});
+
+function sprintZadininSheyeidlmesi(id, projectId, backlogId, sprintId, checked) {
+    var json = initJSON();
     json.kv['fkSprintId'] = sprintId;
     json.kv['fkProjectId'] = projectId;
     json.kv.fkBacklogId = backlogId;
@@ -151,12 +192,9 @@ $(document).on('click', '.assign-sprint-to-task-item', function (evt) {
         async: true,
         success: function (res) {
             new Sprint().load4Task()
-        },
-        error: function () {
-            Toaster.showError(('Something went wrong!!!'));
         }
     });
-});
+}
 
 function deleteBugFromTable(el) {
     if (!bugId) {
@@ -244,9 +282,9 @@ function insertNewTaskDetail4Bug(taskName, backlogId, assgineeId, taskStatus, pr
     if (!projectId) {
         return;
     }
-    
+
     var id = "";
-    
+
     backlogId = (backlogId) ? backlogId : "-1";
     assgineeId = (assgineeId) ? assgineeId : "-1";
     taskStatus = (taskStatus) ? taskStatus : "new";
@@ -399,12 +437,25 @@ function getBugFilterMultiSelect(el) {
     return st;
 }
 
+function getBugFilterMultiSelectById(elementId) {
+    return getBugFilterMultiSelect(document.getElementById(elementId));
+}
+
 function setBugFilterValues() {
     $('.bug-filter').each(function () {
         var data_type = $(this).attr('data-type');
         bug_filter[data_type] = $(this).val();
     })
 }
+
+function setBugFilterCheckBoxValues() {
+    $('.bug-filter-checkbox').each(function () {
+        var data_type = $(this).attr('data-type');
+        bug_filter[data_type] = $(this).is(":checked") ? "1" : "0";
+    })
+}
+
+
 function setBugFilterLabelValues() {
     var st = ' ';
     $('.bug-task-filter-checkbox-label').each(function () {
@@ -562,6 +613,7 @@ function addNewBug(bugDesc, backlogId, assgineeId, taskStatus) {
 
 
 function getBugList() {
+    setBugFilterCheckBoxValues();
     setBugFilterValues();
     setBugFilterMultiValues();
     setBugFilterSprintValues();
@@ -584,6 +636,7 @@ function getBugList() {
     json.kv.sprintId = bug_filter.sprint_id;
     json.kv.labelId = bug_filter.label_id;
     json.kv.fkTaskId = global_var.current_issue_id;
+    json.kv.showChildTask = bug_filter.showChildTask;
     var that = this;
     var data = JSON.stringify(json);
     $.ajax({
@@ -804,7 +857,7 @@ function getBugListDetails(res) {
                 : fileUrl(new User().getDefaultUserprofileName());
 
         var backlogName = '<a href1="#" onclick="callStoryCard4BugTask(\'' + o.fkProjectId + '\',\'' + o.fkBacklogId + '\',this)" style="cursor:pointer;color: rgb(0, 0, 255);">' + replaceTags(o.backlogName) + '</a>';
-        var taskName = '<a class="issue_'+o.id+'" href1="#" onclick="callTaskCard4BugTask(this,\'' + o.fkProjectId + '\',\'' + o.id + '\')" style="cursor:pointer;color: rgb(0, 0, 255);">' + replaceTags(fnline2Text(o.taskName)) + '</a>';
+        var taskName = '<a class="issue_' + o.id + '" href1="#" onclick="callTaskCard4BugTask(this,\'' + o.fkProjectId + '\',\'' + o.id + '\')" style="cursor:pointer;color: rgb(0, 0, 255);">' + replaceTags(fnline2Text(o.taskName)) + '</a>';
         var task_id = getTaskCode(o.id);
 
         var t = $('<tr>')
@@ -824,7 +877,8 @@ function getBugListDetails(res) {
                         .addClass('bug-list-column-task-name')
                         .css("max-width", '400px')
                         .append(taskName, ' ')
-
+                        .append((o.fkParentTaskId) ? "<i class='fa fa-level-up '>" : "")
+                        .attr('title', (o.fkParentTaskId) ? "Has Parent Task" : "")
                         )
                 .append($('<td>').addClass('bug-list-column')
                         .addClass('bug-list-column-task-nature').append(getBugListTaskNatureValue(o.taskNature)))
@@ -921,6 +975,7 @@ function getBugListDetails(res) {
 
         tbody.append(t);
     }
+
     getBugListDetailsSumLine(tbody, sumEstHours, sumSpentHours, sumEstCount, sumExecCount,
             sumEstBudget, sumSpentBudget);
 
@@ -948,8 +1003,8 @@ function callTaskCard4BugTask(el, projectId, taskId) {
     Utility.addParamToUrl('current_issue_id', global_var.current_issue_id);
     global_var.current_issue_is_hide = "0";
     Utility.addParamToUrl('current_issue_is_hide', global_var.current_issue_is_hide);
-    
-    
+
+
 //Task card-da Story Card-linke basanda istifade edilir.
     if (projectId !== global_var.current_project_id) {
         global_var.current_project_id = projectId;
@@ -993,6 +1048,7 @@ function callTaskCard4BugTask(el, projectId, taskId) {
                 .attr('pid', coreBugKV[taskId].fkBacklogId)
                 .html(coreBugKV[taskId].backlogName);
     }
+
 
 
 //    showAssigneeTaskCardIn(taskId, 'updateBugList-taskinfo');

@@ -8,7 +8,7 @@ package module.tm;
 import com.google.gson.JsonObject;
 import controllerpool.ControllerPool;
 import java.io.BufferedReader;
-import java.io.BufferedWriter; 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -190,8 +190,28 @@ public class TmModel {
     /////////////////////////////////////////
     //// type code here
     ///////////////////////////////////////////////
+    public Carrier getSprintNamesByTask(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkBacklogTaskId", cp.hasValue(carrier, "fkBacklogTaskId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+        
+        EntityTmRelTaskAndSprint ent = new EntityTmRelTaskAndSprint();
+        ent.setFkBacklogTaskId(carrier.get("fkBacklogTaskId"));
+        String sprintIds = EntityManager.select(ent).getValueLine(ent.toTableName(),
+                EntityTmRelTaskAndSprint.FK_TASK_SPRINT_ID);
+        
+        if (sprintIds.length() > 6) {
+            EntityTmTaskSprint entSp = new EntityTmTaskSprint();
+            entSp.setId(sprintIds);
+            carrier = EntityManager.select(entSp);
+        }
+        
+        return carrier;
+    }
     
-        public Carrier getInputOutputListByBacklogId(Carrier carrier) throws QException {
+    public Carrier getInputOutputListByBacklogId(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
         if (carrier.hasError()) {
@@ -206,13 +226,16 @@ public class TmModel {
         
         return carrier;
     }
+    
     public static Carrier getApiList4Zad(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
         if (carrier.hasError()) {
             return carrier;
         }
         
         EntityTmBacklog entIn = new EntityTmBacklog();
+        entIn.setFkProjectId(carrier.get("fkProjectId"));
         entIn.setIsApi("1");
         entIn.addSortBy("backlogName");
         Carrier cout = EntityManager.select(entIn);
@@ -1731,6 +1754,7 @@ public class TmModel {
                 
                 EntityTmBacklogTask entNew = new EntityTmBacklogTask();
                 entNew.setTaskName(ent.getTaskName());
+                entNew.setFkParentTaskId(taskId);
                 entNew.setCreatedBy(SessionManager.getCurrentUserId());
                 entNew.setCreatedDate(QDate.getCurrentDate());
                 entNew.setCreatedTime(QDate.getCurrentTime());
@@ -3641,6 +3665,11 @@ public class TmModel {
     
     private static String getTaskList4TableFilterSection(Carrier carrier) throws QException {
         
+        String showChildTask = (carrier.get("showChildTask").length() > 0
+                && carrier.get("showChildTask").equals("0"))
+                ? " and  fk_parent_task_id =''"
+                : " ";
+        
         String sprintLine = (carrier.get("sprintId").length() > 5)
                 ? " and  t.id in (select fk_backlog_task_id from " + SessionManager.getCurrentDomain() + ".tm_rel_task_and_sprint k"
                 + " where k.status='A' and k.FK_TASK_SPRINT_ID in  (" + carrier.get("sprintId") + ")) "
@@ -3699,6 +3728,7 @@ public class TmModel {
                 + labelLine
                 + priority
                 + taskId
+                + showChildTask
                 + searchText;
         return st;
     }
@@ -3732,7 +3762,8 @@ public class TmModel {
                 + "    t.estimated_budget,\n"
                 + "    t.spent_budget,\n"
                 + "    t.estimated_counter,\n"
-                + "    t.executed_counter\n";
+                + "    t.executed_counter,\n"
+                + "    t.fk_parent_task_id\n";
         return st;
     }
     
@@ -6470,6 +6501,9 @@ public class TmModel {
         EntityTmBacklogTask ent = new EntityTmBacklogTask();
         ent.setId(carrier.get("id"));
         EntityManager.select(ent);
+        String oldVal = EntityManager.getEntityValue(ent, carrier.get("type"));
+        String newVal = carrier.get("value");
+        
         EntityManager.setEntityValue(ent, carrier.get("type"), carrier.get("value"));
         ent.setUpdatedBy(SessionManager.getCurrentUserId());
         ent.setLastUpdatedDate(QDate.getCurrentDate());
@@ -6493,7 +6527,7 @@ public class TmModel {
         temporarySetStatusInYelo(ent.getId(), ent.getTaskStatus());
         
         String fieldName = getUpdatedFieldName(carrier.get("type"));
-        sendMailNotificationOnChange(ent.getId(), ent.getFkBacklogId(), fieldName);
+        sendMailNotificationOnChange(ent.getId(), ent.getFkBacklogId(), fieldName, oldVal, newVal);
         
         return carrier;
     }
@@ -9953,6 +9987,10 @@ public class TmModel {
                 
                 EntityManager.mapCarrierToEntity(crUser, tn, i, entUser);
                 
+                if (entUser.getId().equals(SessionManager.getCurrentUserId())) {
+                    continue;
+                }
+                
                 String userFullname = entUser.getUserPersonName();
                 
                 url = url.replaceAll("@backlogId", entBL.getId())
@@ -10048,6 +10086,10 @@ public class TmModel {
             int rc = crUser.getTableRowCount(tn);
             for (int i = 0; i < rc; i++) {
                 EntityManager.mapCarrierToEntity(crUser, tn, i, entUser);
+                
+                if (entUser.getId().equals(SessionManager.getCurrentUserId())) {
+                    continue;
+                }
                 
                 String userFullname = entUser.getUserPersonName();
                 
@@ -10148,6 +10190,10 @@ public class TmModel {
                 
                 EntityManager.mapCarrierToEntity(crUser, tn, i, entUser);
                 
+                if (entUser.getId().equals(SessionManager.getCurrentUserId())) {
+                    continue;
+                }
+                
                 String userFullname = entUser.getUserPersonName();
                 
                 mailSubject = mailSubject.replaceAll("@taskName", taskName)
@@ -10170,7 +10216,7 @@ public class TmModel {
         
     }
     
-    private static void sendMailNotificationOnChange(String taskId, String backlogId, String realtedFieldName) throws QException {
+    private static void sendMailNotificationOnChange(String taskId, String backlogId, String realtedFieldName, String oldValue, String newValue) throws QException {
         
         if (taskId.length() == 0) {
             return;
@@ -10194,6 +10240,8 @@ public class TmModel {
         String storyCardName = " No Story Card Attached";
         String taskName = entTaskNew.getTaskName();
         String assigneeName = " No one";
+        String fieldName = realtedFieldName.toUpperCase() + " ( Changed from: "
+                + oldValue.toUpperCase() + " to:" + newValue.toUpperCase() + ")";
         
         if (entTaskNew.getFkAssigneeId().length() > 2) {
             EntityCrUserList entUserAssingee = new EntityCrUserList();
@@ -10225,9 +10273,6 @@ public class TmModel {
             Carrier cr = EntityManager.select(entTask);
             
             userIds += entBL.getFkOwnerId() + CoreLabel.IN + entBL.getCreatedBy() + CoreLabel.IN;
-//            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.FK_ASSIGNEE_ID) + CoreLabel.IN;
-//            userIds += cr.getValueLine(entTask.toTableName(), EntityTmBacklogTask.CREATED_BY);
-
         }
         
         if (userIds.length() > 6) {
@@ -10250,6 +10295,10 @@ public class TmModel {
                 
                 EntityManager.mapCarrierToEntity(crUser, tn, i, entUser);
                 
+                if (entUser.getId().equals(SessionManager.getCurrentUserId())) {
+                    continue;
+                }
+                
                 String userFullname = entUser.getUserPersonName();
                 
                 mailSubject = mailSubject.replaceAll("@taskName", taskName)
@@ -10260,7 +10309,7 @@ public class TmModel {
                         .replaceAll("@assigneeName", assigneeName)
                         .replaceAll("@createdByName", createdByName)
                         .replaceAll("@storyCard", storyCardName)
-                        .replaceAll("@field", realtedFieldName)
+                        .replaceAll("@field", fieldName)
                         .replaceAll("@url", url);
                 
                 String email = entUser.getEmail1();
@@ -10345,6 +10394,10 @@ public class TmModel {
                         .replaceAll("@projectId", projectIdRel);
                 
                 EntityManager.mapCarrierToEntity(crUser, tn, i, entUser);
+                
+                if (entUser.getId().equals(SessionManager.getCurrentUserId())) {
+                    continue;
+                }
                 
                 String userFullname = entUser.getUserPersonName();
                 

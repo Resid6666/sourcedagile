@@ -3523,6 +3523,7 @@ UserStory.prototype = {
         d.file_name = file_name;
         conf = JSON.parse('{"kv":{}}');
         conf['kv'] = d;
+        conf.kv.cookie = getToken();
         var dat = JSON.stringify(conf);
         var finalname = "";
         $.ajax({
@@ -8228,6 +8229,7 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
         $('#gui_all_' + global_var.current_backlog_id).find('.redirectClass').html(designHTML);
         var hdiv = $('#gui_all_' + global_var.current_backlog_id).find('.redirectClass').height();
         $('#gui_all_' + global_var.current_backlog_id).height(hdiv + 50);
+        initSelectpickerComponent();
 
 
 
@@ -10201,6 +10203,11 @@ class="us-ipo-input-table-tr"  pid="' + id + '" itable="' + replaceTags(Replace2
             var tempEl = $('#' + padeId).find('.redirectClass').find('div').first();
             $(tempEl).attr('sa-triggersetvalue', '1');
             triggerAPI(tempEl, $(el).attr("onclick_trigger_id"), data);
+        } else {
+            var tempEl = $('#' + padeId).find('.redirectClass').find('div').first();
+            if (!$(tempEl).hasClass('sa-onloadclick')) {
+                initOnloadActionOnGUIDesign4OnClick();
+            }
         }
 //       
     },
@@ -11154,7 +11161,7 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
                 }
 //                queue4ProLoad.loadSUS4Relation4Section = true;
 //                executeCoreOfManualProSelection();
-		 
+
             },
             error: function () {
                 Toaster.showError(('somethingww'));
@@ -11436,7 +11443,8 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
         d.file_type = "general";
         d.file_name = file_name;
         conf = JSON.parse('{"kv":{}}');
-        conf['kv'] = d;
+        conf['kv'] = d
+        conf.kv.cookie = getToken();
         var data = JSON.stringify(conf);
         var finalname = "";
         $.ajax({
@@ -11942,11 +11950,11 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
         return json;
     },
     load: function () {
-        
-        if (!ifQueue4ProLoadDone()){
+
+        if (!ifQueue4ProLoadDone()) {
             return;
         }
-        
+
         $('#container-us-body').html('');
         $('.us-checkbox-list').first().prop("checked", false);
         $('.assignSprintAndLabel').attr("style", "pointer-events:none;color:gray;");
@@ -12082,7 +12090,7 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
                 }
                 queue4ProLoad.loadDetailsOnProjectSelect = true;
                 executeCoreOfManualProSelection();
-		
+
 
                 hideProgress();
             },
@@ -12100,7 +12108,7 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
                 $('.project-item-zad')
                         .last()
                         .after($('<div>')
-                                .addClass("row row-style")
+                                .addClass("row row-style project-item-zad")
                                 .append($('<a>')
                                         .addClass('btnplus manualProject openNavhide left-menu-load')
                                         .attr("title", o.projectName)
@@ -12168,7 +12176,7 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
 
                 queue4ProLoad.loadInputDetailsOnProjectSelect = true;
                 executeCoreOfManualProSelection();
-		
+
             }
         });
     },
@@ -12192,7 +12200,7 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
                 }
                 queue4ProLoad.loadInputDescDetailsOnProjectSelect = true;
                 executeCoreOfManualProSelection();
-		
+
 
             }
         });
@@ -12217,7 +12225,7 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
                 }
                 queue4ProLoad.loadDependencyOnProjectSelect = true;
                 executeCoreOfManualProSelection();
-		
+
             }
         });
     },
@@ -12243,7 +12251,7 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
                 }
                 queue4ProLoad.loadBacklogLabelOnProjectSelect = true;
                 executeCoreOfManualProSelection();
-		
+
             }
         });
     },
@@ -14038,6 +14046,11 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
         if (!id) {
             return;
         }
+
+        fillBacklogHistory4View(id);
+
+
+
         this.setPreviousUserstoryValues();
         this.setPreviousUserstory();
         $('.us-selected').each(function () {
@@ -14050,6 +14063,15 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
         global_var.current_backlog_id = id;
         global_var.current_backlog_name = $(e).html();
         Utility.addParamToUrl('current_backlog_id', global_var.current_backlog_id);
+
+        if (saViewIsPressed) {
+            SCSourceManagement.Init(global_var.current_backlog_id);
+        }
+
+        if (saInputTagIsPressed)
+            setInputListToInputRelation();
+
+
 
         $('#container-us-body').find('.pointer').removeClass('us-selected');
 
@@ -15123,6 +15145,7 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
         d.file_name = file_name;
         conf = JSON.parse('{"kv":{}}');
         conf['kv'] = d;
+        conf.kv.cookie = getToken();
         var dat = JSON.stringify(conf);
         var finalname = "";
         $.ajax({
@@ -15174,6 +15197,7 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
         d.file_name = file_name;
         conf = JSON.parse('{"kv":{}}');
         conf['kv'] = d;
+        conf.kv.cookie = getToken();
         var dat = JSON.stringify(conf);
         var finalname = "";
         $.ajax({
@@ -18401,6 +18425,7 @@ onclick="new UserStory().getStoryInfo(\'' + o.id + '\',this)">';
         $('#SUS_IPO_GUI_Design').attr('bid', SACore.GetCurrentBacklogId());
         $('#SUS_IPO_GUI_Design').attr('bcode', makeId(10));
         initOnloadActionOnGUIDesign();
+        initSelectpickerComponent();
 
         //set is API
         try {
@@ -19420,7 +19445,7 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
             data: data,
             contentType: "application/json",
             crossDomain: true,
-            async: true,
+            async: false,
             success: function (res) {
                 SAInput.updateInputByRes(res);
                 $('#addRelatedSourceModal').modal('hide');
@@ -19470,7 +19495,7 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
             data: data,
             contentType: "application/json",
             crossDomain: true,
-            async: true,
+            async: false,
             success: function (res) {
                 SAInput.updateInputByRes(res);
                 $('#addRelatedSourceModal').modal('hide');
@@ -21742,6 +21767,22 @@ Project.prototype = {
             success: function (res) {
                 that.generateTableBody4MainProject(res);
                 new UserStory().addProjectToMenu(res);
+
+                loadModulePermission();
+
+                var current_modal = Utility.getParamFromUrl('current_modal').replace("#", '');
+
+                try {
+                    if (current_modal && $('.' + current_modal).first().html().length > 10) {
+                        $('.' + current_modal).first().click();
+                    } else {
+                        $('.left-menu-load').first().click();
+                    }
+                } catch (err) {
+                    $('.left-menu-load').first().click();
+                }
+
+
                 hideProgress();
             },
             error: function () {
@@ -21924,8 +21965,6 @@ Project.prototype = {
         getUsers();
         getDBStructure4Select();
     },
-
-   
 
     showProjectDetailsMain4Permission: function (projectId) {
         if (!projectId) {
@@ -22654,6 +22693,8 @@ User.prototype = {
                 that.removeTagsByPermission();
             },
             error: function () {
+                //bu hisse de error atmalidir. lakin atmir
+
                 document.location = "login.html";
 //                Toaster.showError("Something went wrong. This might be caused by duplicate table.");
             }
@@ -22952,6 +22993,7 @@ User.prototype = {
         d.scaleHeight = 288;
         conf = JSON.parse('{"kv":{}}');
         conf['kv'] = d;
+        conf.kv.cookie = getToken();
         var dat = JSON.stringify(conf);
         var finalname = "";
         $.ajax({
