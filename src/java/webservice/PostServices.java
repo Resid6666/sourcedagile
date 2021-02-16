@@ -350,6 +350,21 @@ public class PostServices {
     }
 
     @POST
+    @Path(value = "zd/{domain}/{api}")
+    @Compress
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public void callApi(@Context HttpHeaders headers, @Suspended
+            final AsyncResponse asyncResponse,
+            @PathParam(value = "servicename") final String servicename,
+            @PathParam(value = "domain") final String domain,
+            @PathParam(value = "api") final String api,
+            final String json) {
+        executorService.submit(() -> {
+            asyncResponse.resume(doCallApi(headers, domain, api, json));
+        });
+    }
+
+    @POST
     @Path(value = "nasrv/{servicename}")
     @Compress
     @Produces(value = MediaType.APPLICATION_JSON)
@@ -463,6 +478,68 @@ public class PostServices {
 
             asyncResponse.resume(doCallDispatcher(headers, servicename, jsonNew));
         });
+    }
+
+    private Response doCallApi(@Context HttpHeaders headers,
+            @PathParam("domain") String domain,
+            @PathParam("api") String api, String json) {
+
+        
+        if (domain.trim().length() == 0 || api.length() == 0) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        Connection conn = null;
+        try {
+
+            String servicename = "serviceIoCallApi";
+
+            Carrier c = new Carrier();
+            c.setServiceName(servicename);
+            c.set("api", api);
+            c.fromJson(json);
+
+//            System.out.println("ok 2 - 1"+"  "+servicename);
+            QLogger.saveServiceLog(servicename);
+
+            conn = new DBConnection().getConnection();
+            conn.setAutoCommit(false);
+            SessionManager.setConnection(Thread.currentThread().getId(), conn);
+
+            SessionManager.setDomain(Thread.currentThread().getId(), "backlog");
+            EntityCrCompany entComp = new EntityCrCompany();
+            entComp.setCompanyDomain(domain);
+            entComp.setEndLimit(0);
+            EntityManager.select(entComp);
+
+            if (entComp.getCompanyDb().trim().length() == 0) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            SessionManager.setUserName(Thread.currentThread().getId(), "-1");
+            SessionManager.setLang(Thread.currentThread().getId(), "ENG");
+            SessionManager.setDomain(Thread.currentThread().getId(), entComp.getCompanyDb());
+            SessionManager.setUserId(Thread.currentThread().getId(), "-1");
+            SessionManager.setCompanyId(Thread.currentThread().getId(), "-1");
+            
+            
+
+            Response res = CallDispatcher.callService(c);
+            conn.commit();
+            //conn.close();
+
+            return res;
+        } catch (JoseException ex) {
+            DBConnection.rollbackConnection(conn);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (Exception ex) {
+            DBConnection.rollbackConnection(conn);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } finally {
+            DBConnection.closeConnection(conn);
+            SessionManager.cleanSessionThread();
+        }
+
     }
 
     private Response doCallDispatcher(@Context HttpHeaders headers,

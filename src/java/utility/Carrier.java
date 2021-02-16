@@ -157,129 +157,120 @@ public class Carrier implements Serializable {
     public boolean hasCurrentUserField(String arg) throws QException {
         String ln = this.get("currentUserField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-        return ArrayUtils.contains(res,arg);
+        return ArrayUtils.contains(res, arg);
     }
 
     public boolean hasCurrentDateField(String arg) throws QException {
         String ln = this.get("currentDateField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-       return ArrayUtils.contains(res,arg);
+        return ArrayUtils.contains(res, arg);
     }
 
     public boolean hasCurrentTimeField(String arg) throws QException {
         String ln = this.get("currentTimeField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-       return ArrayUtils.contains(res,arg);
+        return ArrayUtils.contains(res, arg);
     }
 
     public boolean hasIsMaximumField(String arg) throws QException {
         String ln = this.get("isMaximumField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-       return ArrayUtils.contains(res,arg);
+        return ArrayUtils.contains(res, arg);
     }
 
     public boolean hasIsMinimumField(String arg) throws QException {
         String ln = this.get("isMinimumField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-       return ArrayUtils.contains(res,arg);
+        return ArrayUtils.contains(res, arg);
     }
 
     public boolean hasIsCountField(String arg) throws QException {
         String ln = this.get("isCountField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-       return ArrayUtils.contains(res,arg);
+        return ArrayUtils.contains(res, arg);
     }
 
     public boolean hasIsAverageField(String arg) throws QException {
         String ln = this.get("isAverageField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-       return ArrayUtils.contains(res,arg);
+        return ArrayUtils.contains(res, arg);
     }
 
     public boolean hasIsSumField(String arg) throws QException {
         String ln = this.get("isSumField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-       return ArrayUtils.contains(res,arg);
+        return ArrayUtils.contains(res, arg);
     }
-    
-    
-    
-    
-    
-    
+
     public boolean hasIsMaximumField() throws QException {
         String ln = this.get("isMaximumField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-       return res.length > 0;
+        return res.length > 0;
     }
 
     public boolean hasIsMinimumField() throws QException {
         String ln = this.get("isMinimumField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-       return res.length > 0;
+        return res.length > 0;
     }
 
     public boolean hasIsCountField() throws QException {
         String ln = this.get("isCountField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-       return res.length > 0;
+        return res.length > 0;
     }
 
     public boolean hasIsAverageField() throws QException {
         String ln = this.get("isAverageField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-       return res.length > 0;
-    } 
+        return res.length > 0;
+    }
 
     public boolean hasIsSumField() throws QException {
         String ln = this.get("isSumField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
-       return res.length > 0;
+        return res.length > 0;
     }
-    
-    
 
     public String[] getIsMaximumField() throws QException {
         String ln = this.get("isMaximumField");
-        String res[] = (ln.trim().length() > 0) ? 
-                ln.replaceAll("undefined","").replaceAll("null","").split(",")
+        String res[] = (ln.trim().length() > 0)
+                ? ln.replaceAll("undefined", "").replaceAll("null", "").split(",")
                 : new String[]{};
-       return    res ;
+        return res;
     }
 
     public String[] getIsMinimumField() throws QException {
         String ln = this.get("isMinimumField");
-        String res[] = (ln.trim().length() > 0) ? 
-                ln.replaceAll("undefined","").replaceAll("null","").split(",")
+        String res[] = (ln.trim().length() > 0)
+                ? ln.replaceAll("undefined", "").replaceAll("null", "").split(",")
                 : new String[]{};
-       return res;
+        return res;
     }
 
     public String[] getIsCountField() throws QException {
         String ln = this.get("isCountField");
-        String res[] = (ln.trim().length() > 0) ? 
-                ln.replaceAll("undefined","").replaceAll("null","").split(",")
+        String res[] = (ln.trim().length() > 0)
+                ? ln.replaceAll("undefined", "").replaceAll("null", "").split(",")
                 : new String[]{};
-       return res;
+        return res;
     }
 
     public String[] getIsAverageField() throws QException {
         String ln = this.get("isAverageField");
-        String res[] = (ln.trim().length() > 0) ? 
-                ln.replaceAll("undefined","").replaceAll("null","").split(",")
+        String res[] = (ln.trim().length() > 0)
+                ? ln.replaceAll("undefined", "").replaceAll("null", "").split(",")
                 : new String[]{};
-       return res;
+        return res;
     }
 
     public String[] getIsSumField() throws QException {
         String ln = this.get("isSumField");
-        String res[] = (ln.trim().length() > 0) ? 
-                ln.replaceAll("undefined","").replaceAll("null","").split(",")
+        String res[] = (ln.trim().length() > 0)
+                ? ln.replaceAll("undefined", "").replaceAll("null", "").split(",")
                 : new String[]{};
-       return res;
+        return res;
     }
-    
-    
 
     public void setUpdatedField(String fieldName) throws QException {
         this.setValue("updatedField", fieldName);
@@ -306,7 +297,7 @@ public class Carrier implements Serializable {
 
         return res;
     }
- 
+
     public void setDistinctField(String fieldName) throws QException {
         this.setValue("distinctField", fieldName);
     }
@@ -333,6 +324,10 @@ public class Carrier implements Serializable {
 
     public String getEntityDb() throws QException {
         return this.get("entityDb");
+    }
+
+    public void setEntityDbName(String entityDbName) throws QException {
+        this.set("entityDb", entityDbName);
     }
 
     public void copyTo(Carrier carrier) throws QException {

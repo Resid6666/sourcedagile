@@ -13,6 +13,7 @@ import resources.config.Config;
 import utility.Carrier;
 import utility.CoreEntity;
 import utility.DBConfigurationProperties;
+import utility.QDate;
 import utility.QException;
 import utility.SessionManager;
 import utility.WhereSingle;
@@ -209,7 +210,7 @@ public class SQLGenerator {
             st = (crin.hasIsCountField() || crin.hasIsMaximumField() || crin.hasIsMinimumField()
                     || crin.hasIsSumField() || crin.hasIsAverageField())
                     ? ""
-                    :" count(id) ";
+                    : " count(id) ";
 //                    : selectFieldNameGeneratorByMethodnames(crin, methods);
         }
 
@@ -804,7 +805,20 @@ public class SQLGenerator {
 
                     singleClause = singleClause.trim().length() == 0
                             ? singleClause : singleClause + AND;
+
                     whereCondition = whereCondition + singleClause + SPACE;
+
+//                    whereCondition += (crin.hasCurrentUserField(atrName))
+//                            ? key + " = '" + SessionManager.getCurrentUserId() + "' AND "
+//                            : "";
+//
+//                    whereCondition += (crin.hasCurrentDateField(atrName))
+//                            ? key + " = '" + QDate.getCurrentDate() + "' AND "
+//                            : "";
+//
+//                    whereCondition += (crin.hasCurrentTimeField(atrName))
+//                            ? key + " = '" + QDate.getCurrentTime() + "' AND "
+//                            : "";
 
                 }
             }
