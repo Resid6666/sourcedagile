@@ -1,0 +1,14 @@
+E:\TaskNegon_PRoject\TaskNegon\src\java\resources\src\apd_backlog\getCompanyList.java:3: error: package utility does not exist
+import utility.Carrier;
+              ^
+E:\TaskNegon_PRoject\TaskNegon\src\java\resources\src\apd_backlog\getCompanyList.java:7: error: cannot find symbol
+public static Carrier getCompanyList(Carrier carrier) {
+                                     ^
+  symbol:   class Carrier
+  location: class getCompanyList
+E:\TaskNegon_PRoject\TaskNegon\src\java\resources\src\apd_backlog\getCompanyList.java:7: error: cannot find symbol
+public static Carrier getCompanyList(Carrier carrier) {
+              ^
+  symbol:   class Carrier
+  location: class getCompanyList
+3 errors

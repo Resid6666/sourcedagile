@@ -98,8 +98,7 @@ public class QUtility {
     }
 
     public static String convertWSTitleToMethodFormat(String wsTitle) {
-//  Veb servis standardı “Service” + MODULE(2 characters) + METHOD_NAME
-//  “ServiceHrInsertNewEmployee”
+ 
         String t = wsTitle.substring(SERVICE.length() + MODULE.length());
         return t;
     }

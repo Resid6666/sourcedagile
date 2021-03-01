@@ -29,6 +29,16 @@ public class EntityTmJsCode extends CoreEntity {
     private String fnType = "";
     public static String IS_ACTIVE = "isActive";
     private String isActive = "";
+    public static String LIBRARY_URL = "libraryUrl";
+    private String libraryUrl = "";
+
+    public String getLibraryUrl() {
+        return libraryUrl;
+    }
+
+    public void setLibraryUrl(String libraryUrl) {
+        this.libraryUrl = libraryUrl;
+    }
 
     public String getIsActive() {
         return isActive;
@@ -38,8 +48,6 @@ public class EntityTmJsCode extends CoreEntity {
         this.isActive = isActive;
     }
 
-    
-    
     public String getFnType() {
         return fnType;
     }

@@ -18,8 +18,7 @@ import org.ehcache.Status;
  *
  * @author 02483577
  */
-//        Veb servis standardı “Service” + MODULE(2 characters) + METHOD_NAME
-//        “ServiceHrInsertNewEmployee”
+ 
 public class CallDispatcher {
 
     static String SERVICE = "Service";

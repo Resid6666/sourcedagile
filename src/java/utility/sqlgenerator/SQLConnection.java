@@ -1,10 +1,6 @@
 package utility.sqlgenerator;
 
-import com.google.common.io.CharSource;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.sql.*;
 
 import java.sql.Connection;
@@ -12,8 +8,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Locale;
 import label.CoreLabel;
-import org.apache.poi.util.IOUtils;
-import org.apache.xmlbeans.impl.common.ReaderInputStream;
 import utility.*;
 
 public class SQLConnection {

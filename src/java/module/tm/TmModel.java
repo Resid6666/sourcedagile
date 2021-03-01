@@ -925,7 +925,7 @@ public class TmModel {
 
         EntityTmJsCode ent = new EntityTmJsCode();
         ent.addSortBy("fnDescription");
-        ent.setFnType("core");
+        ent.setFnType("core%IN%java");
         ent.setSortByAsc(true);
         ent.setIsGlobal("1");
         carrier = EntityManager.select(ent);
@@ -941,7 +941,7 @@ public class TmModel {
 
         EntityTmJsCode ent = new EntityTmJsCode();
         ent.addSortBy("fnDescription");
-        ent.setFnType("core");
+        ent.setFnType("core%IN%java");
         ent.setSortByAsc(true);
         ent.setFkProjectId(carrier.get("fkProjectId"));
         carrier = EntityManager.select(ent);
