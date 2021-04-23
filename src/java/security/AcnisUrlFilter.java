@@ -133,15 +133,19 @@ public class AcnisUrlFilter implements Filter {
             response.addHeader("Access-Control-Allow-Methods", "*");
             response.addHeader("Access-Control-Allow-Credentials", "true");
             response.addHeader("Access-Control-Allow-Headers", "Accept");
-            response.addHeader("Access-Control-Allow-Headers", "momo,MCTotal");
+          response.addHeader("Access-Control-Allow-Headers", "momo,MCTotal");
+//          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            response.addHeader("Access-Control-Allow-Headers", "x-requested-with");
+            
             System.out.println(url + "--> forward edildi......");
             chain.doFilter(req, res);
         }
-
-    }
-
+  
+    }   
+    
     @Override
     public void destroy() {
 
     }
 }
+   

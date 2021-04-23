@@ -5,13 +5,19 @@
  */
 package module.tm;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import controllerpool.ControllerPool;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -125,7 +131,9 @@ import utility.SessionManager;
 import utility.sqlgenerator.EntityManager;
 import java.nio.file.Paths;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import module.tm.entity.EntityTmGuiClass;
 import module.tm.entity.EntityTmInputActionRel;
 import module.tm.entity.EntityTmInputAttributes;
@@ -1717,6 +1725,66 @@ public class TmModel {
 
         } catch (Exception e) {
             carrier.set("err", e.getMessage());
+        }
+
+        return carrier;
+    }
+
+    public static Carrier getProjectEntireInputList(Carrier carrier) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/" + carrier.get("fkProjectId") + ".properties";
+
+        try (OutputStream output = new FileOutputStream(filename)) {
+            Properties prop = new Properties();
+            prop.setProperty(carrier.get("fkInputId"), carrier.get("inputList"));
+            prop.store(output, null);
+
+            JSONObject jsonProps = new JSONObject(prop);
+            carrier.set("jsonOut", jsonProps.toString());
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        return carrier;
+    }
+
+    public static Carrier setProjectInputList(String fkProjectId, String fkInputId, String inputList) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        Carrier carrier = new Carrier();
+        carrier.set("fkProjectId", fkProjectId);
+        carrier.set("fkInputId", fkInputId);
+        carrier.set("inputList", inputList);
+        return setProjectInputList(carrier);
+    }
+
+    public static Carrier setProjectInputList(Carrier carrier) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
+        carrier.addController("fkInputId", cp.isKeyExist(carrier, "fkInputId"));
+        carrier.addController("inputList", cp.isKeyExist(carrier, "inputList"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
+        filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
+        File theDir = new File(filedir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/" + carrier.get("fkProjectId") + ".properties";
+
+        try (InputStream input = new FileInputStream(filename)) {
+            Properties prop = new Properties();
+            prop.load(input);
+
+        } catch (IOException io) {
+            io.printStackTrace();
         }
 
         return carrier;
@@ -4654,21 +4722,24 @@ public class TmModel {
         return carrier;
     }
 
-    public static Carrier updateInput4ShortChange(Carrier carrier) throws QException {
+    public static Carrier updateInput4ShortChange(Carrier carrier) throws QException, FileNotFoundException, IOException {
         ControllerPool cp = new ControllerPool();
         carrier.addController(EntityTmDocument.ID, cp.hasValue(carrier, EntityTmDocument.ID));
         carrier.addController("type", cp.hasValue(carrier, "type"));
         carrier.addController("value", cp.isKeyExist(carrier, "value"));
         if (carrier.hasError()) {
             return carrier;
-        }
+        } 
 
         EntityTmInput ent = new EntityTmInput();
         ent.setId(carrier.get("id"));
         EntityManager.select(ent);
         EntityManager.setEntityValue(ent, carrier.get("type"), carrier.get("value"));
+        EntityManager.update(ent); 
 
-        EntityManager.update(ent);
+        Gson gson = new Gson();
+        String json = gson.toJson(ent);
+        setProjectInputList(ent.getFkProjectId(),ent.getId(),json);
 
         getInputList4Select(ent.getId()).copyTo(carrier);
         return carrier;
@@ -8763,7 +8834,7 @@ public class TmModel {
                 ent.getInputName(), ent.getInputType(), ent.getTableName());
     }
 
-    public static Carrier updateInputByInputName(Carrier carrier) throws QException {
+    public static Carrier updateInputByInputName(Carrier carrier) throws QException, FileNotFoundException, IOException {
         EntityTmInput entity = new EntityTmInput();
         entity.setId(carrier.getValue(EntityTmInput.ID).toString());
         EntityManager.select(entity);
@@ -8774,6 +8845,10 @@ public class TmModel {
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
         setNewBacklogHistory4InputUpdateName(entity, oldName);
 
+         Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(),entity.getId(),json);
+        
         getInputList4Select(entity.getId()).copyTo(carrier);
         return carrier;
     }
@@ -8804,6 +8879,7 @@ public class TmModel {
         setNewBacklogHistory4InputUpdateTableName(entity, oldTableName);
 
         getInputList4Select(entity.getId()).copyTo(carrier);
+
         return carrier;
     }
 

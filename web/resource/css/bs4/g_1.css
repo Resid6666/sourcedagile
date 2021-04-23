@@ -2085,14 +2085,14 @@ label h6{
     /* margin: -51px 0 0 -136px; */
     position: absolute;
     top: 22%;
-    z-index: 5;
+    z-index: 1000;
     display: flex;
 }
 .toolbar ul{
     padding: 0 !important;
     display: flex;
     flex-wrap: wrap;
-    width: 60px;
+    width: 90px;
     border-radius: 4px;
     box-shadow: 0 0 3px rgba(64,100,138,.3), 0 2px 4px #3b5c7f, 0 12px 18px rgba(64,100,138,.4);
 }
@@ -2131,9 +2131,24 @@ label h6{
 .toolbar li {
 
     list-style: none;
-    width: 30px;
-    height: 30px;
+    width: 45px;
+    height: 45px;
     text-align: center;
+}
+.toolbar li img {
+    width: 17px;
+    height: 15px;
+    display: block;
+    margin: auto;
+    align-items: center;
+   
+}
+#jsCodeModal_fnbody,#guiClassModal_classbody {
+	width: 100%;
+	height: 200px;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
 }
 .toolbar a{
     background: #f4f7f9;
@@ -2147,12 +2162,15 @@ label h6{
     border-left: 1px solid rgba(79,123,170,.4);
     border-right: 1px solid rgba(255,255,255,.3);
     color: #40648a;
-    display: block;
-    font-size: 20px;
-    height: 30px;
-    line-height: 30px;
+    height: 100% ;
     text-decoration: none;
+    line-height: 11px;
     text-shadow: 0 1px 0 #fff;
+    display: flex;
+    padding: 5px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
 }
 .toolbar li:first-child a {
     border-left: none;
@@ -2325,6 +2343,22 @@ label h6{
     position:absolute;
     left:50%; 
     top:50%;
+    margin:-25px 0 0 -50px;
+    border-radius:5px;
+    z-index: 55555;
+    box-shadow: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.31) 0px 0px 1px;
+    background-color: white;
+    
+}
+.draggablePopup_v2{
+
+    width:400px;
+    padding: 5px;
+    height:auto;
+     display: none;
+    position:absolute;
+    left:10%; 
+    top:10%;
     margin:-25px 0 0 -50px;
     border-radius:5px;
     z-index: 55555;
@@ -2805,11 +2839,51 @@ ul.main-nav > li > div.sub-menu-block {
     max-width: 22%;
    
     white-space: nowrap;
-    
+    transition: display 0.5s ease;
     color: white;
     padding: 10px;
   }
-  
+.is-close{
+  display: none !important;
+  width: 0px;
+}
+.btn-toggle1{
+    position: absolute;
+    top: 60px;
+    z-index: 1;
+    border-radius: 0 360px 360px 0;
+    opacity: .5;
+    margin-left: 0;
+    margin-right: 0;
+     padding: 0px;
+     border: none;
+    color: #000;
+    position: relative;
+    height: 20px;
+    margin: 0;
+    min-width: 38px;
+    padding: 0 0 0 10px;
+    display: inline-block;
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0;
+    overflow: hidden;
+    will-change: box-shadow;
+    transition: box-shadow .2s cubic-bezier(.4,0,1,1),background-color .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1);
+    text-decoration: none;
+    text-align: center;
+    line-height: 22px;
+}
+
+.btn-toggle1:hover{
+    opacity: 1;
+    background-color: rgba(158,158,158,.2);
+}
+.btn-toggle1:focus{
+    outline: none;
+}
   .splitter11 {
     flex: 0 0 auto;
     width: 15px;  
@@ -3022,3 +3096,98 @@ ul.main-nav > li > div.sub-menu-block {
      background-color: #7FC8F8;
 
  }
+
+
+  /*  ipo api section */
+  div[data-closed="apisect"]{
+      display: none;
+  }
+  .ipo_api_card_new{
+    min-height: 40px;
+  
+    background-color: rgb(158,231,284);
+    font-size: 10px;
+    color: grey;
+    margin: 10px 5px;
+    margin-top: 80px;
+    border-radius: 2px;
+   
+    padding: 5px 0px;
+    box-shadow: grey 0.5px 0.5px 0.5px 0.5px;
+  }
+  .ipo_dtb_card_new{
+    min-height: 40px;
+  
+    background-color: rgb(249,220,190);
+    font-size: 10px;
+    color: grey;
+    margin: 10px 5px;
+    margin-top: 80px;
+    border-radius: 2px;
+   
+    padding: 5px 0px;
+    box-shadow: grey 0.5px 0.5px 0.5px 0.5px;
+  }
+  .ipo_api_card_new ul{
+      list-style: none;
+      padding: 0px !important;
+      display: none;
+      width: 50%;
+  }
+
+  .ipo_dtb_card_new ul{
+      list-style: none;
+      padding: 0px !important;
+      display: none;
+  }
+  .ipo_api_card_new p{
+    width: 100%;
+  }
+  
+  .ipo_api_card_new ul li{
+    background-color: rgb(249,220,190);
+    font-size: 10px;
+    color: grey;
+    border-radius: 2px;
+    margin: 5px 10px;
+    padding: 1px 5px;
+    line-break: anywhere;
+  }
+  .ipo_api_card_new .cst_ul li{
+    background-color: white;
+    font-size: 10px;
+    color: grey;
+    border-radius: 2px;
+    margin: 5px 10px;
+    padding: 1px 5px;
+    line-break: anywhere;
+  }
+
+  .ipo_dtb_card_new ul li{
+    background-color: white;
+    font-size: 10px;
+    color: grey;
+    border-radius: 2px;
+    margin: 5px 10px;
+    padding: 1px 5px;
+    line-break: anywhere;
+  }
+  .editor_full_screenBt{
+      float: right;
+  }
+  .cst_mod_dl{
+      
+      z-index: 50000;
+  }
+  .cst_mod_dlg{
+      margin: 0px !important;
+      width: 100%  !important ;
+      max-width: 100% !important;
+  }
+  .cst_mod_dlg .modal-body{
+   padding: 0;
+  }
+  #edit_full_screen{
+      width: 100%;
+      height: 90vh;
+  }

@@ -76,6 +76,237 @@ public class PostServices {
     }
 
     @POST
+    @Path("zdupload/{domain}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public static Response doPostRequestUploadWithoutAuth(@Context HttpHeaders headers,
+            @PathParam(value = "domain")
+            final String domain,
+            String jsonData) throws Exception {
+
+        if (domain.trim().length() == 0) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        Connection conn = null;
+
+        try {
+            conn = new DBConnection().getConnection();
+
+            conn.setAutoCommit(false);
+            SessionManager.setConnection(Thread.currentThread().getId(), conn);
+            SessionManager.setDomain(Thread.currentThread().getId(), "backlog");
+            EntityCrCompany entComp = new EntityCrCompany();
+            entComp.setCompanyDomain(domain);
+            entComp.setEndLimit(0);
+            EntityManager.select(entComp);
+
+            if (entComp.getCompanyDb().trim().length() == 0) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            SessionManager.setUserName(Thread.currentThread().getId(), "-1");
+            SessionManager.setLang(Thread.currentThread().getId(), "ENG");
+//            SessionManager.setDomain(Thread.currentThread().getId(), entComp.getCompanyDb());
+            SessionManager.setDomain(Thread.currentThread().getId(), "commonzad");
+            SessionManager.setUserId(Thread.currentThread().getId(), "-1");
+            SessionManager.setCompanyId(Thread.currentThread().getId(), "-1");
+
+            Carrier carrier = new Carrier();
+            carrier.fromJson(jsonData);
+
+            String resize = carrier.getValue("resize").toString();
+            String scaleWidth = carrier.getValue("scaleWidth").toString();
+            String scaleHeight = carrier.getValue("scaleHeight").toString();
+            String file_type = carrier.getValue("file_type").toString();
+            String file_extension = carrier.getValue("file_extension").toString();
+            String fileName = carrier.getValue("file_name").toString();
+//        System.out.println("fileName-" + fileName);
+            String msg = "";
+            String type = "";
+
+            if (file_type.trim().toLowerCase(Locale.ENGLISH).equals("image")) {
+                type = "image";
+            } else if (file_type.trim().toLowerCase(Locale.ENGLISH).equals("video")) {
+                type = "video";
+            } else if (file_type.trim().toLowerCase(Locale.ENGLISH).equals("audio")) {
+                type = "audio";
+            } else {
+                type = "general";
+            }
+
+            if (type.trim().length() > 0) {
+                String img_type[] = Config.getProperty("upload.type." + type).split(",");
+                boolean f = false;
+                if (type.equals("general")) {
+                    f = true;
+                } else {
+                    for (String t : img_type) {
+                        if (file_extension.trim().toLowerCase(Locale.ENGLISH).equals(t.trim().toLowerCase(Locale.ENGLISH))) {
+                            f = true;
+                        }
+                    }
+                }
+                if (f) {
+                    FileUpload fileUpload = new FileUpload();
+//                System.out.println("file context"+ carrier.getValue("file_base_64").toString());
+                    fileName = fileUpload.uploadImage(carrier.getValue("file_base_64").toString(),
+                            file_extension.trim().toLowerCase(Locale.ENGLISH), fileName);
+
+                    System.out.println("---------------------------------------------");
+                    System.out.println("type=" + type);
+                    System.out.println("resize=" + resize);
+                    System.out.println("fname=" + fileUpload.getUploadPath() + fileName);
+                    System.out.println("-------------------------------------------------");
+
+                    if (type.equals("image") && resize.equals("1")) {
+                        String fname = fileUpload.getUploadPath() + fileName;
+
+                        try {
+                            ImageResizer.resize(fname, fname, Integer.parseInt(scaleWidth), Integer.parseInt(scaleHeight));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    for (String t : img_type) {
+                        msg += t + ", ";
+                    }
+                    msg = msg.substring(0, msg.length() - 2);
+                }
+            } else {
+                msg = "Incorrent File Type";
+            }
+
+            Carrier c = new Carrier();
+
+            c.setValue("msg", msg);
+            c.setValue("uploaded_file_name", fileName);
+
+            SessionManager.cleanSessionThread();
+            return Response.status(Response.Status.OK)
+                    .entity(c.getJson()).build();
+        } catch (Exception ex) {
+            DBConnection.rollbackConnection(conn);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } finally {
+            DBConnection.closeConnection(conn);
+        }
+    }
+
+    @POST
+    @Path("uploadd/{domain}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public static Response doPostRequestUploadd(@Context HttpHeaders headers,
+            String jsonData) throws Exception {
+
+        Connection conn = null;
+//
+        try {
+            conn = new DBConnection().getConnection();
+
+            conn.setAutoCommit(false);
+            SessionManager.setConnection(Thread.currentThread().getId(), conn);
+            SessionManager.setDomain(Thread.currentThread().getId(), "backlog");
+            EntityCrCompany entComp = new EntityCrCompany();
+            entComp.setCompanyDomain("backlog");
+            entComp.setEndLimit(0);
+            EntityManager.select(entComp);
+
+            if (entComp.getCompanyDb().trim().length() == 0) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            Carrier carrier = new Carrier();
+            carrier.fromJson(jsonData);
+
+            SessionManager.setUserName(Thread.currentThread().getId(), "-1");
+            SessionManager.setLang(Thread.currentThread().getId(), "-1");
+            SessionManager.setDomain(Thread.currentThread().getId(), entComp.getCompanyDb());
+//        SessionManager.setDomain(Thread.currentThread().getId(), "apd_backlog");
+            SessionManager.setUserId(Thread.currentThread().getId(), "-1");
+            SessionManager.setCompanyId(Thread.currentThread().getId(), "-1");
+
+            String resize = carrier.getValue("resize").toString();
+            String scaleWidth = carrier.getValue("scaleWidth").toString();
+            String scaleHeight = carrier.getValue("scaleHeight").toString();
+            String file_type = carrier.getValue("file_type").toString();
+            String file_extension = carrier.getValue("file_extension").toString();
+            String fileName = carrier.getValue("file_name").toString();
+//        System.out.println("fileName-" + fileName);
+            String msg = "";
+            String type = "";
+
+            if (file_type.trim().toLowerCase(Locale.ENGLISH).equals("image")) {
+                type = "image";
+            } else if (file_type.trim().toLowerCase(Locale.ENGLISH).equals("video")) {
+                type = "video";
+            } else if (file_type.trim().toLowerCase(Locale.ENGLISH).equals("audio")) {
+                type = "audio";
+            } else {
+                type = "general";
+            }
+
+            if (type.trim().length() > 0) {
+                String img_type[] = Config.getProperty("upload.type." + type).split(",");
+                boolean f = false;
+                if (type.equals("general")) {
+                    f = true;
+                } else {
+                    for (String t : img_type) {
+                        if (file_extension.trim().toLowerCase(Locale.ENGLISH).equals(t.trim().toLowerCase(Locale.ENGLISH))) {
+                            f = true;
+                        }
+                    }
+                }
+                if (f) {
+                    FileUpload fileUpload = new FileUpload();
+//                System.out.println("file context"+ carrier.getValue("file_base_64").toString());
+                    fileName = fileUpload.uploadImage(carrier.getValue("file_base_64").toString(),
+                            file_extension.trim().toLowerCase(Locale.ENGLISH), fileName);
+
+                    System.out.println("---------------------------------------------");
+                    System.out.println("type=" + type);
+                    System.out.println("resize=" + resize);
+                    System.out.println("fname=" + fileUpload.getUploadPath() + fileName);
+                    System.out.println("-------------------------------------------------");
+
+                    if (type.equals("image") && resize.equals("1")) {
+                        String fname = fileUpload.getUploadPath() + fileName;
+                        String fname1 = fileUpload.getUploadPath() + "TEST_" + fileName;
+
+                        try {
+                            ImageResizer.resize(fname, fname, Integer.parseInt(scaleWidth), Integer.parseInt(scaleHeight));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    for (String t : img_type) {
+                        msg += t + ", ";
+                    }
+                    msg = msg.substring(0, msg.length() - 2);
+                }
+            } else {
+                msg = "Incorrent File Type";
+            }
+
+            Carrier c = new Carrier();
+
+            c.setValue("msg", msg);
+            c.setValue("uploaded_file_name", fileName);
+
+            SessionManager.cleanSessionThread();
+
+            return Response.status(Response.Status.OK)
+                    .entity(c.getJson()).build();
+        } catch (Exception ex) {
+            DBConnection.rollbackConnection(conn);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } finally {
+            DBConnection.closeConnection(conn);
+        }
+    }
+
+    @POST
     @Path("upload")
     @Produces(MediaType.APPLICATION_JSON)
     public static Response doPostRequestUpload(@Context HttpHeaders headers, String jsonData) throws Exception {
@@ -213,7 +444,7 @@ public class PostServices {
             SessionManager.setUserId(Thread.currentThread().getId(), user.getId());
             SessionManager.setCompanyId(Thread.currentThread().getId(), user.selectCompanyId());
 
-            String entity = "{\"fullname\":\"" + fullname + "\"}";
+            String entity = "{\"fullname\":\"" + fullname + "\",\"token\":\"" + token + "\"}";
 
             System.out.println("filpagebody");
 //            CrModel.fillPageBody();
@@ -360,10 +591,10 @@ public class PostServices {
             @PathParam(value = "function") final String fname,
             final String json) {
         executorService.submit(() -> {
-            asyncResponse.resume(doCallFunction(headers,domain, fname,json));
+            asyncResponse.resume(doCallFunction(headers, domain, fname, json));
         });
     }
-    
+
     @POST
     @Path(value = "zd/{domain}/{api}")
     @Compress
@@ -494,14 +725,13 @@ public class PostServices {
             asyncResponse.resume(doCallDispatcher(headers, servicename, jsonNew));
         });
     }
-    
+
     private Response doCallFunction(@Context HttpHeaders headers,
             @PathParam("domain") String domain,
             @PathParam("function") String fname,
-              String json) {
+            String json) {
 
-        
-        if (fname.trim().length() == 0  ) {
+        if (fname.trim().length() == 0) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
@@ -537,8 +767,6 @@ public class PostServices {
             SessionManager.setDomain(Thread.currentThread().getId(), entComp.getCompanyDb());
             SessionManager.setUserId(Thread.currentThread().getId(), "-1");
             SessionManager.setCompanyId(Thread.currentThread().getId(), "-1");
-            
-            
 
             Response res = CallDispatcher.callService(c);
             conn.commit();
@@ -562,7 +790,6 @@ public class PostServices {
             @PathParam("domain") String domain,
             @PathParam("api") String api, String json) {
 
-        
         if (domain.trim().length() == 0 || api.length() == 0) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -583,7 +810,6 @@ public class PostServices {
             conn = new DBConnection().getConnection();
             conn.setAutoCommit(false);
             SessionManager.setConnection(Thread.currentThread().getId(), conn);
-
             SessionManager.setDomain(Thread.currentThread().getId(), "backlog");
             EntityCrCompany entComp = new EntityCrCompany();
             entComp.setCompanyDomain(domain);
@@ -599,8 +825,6 @@ public class PostServices {
             SessionManager.setDomain(Thread.currentThread().getId(), entComp.getCompanyDb());
             SessionManager.setUserId(Thread.currentThread().getId(), "-1");
             SessionManager.setCompanyId(Thread.currentThread().getId(), "-1");
-            
-            
 
             Response res = CallDispatcher.callService(c);
             conn.commit();

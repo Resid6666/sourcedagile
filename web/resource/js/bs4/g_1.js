@@ -405,6 +405,13 @@ $(document).on("click", "#History-btn-icon", function () {
     });
     setBacklogHistory4View();
 })
+$(document).on("dblclick", ".component-container-dashed", function () {
+    $('#edit_component_inp_popUp').toggle('fast');
+    $('#edit_component_inp_popUp').draggable({
+        containment: "parent"
+    });
+  
+})
 
 var popUpt = `<div   class="popup-Elements" data-toggle="modal" data-target="#exampleModal" id="popup-btn" >
   <span class="editBtnLVSect deleteBTn" title="Delete Input"><i class="fas fa-trash-alt"></i></span>
@@ -582,10 +589,7 @@ $(document).on("click", ".openNavhide", function () {
 
 
 
-//setTimeout(function () {
-//    $(".toolbar").draggable({});
-//    console.log("QWqwdqwd");
-//}, 3200);
+
 
 $(document).on("click", ".cf li .inptadd", function () {
 
@@ -649,20 +653,73 @@ $(document).on("click", ".toolbar .horizontalBtn", function () {
 
 $(document).on("click", ".toolbar .verticalBtn", function () {
 
-    $('.toolbar .cf').css('width', '60px');
+    $('.toolbar .cf').css('width', '90px');
     $('.toolbar .cf').css('height', 'auto');
     $('.toolbar .horizontalBtn').css('display', 'block');
     $('.toolbar .verticalBtn').css('display', 'none');
 
 });
 
+ function genIpoAPiBlock(apnm,){
+     return $('<div>')
+                 .addClass('ipo_api_card_new row feild_sect_opened col-11 text-center')
+                 .append('<p>'+apnm+'</p>')
+                 .append('<p>'+apnm+'</p>');
+ }
+  
+   
 
+$(document).ready(function(){
 
+ 
+    $(document).on('click','.btn-toggle1', function(e){
+        
+        var _this = $(this);
+        var pnl =$('#panelFirst1');
+        pnl.toggleClass('is-close');
+        
+        if(pnl.hasClass('is-close')) {
+          _this.html('<i class="fas fa-chevron-right"></i>');
+          pnl.css('width','0px');
+          pnl.css('display','none');
+        } else {
+          _this.html('<i class="fas fa-chevron-left"></i>');
+          pnl.css('width','22%');
+          pnl.css('display','block');
+        }    
+        
+        });
+    $(document).on('click','#api_block_opened', function(){
 
+        $('div[data-closed="apisect"]').toggle('fast');
 
+        $('div[data-toggle="apisect"]').toggleClass('col-12');
+        $('div[data-toggle="apisect"]').toggleClass('col-6');
+        
 
+    })
+    $(document).on('click','.addInputAttrPlus', function(){
 
+        var nmval =$(this).parents('tr').find('select').val();
+        var val =$(this).parents('tr').find('span').text();
 
+        addInputAttributes2(nmval,val)
+
+    })
+    $(document).on('click','.addInputClassPlus', function(){
+
+        var val =$(this).parents('tr').find('.clsLbVal').text();
+          insertNewGuiClassModal2(val);
+
+    })
+    $(document).on('dblclick','.feild_sect_opened', function(){
+
+      $(this).find('ul').toggle('fast')
+        
+
+    })
+
+})
 function addNewBug(el) {
     var bugDesc = $('#id').val();
     if (!(bugDesc))
@@ -789,7 +846,7 @@ $(document).ready(function () {
     })
 
 
-
+    
 
 })
 

@@ -5,15 +5,26 @@
  */
 package module.io;
 
+import com.google.gson.Gson;
 import controllerpool.ControllerPool;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
+import module.cr.entity.EntityCrUser;
 import module.tm.entity.EntityTmBacklog;
 import module.tm.entity.EntityTmDatabase;
 import module.tm.entity.EntityTmInput;
@@ -22,18 +33,66 @@ import module.tm.entity.EntityTmTable;
 import resources.config.Config;
 import utility.Carrier;
 import utility.GeneralProperties;
+import utility.MailSender;
+import static utility.MailSender.sendMail;
 import utility.QException;
 import utility.SessionManager;
+import utility.sqlgenerator.DBConnection;
 import utility.sqlgenerator.EntityManager;
+import utility.sqlgenerator.QLogger;
+import static utility.sqlgenerator.SQLConnection.convertResultSetToCarrier;
 
 /**
  *
  * @author user
  */
+   
 public class IoModel {
+    
+     public static void main(String[] arg) throws Exception {
+         Gson gson = new Gson();
+         
+         EntityTmInput ent = new EntityTmInput();
+          
+         ent.setInputName("order");
+         ent.setInputContent("Name");
+         
+         String objStr = gson.toJson(ent);
+         String objCore = "{\"b\":\""+objStr+"\"}";
+          
+         System.out.println(gson.toJson(objCore));
+      EntityTmInput ent1 =  gson.fromJson("b",EntityTmInput.class);
+         System.out.println("name"+ent1.getInputName());
+     }
 
-    public static void main(String[] arg) throws Exception {
+    public static void main1(String[] arg) throws Exception {
+        try {
+            String select = "select * from tm_enput";
+            Connection conn = new DBConnection().getConnection();// SessionManager.getCurrentConnection();
+            conn.setCatalog(SessionManager.getCurrentDomain());
+            PreparedStatement stmt = conn.prepareStatement(select);
 
+            ResultSet rs1 = stmt.executeQuery();
+            ResultSetMetaData rsmd = rs1.getMetaData();
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    for (int i = 0; i <= 5; i++) {
+
+                        String val = rs.getString(i) == null ? "" : rs.getString(i).trim();
+                        System.out.println("res="+val);
+                    }
+
+                }
+            }
+            stmt.close();
+        } catch (SQLException e) {
+            throw new QException(new Object() {
+            }.getClass().getEnclosingClass().getName(),
+                    new Object() {
+                    }.getClass().getEnclosingMethod().getName(),
+                    e);
+        }
     }
 
     //////////////////////////////////////////////////////
@@ -82,7 +141,7 @@ public class IoModel {
         st += "public class " + fnName + " {" + "\n\n";
         st += "public static Carrier " + fnName + "(Carrier carrier) throws Exception {" + "\n\n";
         st += fnBody + "\n\n";
-        st += "} }" + "\n\n";
+        st += "}" + "\n\n" + "}" + "\n\n";
 
         return st;
 
@@ -129,7 +188,7 @@ public class IoModel {
         String ln = corePath;
         ln += SessionManager.getCurrentDomain() + "/";
 
-        ln += className + ".java\"";
+        ln += className + ".java";
 
         String res = executeCommand(ln);
         return res;
@@ -163,6 +222,9 @@ public class IoModel {
 
         String res = "";
 
+//        command =  "javac -cp /opt/tomcat/apache-tomcat-9.0.20/lib/:/opt/tomcat/apache-tomcat-9.0.20/webapps/ROOT/WEB-INF/classes/:. /opt/tomcat/apache-tomcat-9.0.20/webapps/ROOT/WEB-INF/classes/resources/src/apd_48edh/testDrive.java";
+        System.out.println("command for java zad = " + command);
+
         Process process = Runtime.getRuntime().exec(command);
 //                Process process = ProcessBuilder.exec(command);
 
@@ -186,17 +248,6 @@ public class IoModel {
 
         Carrier cout = EntityManager.select(carrier);
 //        cout.renameTableName(carrier.getEntityFullname(), CoreLabel.RESULT_SET);
-
-        String tn = carrier.getEntityFullname();
-        int rc = cout.getTableRowCount(tn);
-        if (rc == 1) {
-            String cols[] = cout.getTableColumnNames(tn);
-            for (int i = 0; i < cols.length; i++) {
-                String colName = cols[i];
-                String val = cout.getValue(tn, 0, colName).toString();
-                cout.set(colName, val);
-            }
-        }
 
         cout.set("startLimit", carrier.get("startLimit"));
         cout.set("endLimit", carrier.get("endLimit"));

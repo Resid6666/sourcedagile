@@ -55,7 +55,7 @@ public class SessionManager {
 
     public static void setDomain(Long threadId, String domain) {
         domainMap.put(threadId, domain);
-    }
+    } 
 
     public static String getDomain(Long threadId) {
         return domainMap.get(threadId);
@@ -78,7 +78,7 @@ public class SessionManager {
     }
 
     public static void setUserId(Long threadId, String userId) {
-        userIdMap.put(threadId, userId);
+        userIdMap.put(threadId, userId); 
     }
 
     public static void setLang(Long threadId, String lang) {

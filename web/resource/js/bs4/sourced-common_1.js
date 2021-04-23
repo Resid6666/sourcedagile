@@ -7957,6 +7957,7 @@ id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded=
         var currentInputId = "";
 
         var json = {"kv": {}, "tbl": [{"r": [], "tn": "inputDescTable"}]};
+        json.kv.cookie = getToken();
         $('.indesc_check:checked').each(function () {
             var ln = "";
 
@@ -10206,7 +10207,7 @@ class="us-ipo-input-table-tr"  pid="' + id + '" itable="' + replaceTags(Replace2
         } else {
             var tempEl = $('#' + padeId).find('.redirectClass').find('div').first();
             if (!$(tempEl).hasClass('sa-onloadclick')) {
-                initOnloadActionOnGUIDesign4OnClick();
+//                initOnloadActionOnGUIDesign4OnClick();
             }
         }
 //       
@@ -10233,8 +10234,25 @@ class="us-ipo-input-table-tr"  pid="' + id + '" itable="' + replaceTags(Replace2
 
     setGUIComponentFillGUIModal: function (el, id, sectionId) {
         closeModal('userstory-gui-input-component-res-sus-analytic');
-        var html = this.genGUIDesignHtmlById(id);
+//        var html = this.genGUIDesignHtmlById(id);
+
+        var res = SAInput.toJSONByBacklog(id);
+        var html = this.getGUIDesignHTML(res);
         $(el).closest('div.redirectClass').find('#' + sectionId).find('.component-section-row').first().html(html);
+
+
+
+        if ($(el).attr("onclick_trigger_id")) {
+            var apiId = $(el).attr("onclick_trigger_id");
+            triggerAPI(el, apiId);
+            initOnloadActionOnGUIDesign();
+            $(el).closest('div.modal').first().modal('hide');
+        } else {
+            //initiate onclick action
+            initOnloadActionOnGUIDesign();
+        }
+
+
 //        generatePopupModalNew(html, canvasCSS);
 //        $('[data-toggle="tooltip"]').tooltip({html: true});
     },
@@ -11448,7 +11466,7 @@ onchange="new UserStory().updateInputByAttr(this,\'table\')" type="text" pid="' 
         var data = JSON.stringify(conf);
         var finalname = "";
         $.ajax({
-            url: urlGl + "api/post/upload",
+            url: urlGl + "api/post/zdupload/backlog",
             type: "POST",
             data: data,
             contentType: "application/json",
@@ -21781,7 +21799,6 @@ Project.prototype = {
                 } catch (err) {
                     $('.left-menu-load').first().click();
                 }
-
 
                 hideProgress();
             },

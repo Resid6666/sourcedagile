@@ -99,7 +99,7 @@ public class EntityManager {
         crin.set("status", "A");
         setReferenceValue(crin);
         addDateToInsert(crin);
-        String methodNames[] = getEntityFields(entityDb, entityName,false);
+        String methodNames[] = getEntityFields(entityDb, entityName, false);
         String[] values = getEntityFieldValues(crin, methodNames);
         String query = SQLGenerator.insertGenerator(entityFullname, crin, methodNames);
 
@@ -180,6 +180,18 @@ public class EntityManager {
         Carrier cout = new Carrier();
         try {
             cout = coreSelect(carrier);
+
+            String tn = carrier.getEntityFullname();
+            int rc = cout.getTableRowCount(tn);
+            if (rc == 1) {
+                String cols[] = cout.getTableColumnNames(tn);
+                for (int i = 0; i < cols.length; i++) {
+                    String colName = cols[i];
+                    String val = cout.getValue(tn, 0, colName).toString();
+                    cout.set(colName, val);
+                }
+            }
+            
             return cout;
         } catch (Exception ex) {
             throw new QException(new Object() {
@@ -213,7 +225,7 @@ public class EntityManager {
         String methodNames[] = getEntityFields(entityDb, entityName);//SQLGenerator.getAllGetMethodNames(entity);
         String[] values = getEntityFieldValues(crin, methodNames); //SQLGenerator.getValuesOfAllGetMethodsOfEntity(entity, methodNames);
         ArrayList valueArr = new ArrayList();
-        String query = SQLGenerator.selectGenerator(entityFullname,crin, methodNames, values, valueArr);
+        String query = SQLGenerator.selectGenerator(entityFullname, crin, methodNames, values, valueArr);
 //        System.out.println("query select->"+query);
 
         Carrier carrier = SQLConnection.execSelectSql(query, entityFullname, "", valueArr);
@@ -221,7 +233,7 @@ public class EntityManager {
         return carrier;
     }
 
-    public static String[] getEntityFields(String entityDb, String entityName,boolean withAutoIncreament) throws Exception {
+    public static String[] getEntityFields(String entityDb, String entityName, boolean withAutoIncreament) throws Exception {
         List<String> array = new ArrayList<String>();
 
         if (entityName.trim().length() == 0) {
@@ -234,10 +246,10 @@ public class EntityManager {
             String ln = "";
             while ((ln = br.readLine()) != null) {
 
-                if (!withAutoIncreament && ln.toLowerCase().contains("auto_increment") ){
+                if (!withAutoIncreament && ln.toLowerCase().contains("auto_increment")) {
                     continue;
                 }
-                
+
                 if (ln.trim().length() == 0) {
                     continue;
                 }
@@ -252,11 +264,10 @@ public class EntityManager {
 
         return arrStr;
     }
-    
-    public static String[] getEntityFields(String entityDb, String entityName) throws Exception {
-         
 
-        return  getEntityFields(entityDb,entityName,true);
+    public static String[] getEntityFields(String entityDb, String entityName) throws Exception {
+
+        return getEntityFields(entityDb, entityName, true);
     }
 
     public static String[] getEntityFieldValues(Carrier carrier, String fields[]) throws QException {
@@ -282,7 +293,7 @@ public class EntityManager {
                     : (carrier.hasCurrentTimeField(key))
                     ? QDate.getCurrentTime()
                     : carrier.get(key);
-            
+
             arr[i] = val;
         }
 
@@ -518,7 +529,7 @@ public class EntityManager {
         entityFullname = entityFullname.toLowerCase();
 
         crin.set("modificationDate", QDate.getCurrentDate());
-        String methodNames[] =  crin.getUpdatedField(); //getEntityFields(entityDb, entityName);
+        String methodNames[] = crin.getUpdatedField(); //getEntityFields(entityDb, entityName);
         String[] values = getEntityFieldValues(crin, methodNames);
 
         String query = SQLGenerator.updateGenerator(entityFullname, crin, methodNames, valueList);
@@ -913,7 +924,6 @@ public class EntityManager {
 //        ent.setItemKey(messageCode);
 //        ent.setLang(lang);
 //        EntityManager.select(ent);
-
 //        if (ent.getItemValue().trim().equals("")) {
 //            EntityCrListItem ent1 = new EntityCrListItem();
 //            ent1.setItemCode("errorMessage");
@@ -922,7 +932,7 @@ public class EntityManager {
 //
 //            EntityManager.select(ent1);
 //            if (ent1.getItemValue().trim().equals("")) {
-                return "{" + messageCode + "}";
+        return "{" + messageCode + "}";
 //            } else {
 //                return ent1.getItemValue().trim();
 //            }

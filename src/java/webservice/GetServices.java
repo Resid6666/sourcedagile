@@ -32,6 +32,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import module.cr.entity.EntityCrCompany;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.poi.util.IOUtils;
 import org.jose4j.lang.JoseException;
@@ -42,6 +43,7 @@ import utility.QDate;
 import utility.QException;
 import utility.SessionManager;
 import utility.sqlgenerator.DBConnection;
+import utility.sqlgenerator.EntityManager;
 import utility.sqlgenerator.QLogger;
 //import smssender.Config;
 //import smssender.SMSSender;
@@ -162,13 +164,79 @@ public class GetServices {
     }
 
     @GET
+    @Path("/zdfiles/{domain}/{filename}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response helloWorldZipsDirect(@PathParam(value = "domain") final String domain,
+            @PathParam(value = "filename") final String filename) throws Exception {
+
+        if (domain.trim().length() == 0 || filename.length() == 0) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        Connection conn = null;
+        try {
+            conn = new DBConnection().getConnection();
+
+            conn.setAutoCommit(false);
+            SessionManager.setConnection(Thread.currentThread().getId(), conn);
+            SessionManager.setDomain(Thread.currentThread().getId(), "backlog");
+            EntityCrCompany entComp = new EntityCrCompany();
+            entComp.setCompanyDomain(domain);
+            entComp.setEndLimit(0);
+            EntityManager.select(entComp);
+
+            if (entComp.getCompanyDb().trim().length() == 0) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            SessionManager.setUserName(Thread.currentThread().getId(), "-1");
+            SessionManager.setLang(Thread.currentThread().getId(), "ENG");
+            SessionManager.setDomain(Thread.currentThread().getId(), entComp.getCompanyDb());
+            SessionManager.setUserId(Thread.currentThread().getId(), "-1");
+            SessionManager.setCompanyId(Thread.currentThread().getId(), "-1");
+
+            StreamingOutput sout = new StreamingOutput() {
+                @Override
+                public void write(OutputStream arg0) throws IOException, WebApplicationException {
+                    // TODO Auto-generated method stub
+                    System.out.println("fname= will be upload started");
+                    BufferedOutputStream bus = new BufferedOutputStream(arg0);
+                    System.out.println("fname= will be uploaded");
+                    try {
+                        java.net.URL uri = Thread.currentThread().getContextClassLoader().getResource("");
+                        String fname = getFullname(filename);//new FileUpload().getUploadPath() + filename;
+                        System.out.println("fname=" + fname);
+                        File file = new File(fname);
+//                    File file = new File("D:\\"+filename);
+                        FileInputStream fizip = new FileInputStream(file);
+                        byte[] buffer2 = IOUtils.toByteArray(fizip);
+                        bus.write(buffer2);
+                    } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    
+                    SessionManager.cleanSessionThread();
+                }
+            };
+            return Response.ok(sout).header("Content-Disposition", "inline;filename=\"" + filename + "")
+                    .header("Content-Type", "image/png").build();
+        } catch (Exception ex) {
+            DBConnection.rollbackConnection(conn);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } finally {
+            DBConnection.closeConnection(conn);
+        }
+    }
+
+    @GET
     @Path("/files/{filename}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response helloWorldZipsDirect(@PathParam(value = "filename")
             final String filename) throws Exception {
 
         StreamingOutput sout = new StreamingOutput() {
- 
+
             @Override
             public void write(OutputStream arg0) throws IOException, WebApplicationException {
                 // TODO Auto-generated method stub
@@ -177,7 +245,7 @@ public class GetServices {
                 System.out.println("fname= will be uploaded");
                 try {
                     java.net.URL uri = Thread.currentThread().getContextClassLoader().getResource("");
-                    String fname =  getFullname(filename);//new FileUpload().getUploadPath() + filename;
+                    String fname = getFullname(filename);//new FileUpload().getUploadPath() + filename;
                     System.out.println("fname=" + fname);
                     File file = new File(fname);
 //                    File file = new File("D:\\"+filename);
@@ -239,7 +307,7 @@ public class GetServices {
 
                 try {
                     java.net.URL uri = Thread.currentThread().getContextClassLoader().getResource("");
-                    String fname =  getFullname(filename);//new FileUpload().getUploadPath() + filename;
+                    String fname = getFullname(filename);//new FileUpload().getUploadPath() + filename;
                     System.out.println("fname=" + fname);
                     File file = new File(fname);
 //                    File file = new File("D:\\"+filename);
@@ -270,7 +338,7 @@ public class GetServices {
                     //ByteArrayInputStream reader = (ByteArrayInputStream) Thread.currentThread().getContextClassLoader().getResourceAsStream();     
                     //byte[] input = new byte[2048];  
                     java.net.URL uri = Thread.currentThread().getContextClassLoader().getResource("");
-                    String fname =  getFullname(filename);//new FileUpload().getUploadPath() + filename;
+                    String fname = getFullname(filename);//new FileUpload().getUploadPath() + filename;
                     System.out.println("fname=" + fname);
                     File file = new File(fname);
 //                    File file = new File("D:\\"+filename);
@@ -304,7 +372,7 @@ public class GetServices {
                     //ByteArrayInputStream reader = (ByteArrayInputStream) Thread.currentThread().getContextClassLoader().getResourceAsStream();     
                     //byte[] input = new byte[2048];  
                     java.net.URL uri = Thread.currentThread().getContextClassLoader().getResource("");
-                    String fname =  getFullname(filename);//new FileUpload().getUploadPathPrivate() + filename;
+                    String fname = getFullname(filename);//new FileUpload().getUploadPathPrivate() + filename;
 //                    System.out.println("fname="+fname);
                     File file = new File(fname);
 //                    File file = new File("D:\\"+filename);
@@ -378,7 +446,6 @@ public class GetServices {
             }
         }
         return res;
-
     }
 
     private Response doCallDispatcherNoToken(@Context HttpHeaders headers,

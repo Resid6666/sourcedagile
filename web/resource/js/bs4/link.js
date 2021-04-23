@@ -6,10 +6,10 @@
 
 
 //var urlGl = "https://app.sourcedagile.com/";
-//var urlGl = "http://localhost:8080/tsn1/";
-var urlGl = ""
+var urlGl = "http://localhost:8080/tsn1/";
+//var urlGl = ""
 
 function getToken() {
-//    return 'apdtok=eyJhbGciOiJBMTI4S1ciLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0.pdJ7adW7gVc_YSZzSW2Fo2vhnKzMexxvHnxN5xx5fkGvj_ouPjlX_g.KEFWVpRtjy6c6eQHVfy6RA.XIMQOV7OYPMJq0yLSbWpvR4LBhN9AQuoL54uxT3QMnbG-3rLKSy9bhGU59BRn48bwwI05WxBZtAMkOCul1OOjeV8Hf0NrF7lc762yQ8BpY8eOhZ-ttYJHUrg1dQHWeefVX9otPFTLOyd66jn83U6DKTgHzjoRKV-UgUnd8btv9I.UO-uiPNljLO9BwsptvrSqg';
-     return '';
+//    return 'apdtok=eyJhbGciOiJBMTI4S1ciLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0.FiiAxw6JJjlFjcVC7P7Y6eNKQfcDAuBu4TQiN58GGPAEL1vLXDxUXQ.1g-rIhZ9vfkofn6BkzuxjQ.FQ1XLXZ_o2inQYU8Knk2DVyh7DqM4KJfyFt__Tl5XPN0orbluqib20247IpN1HjDWHlepJ10sQokk3NeER1hrpqRs_qeg2BUlU_oYO3HD78GxpwoU-iKKkT2sxbLNeIBEj4QRQgAOJ4cjSrtPi4BweMJFLt2CGvJ4MJu3WCZPQ4.4_IbzeZCMBLfDYUAOLyurw';
+        return '';
 }

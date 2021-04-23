@@ -16,6 +16,6 @@ public class DBConfigurationProperties extends GeneralProperties{
     public DBConfigurationProperties() throws UnsupportedEncodingException{
        super();
        super.setConfigFileName(configFileName);
-     }
+    }
     
 }

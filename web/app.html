@@ -46,6 +46,7 @@
         <script src="resource/js/bs4/jquery-ui.js"></script>
         <script src="resource/js/bs4/popper.min.js"></script>
         <script src="resource/js/bs4/bootstrap.min.js"></script>
+        
         <script src="resource/js/bs4/component.js"></script>
         <script src="resource/js/bs4/main-kanban.js"></script>
         <script src="resource/js/bs4/sourced-common_1.js"></script>
@@ -80,7 +81,7 @@
         <script src="resource/js/bs4/serviceMag.js"></script>
         <!--<script src="resource/js/bs4/swimlane2.js"></script>-->
         <script src="resource/js/bs4/beaction.js"></script>
-
+     
 
     </head>
 
@@ -118,7 +119,7 @@
                                                         onclick="new Project().loadProject()" data-target="#insertNewProject"
                                                         data-toggle="modal"><i class="fa fa-spotify"> </i>&nbsp;Project</a></li>
                         <li style="padding:5px 0px;"><a href="#" class="navbar-submenu-line-conf perm4" data-perm="admin"
-                                                        onclick="new User().loadUser()" data-target="#insertNewUser"
+                                                        onclick="new User()()" data-target="#insertNewUser"
                                                         data-toggle="modal"><i class="fa fa-users"> </i>&nbsp;User</a></li>
                         <li style="padding:5px 0px;"><a href="#" class="navbar-submenu-line-conf perm4" data-perm="admin"
                                                         onclick="new TaskType().load()" data-target="#insertNewTaskType"
@@ -982,7 +983,7 @@
 
             <div class="panel-container">
 
-                <div class="panel-left" id="panelFirst1">
+                <div class="panel-left is-close" id="panelFirst1" >
                     <div class="primary-nav">
 
                         <!--  <button href="#" class="hamburger open-panel nav-toggle">
@@ -1531,7 +1532,10 @@
                 </div>
 
                 <div class="splitter11" id="panelSplit1" >
+                    <button type="button" class="btn-toggle1"><i class="fas fa-chevron-right"></i></button>
+
                 </div>
+                
 
                 <div class="panel-right col-12" id="panelSecond1">
                     <div class="new-wrapper">
@@ -3341,7 +3345,7 @@
                     </button>
                 </div>
                 <div class="modal-body text-center">
-                    <img id="commentFileImageViewerUrl" src="" style="max-height: 85vh;width:100%" frameborder="0">
+                    <img id="commentFileImageViewerUrl" src="" style="max-height: 85vh;" frameborder="0">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -5246,7 +5250,9 @@
 
                         <div class='col-12'>
                             <br>
-                            <span style="width: 100%;">Inputs/Outputs<span style="color:red">*</span></span><br>
+                            <span style="width: 100%;">Inputs/Outputs<span style="color:red">*</span></span>
+                            (<input checked='true' type='checkbox' id='addStoryCardInputsAsModal-checkall'> All)
+                            <br>
                         </div>
 
                         <div class='col-12'>
@@ -5327,7 +5333,10 @@
 
                         <div class='col-12'>
 
-                            <br>                           <span style="width: 100%;">Fields<span style="color:red">*</span></span><br>
+                            <br>               
+                            <span style="width: 100%;">Fields<span style="color:red">*</span></span>
+                            (<input type='checkbox' id='addFieldsOfTableAsInputModal-checkall' checked='true'> All)
+                            <br>
                         </div>
 
                         <div class='col-12'>
@@ -6371,7 +6380,7 @@
                         </div>
                     </div>
 
-                     <div class="addEpicTask" style="padding-bottom: 20px;">
+                    <div class="addEpicTask" style="padding-bottom: 20px;">
                         <div class="dropdown-task show">
                             <span href="#" class="comment-content-header-history">
                                 Sprint<br>
@@ -6379,7 +6388,7 @@
 
                             <span class="comment-content-header-history task-mgmt-modal-sprintname" 
                                   style="color:black;" id="task-mgmt-modal-sprintname">
-                                 
+
                             </span>
                         </div>
                     </div>
@@ -6547,6 +6556,8 @@
                                     <option value="fcomp">Free Component</option>
                                     <option value="sctn">Section</option>
                                     <option value="tab">Tab</option>
+                                    <option value="hcrr">Hidden Carrier</option>
+
                                 </select>
                             </div>
                             <div class="col-12">
@@ -6727,152 +6738,171 @@
         </div>
     </div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document" style="min-width1: 60%">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Properties</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-
-                    <div class="tab-content">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li class="nav-item ">
-                                <a class="nav-link active" href="#exampleModal-properties-tab2" data-toggle="tab" style="font-size: 14px;">Prop </a></li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#exampleModal-properties-tab3" data-toggle="tab" style="font-size: 14px;">Class </a></li>
-                        </ul>
-
-                        <div class="tab-content">
-                            <div id="exampleModal-properties-tab2" class="tab-pane active"
-                                 style=" max-height: 76vh;overflow: auto;">
-                                <div class="col-12"    style="font-size:11px;">
-                                    <br>
-                                    <input type="text" class="form-control" id="exampleModal-input-name" 
-                                           onchange="new UserStory().updateInputByAttr(this, 'name')"
-                                           pid="">
-                                    <br>
-                                </div>
-                                <div class="col-12"    style="font-size:11px;">
-                                    <label>Component Id</label>
-                                    <input type="text" class="form-control" readonly disable id="exampleModal-input-componentid"              >
-                                    <br>
-                                </div>
-
-                                <div class="col-12" id="component-info-popup" style="font-size:11px;">
-                                </div>
-                                <div class="col-12"    style="font-size:11px;">
-                                    <br>
-                                    <a href="#" onclick="new UserStory().deleteCurrentInputFromUSList(this)"
-                                       pid="">Delete Current Input</a>
-                                    <br>
-                                </div>
-                            </div>
-                            <div id="exampleModal-properties-tab3" class="tab-pane "
-                                 style=" max-height: 76vh;overflow: auto;">
-
-                                <fieldset class="border p-2">
-                                    <legend class="w-auto w-auto-man">
-                                        Class
-                                    </legend>
-                                    <table style="width:100%">
-                                        <tbody>
-                                            <tr>
-                                                <td style="padding:5px;">
-
-                                                    <select   id="gui_prop_in_gui_class_list" 
-                                                              class="classListOnChange"
-                                                              style="padding:0px;border-radius:4px;border:1px solid gray;width:100%"></select>
-                                                </td>
-                                                <td style="width: 1%">
-                                                    <i class="fa fa-plus" 
-                                                       onclick="addGuiClassToInput(this)"
-                                                       style="  font-size:16px;cursor:pointer;"></i>
-
-                                                </td>
-                                                <td style="width: 1%">
-                                                    <i class="fa fa-bars" 
-                                                       onclick="guiClassModal(this)"
-                                                       style="  font-size:16px;cursor:pointer;"></i>
-
-                                                </td>
-                                            </tr>
-                                            <tr  class="input4NewClassAdding" style="display:none">
-                                                <td style="padding:5px;" colspan="2">
-
-                                                    <input   id="gui_prop_in_gui_class_new" 
-                                                             style="padding:0px;border-radius:4px;border:1px solid gray;width:100%">
-                                                </td>
-                                                <td style="width: 1%">
-                                                    <button class="buttons" 
-                                                            onclick="insertNewClassDirect(this)"
-                                                            style="   cursor:pointer;">Add</button>
-
-                                                </td>
-
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <table style="width:100%;font-size: 11px; ">
-                                        <tbody id="input_class_list_in_component">
-
-                                        </tbody>
-                                    </table>
-
-                                </fieldset>
-                                <fieldset class="border p-2">
-                                    <legend class="w-auto w-auto-man">
-                                        Attributes
-                                    </legend>
-                                    <table style="width:100%">
-                                        <tbody>
-                                            <tr>
-                                                <td style="padding:5px;">
-                                                    <span class="col-form-label control-label">Name:</span>
-                                                    <input type="text" id="gui_prop_in_attr_name" 
-                                                           style=" padding:0px;border-radius:4px;border:1px solid gray;width:100%">
-                                                </td>
-                                                <td style="padding:5px;">
-                                                    <span class="col-form-label control-label">Value:</span>
-                                                    <input type="text" id="gui_prop_in_attr_value" 
-                                                           style="padding:0px;border-radius:4px;border:1px solid gray;width:100%">
-                                                </td>
-                                                <td>
-                                                    <i class="fa fa-plus" 
-                                                       onclick="addInputAttributes(this)"
-                                                       style="padding-top:20px; font-size:16px;cursor:pointer;"></i>
-
-                                                </td>
-
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <table style="width:100%;font-size: 11px; ">
-                                        <tbody id="input_attributes_list_in_component">
-
-                                        </tbody>
-                                    </table>
-
-                                </fieldset>
-                            </div>
-                        </div>
-
-
-                    </div>
-
-
-
-                </div>
-                <!--            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                
-                            </div>-->
-            </div>
-        </div>
-    </div>
+    <!--    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+           <div class="modal-dialog" role="document" style="min-width1: 60%">
+               <div class="modal-content">
+                   <div class="modal-header">
+                       <h5 class="modal-title" id="exampleModalLabel">Properties</h5>
+                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                           <span aria-hidden="true">&times;</span>
+                       </button>
+                   </div>
+                   <div class="modal-body">
+   
+                       <div class="tab-content">
+                           <ul class="nav nav-tabs" role="tablist">
+                               <li class="nav-item ">
+                                   <a class="nav-link active" href="#exampleModal-properties-tab2" data-toggle="tab" style="font-size: 14px;">Prop </a></li>
+                               <li class="nav-item">
+                                   <a class="nav-link" href="#exampleModal-properties-tab3" data-toggle="tab" style="font-size: 14px;">Class </a></li>
+                           </ul>
+   
+                           <div class="tab-content">
+                               <div id="exampleModal-properties-tab2" class="tab-pane active"
+                                    style=" max-height: 76vh;overflow: auto;">
+                                   <div class="col-12"    style="font-size:11px;">
+                                       <br>
+                                       <input type="text" class="form-control" id="exampleModal-input-name" 
+                                              onchange="new UserStory().updateInputByAttr(this, 'name')"
+                                              pid="">
+                                       <br>
+                                   </div>
+                                   <div class="col-12"    style="font-size:11px;">
+                                       <label>Component Id</label>
+                                       <input type="text" class="form-control" readonly disable id="exampleModal-input-componentid"              >
+                                       <br>
+                                   </div>
+   
+                                   <div class="col-12" id="component-info-popup" style="font-size:11px;">
+                                   </div>
+                                   <div class="col-12"    style="font-size:11px;">
+                                       <br>
+                                       <a href="#" onclick="new UserStory().deleteCurrentInputFromUSList(this)"
+                                          pid="">Delete Current Input</a>
+                                       <br>
+                                   </div>
+                               </div>
+                               <div id="exampleModal-properties-tab3" class="tab-pane "
+                                    style=" max-height: 76vh;overflow: auto;">
+   
+                                   <fieldset class="border p-2">
+                                       <legend class="w-auto w-auto-man">
+                                           Class
+                                       </legend>
+                                       <table style="width:100%">
+                                           <tbody>
+                                               <tr>
+                                                   <td style="padding:5px;">
+   
+                                                       <select   id="gui_prop_in_gui_class_list" 
+                                                                 class="classListOnChange"
+                                                                 style="padding:0px;border-radius:4px;border:1px solid gray;width:100%"></select>
+                                                   </td>
+                                                   <td style="width: 1%">
+                                                       <i class="fa fa-plus" 
+                                                          onclick="addGuiClassToInput(this)"
+                                                          style="  font-size:16px;cursor:pointer;"></i>
+   
+                                                   </td>
+                                                   <td style="width: 1%">
+                                                       <i class="fa fa-bars" 
+                                                          onclick="guiClassModal(this)"
+                                                          style="  font-size:16px;cursor:pointer;"></i>
+   
+                                                   </td>
+                                               </tr>
+                                               <tr  class="input4NewClassAdding" style="display:none">
+                                                   <td style="padding:5px;" colspan="2">
+   
+                                                       <input   id="gui_prop_in_gui_class_new" 
+                                                                style="padding:0px;border-radius:4px;border:1px solid gray;width:100%">
+                                                   </td>
+                                                   <td style="width: 1%">
+                                                       <button class="buttons" 
+                                                               onclick="insertNewClassDirect(this)"
+                                                               style="   cursor:pointer;">Add</button>
+   
+                                                   </td>
+   
+                                               </tr>
+                                           </tbody>
+                                       </table>
+                                       <table style="width:100%;font-size: 11px; ">
+                                           <tbody id="input_class_list_in_component">
+   
+                                           </tbody>
+                                       </table>
+   
+                                   </fieldset>
+                                   <fieldset class="border p-2">
+                                       <legend class="w-auto w-auto-man">
+                                           Attributes
+                                       </legend>
+                                       <table style="width:100%">
+                                           <tbody>
+                                               <tr>
+                                                   <td style="padding:5px;">
+                                                       <span class="col-form-label control-label">Name:</span>
+   
+   
+                                                       <input type="text" list="browsers"  id="gui_prop_in_attr_name" 
+                                                              style=" font-size:13px;border-radius:4px;border:1px solid gray;width:100%">
+                                                       <datalist id="browsers">
+                                                           <option value="sa-selectedfield">
+                                                           <option value="sa-data-selectbox-hassnull">
+                                                           <option value="sa-data-value">
+                                                           <option value="sa-type">
+                                                           <option value="sa-load-ontrigger">
+                                                           <option value="sa-item-key">
+                                                           <option value="sa-item-value">
+                                                           <option value="sa-data-nosort ">
+                                                           <option value="sa-data-hasreplace">
+                                                           <option value="sa-value-linkedfield">
+                                                           <option value="sa-selectbox-clickafterload">
+                                                           <option value="sa-selectbox-changeafterload">
+                                                           <option value="Edge">
+                                                       </datalist>
+   
+                                                   </td>
+                                                   <td style="padding:5px;">
+                                                       <span class="col-form-label control-label">Value:</span>
+                                                       <input type="text" id="gui_prop_in_attr_value" 
+                                                              style="padding:0px;border-radius:4px;border:1px solid gray;width:100%">
+   
+                                                   </td>
+                                                   <td>
+                                                       <i class="fa fa-plus" 
+                                                          onclick="addInputAttributes(this)"
+                                                          style="padding-top:20px; font-size:16px;cursor:pointer;"></i>
+   
+                                                   </td>
+   
+                                               </tr>
+                                           </tbody>
+                                       </table>
+                                       <table style="width:100%;font-size: 11px; ">
+                                           <tbody id="input_attributes_list_in_component">
+   
+                                           </tbody>
+                                       </table>
+   
+                                   </fieldset>
+                               </div>
+                           </div>
+   
+   
+                       </div>
+   
+   
+   
+                   </div>
+                             <div class="modal-footer">
+                                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                   
+                               </div>
+               </div>
+           </div>
+       </div> -->
 
     <div class="modal fade" id="storyCardViewManualModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
         <div class="modal-dialog" role="document" style="min-width: 90%">
@@ -7552,8 +7582,8 @@
                                     <h5>{</h5>
                                 </div>
                                 <div class="col-12 text-left">
-                                    <textarea onchange='updateGuiClassBody(this)'
-                                              rows=15 class="form-control" id="guiClassModal_classbody"></textarea>
+                                    <div onchange=''
+                                              rows=15  style="width: 100%; height: 200px;" id="guiClassModal_classbody"></div>
 
                                     <h5>}</h5><br>
                                 </div>
@@ -7577,6 +7607,7 @@
 
     <div class="modal fade" id="jsCodeModal" tabindex="-1" role="dialog" aria-labelledby=""
          aria-hidden="true">
+         
         <div class="modal-dialog modal-lg" style="width: 90%;max-width: 90%" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -7586,6 +7617,7 @@
                     </button>
                 </div>
                 <div class="modal-body" style="font-size: 12px;">
+                
                     <div class="row">
                         <div class="col-4">
                             <b>New Function (Description)</b>
@@ -7621,6 +7653,8 @@
                                              class="form-control jsCodeModal_checkbox"  id="jsCodeModal_fntype">
                                         <option selected value='core'>Core</option>
                                         <option value='event'>Event Based</option>
+                                        <option   value='java'>Java</option>
+                                        
                                     </select>
                                     <!--                                <input  type="checkbox"
                                                                             checked="checked"
@@ -7647,17 +7681,19 @@
                                     <input class="form-control" id="jsCodeModal_apiid">
 
                                 </div>
-                                <div class="col-12 jscode-corepart">
+                                
+                                <div class="col-12 jscode-corepart jscode-zad  jscode-zad-core">
                                     <b>function</b> <input onchange='updateJSChange(this, "fnCoreName")' 
                                                            placeholder="Function Name"
                                                            class="form-control"  
-                                                           style='border-color:white;margin:15px 0px;display:inline-flex;width:30%' id="jsCodeModal_fncorename"> 
+                                                           style='border-color:white;margin:15px 0px;display:inline-flex;width:30%' id="jsCodeModal_javafncorename"> 
                                     <b>(</b><input onchange='updateJSChange(this, "fnCoreInput")' 
                                                    placeholder="Input Patameters"
                                                    class="form-control" 
                                                    style='border-color:white;margin: 15px 0px;display:inline-flex;width:30%' id="jsCodeModal_fncoreinput"><b> ){</b>
                                 </div>
-                                <div class="col-12 jscode-eventpart" style="display:none;">
+                                
+                                <div class="col-12 jscode-eventpart jscode-zad  jscode-zad-event" style="display:none;">
                                     <b>$(document).on("</b><input onchange='updateJSChange(this, "fnEvent")' 
                                                                   placeholder="Function Event. ex:click"
                                                                   class="form-control"  
@@ -7668,9 +7704,25 @@
                                                      style='border-color:white;margin: 15px 0px;display:inline-flex;width:30%' id="jsCodeModal_fneventobject"> <b>", function(e){</b>
                                 </div>
 
+
+                                <div class="col-12 jscode-javapart jscode-zad  jscode-zad-java" style='display:none;'>
+                                    <button type="button" class="btn btn-secondary" onclick="compileJava()">Compile</button><br>
+                                     <b>Library</b> <textarea onchange='updateJSChange(this, "libraryUrl")' 
+                                                           placeholder="import util.io.*;"
+                                                           class="form-control"  
+                                                           id="jsCodeModal_libraryurl"></textarea>
+                                    <b>public static Carrier </b> <input onchange='updateJSChange(this, "fnCoreName")' 
+                                                           placeholder="Function Name"
+                                                           class="form-control"  
+                                                           style='border-color:white;margin:15px 0px;display:inline-flex;width:30%' id="jsCodeModal_fncorename"> 
+                                    <b>(</b> Carrier carrier<b> ){</b>
+                                </div>
+
                                 <div class="col-12 text-left">
-                                    <textarea onchange='updateJSChange(this, "fnBody")' placeholder="Function Body"
-                                              rows=15 class="form-control" id="jsCodeModal_fnbody"></textarea>
+                                     
+                                     <span class="btn btn-secondary editor_full_screenBt"><i class="fas fa-expand"></i></span>
+                                    <div onchange='' placeholder="Function Body"
+                                              rows=15  style="height: 200px; width: 100%;"  id="jsCodeModal_fnbody"></div>
 
                                     <span class="jscode-corepart"> }</span>  
                                     <span class="jscode-eventpart"> })</span>  
@@ -7815,6 +7867,25 @@
             </div>
         </div>
     </div>
+    <div class="modal cst_mod_dl fade" id="full_screen_editor_modal" tabindex="-1" role="dialog" aria-labelledby=""
+         aria-hidden="true">
+        <div class="modal-dialog cst_mod_dlg modal-lg"   role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="">Editor</h5>
+                    <button type="button" class="close close_full_scree_editor" data-dismiss="#full_screen_editor_modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fas fa-compress"></i></span>
+                    </button>
+                </div>
+                <div class="modal-body" style="width: 100%;height: 100vh;">
+                    <div class="" id="edit_full_screen">
+                        
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
 
 
 
@@ -7954,7 +8025,9 @@
                                                                             Utility.setParamOnLoad();
                                                                             init4Core();
                                                                             new Project().loadMainProjectList();
+
                                                                             init();
+
 
                                                                             //                                                                        var current_modal = Utility.getParamFromUrl('current_modal').replace("#", '');
                                                                             //                                                                        current_modal = (current_modal) ? current_modal : "loadStoryCard";
