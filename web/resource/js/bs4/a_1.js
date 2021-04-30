@@ -2304,9 +2304,9 @@ function initOnloadActionOnGUIDesign() {
 function initOnloadActionOnGUIDesign4OnClick() {
     $('.sa-onloadclick').each(function () {
         if ($(this).attr("sa-isloaded") !== '1') {
-            if ($(this).attr("sa-loadonetime") === '1') {
+             
                 $(this).attr("sa-isloaded", "1");
-            }
+            
             $(this).click();
         }
     })
@@ -2698,15 +2698,9 @@ function triggerAPI(element, apiId, data) {
     if (async === 'sync') {
         triggerAPIAfter(el, apiId, out, finalRes)
     }
-    //call oncload action
-    if (!$(el).hasClass('sa-onloadclick')) {
-        initOnloadActionOnGUIDesign4OnClick();
-    }
+    
 
-    //call oncload action
-    if (!$(el).hasClass('sa-onloadchange')) {
-        initOnloadActionOnGUIDesign4Onchange();
-    }
+    
 //    }
 }
 
@@ -2725,28 +2719,7 @@ function triggerAPIAfter(el, apiId, data, finalRes) {
             ? SACore.GetBacklogDetails(apiId, 'apiSyncRequest')
             : 'sync';
 
-    if (async === 'async') {
-        $(el).closest('.redirectClass').find('.sa-onloadclick-async').each(function () {
-            if ($(this).attr("sa-isloaded") !== '1') {
-                if ($(this).attr("sa-loadonetime") === '1') {
-                    $(this).attr("sa-isloaded", "1");
-                }
-                $(this).click();
-            }
-        })
-
-        $(el).closest('.redirectClass').find('.sa-onloadchange-async').each(function () {
-
-            if ($(this).attr("sa-isloaded") !== '1') {
-                if ($(this).attr("sa-loadonetime") === '1') {
-                    $(this).attr("sa-isloaded", "1");
-                }
-                $(this).change();
-            }
-
-        })
-
-    }
+  
 
     $(el).closest('.redirectClass').find('.sa-selectpicker').each(function () {
         $(this).selectpicker('refresh');
@@ -2948,6 +2921,12 @@ function fillSelectBoxAfterSyncApiCall(el, data, selectField) {
         $(el).val(tmVal);
         $(el).find('option[value="' + tmVal + '"]').attr('selected', true);
     }
+	
+ 
+	
+ if ($(el).hasClass('sa-selectpicker')) {
+        $(el).selectpicker('refresh');
+    }
 
 
 }
@@ -2981,11 +2960,14 @@ function fillComboInAPICall(el, data, asyncData) {
         elem.append($('<option>').val(val).text(name));
     }
 
+  elem.attr("sa-isrunning", "0");
+  
+
+
 
     if (elem.attr('sa-data-nosort') !== '1') {
         sortSelectBoxByElement(elem);
     }
-
     if (elem.attr('sa-data-value')) {
         elem.val(elem.attr('sa-data-value'));
     }

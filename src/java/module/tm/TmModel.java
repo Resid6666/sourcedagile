@@ -131,6 +131,9 @@ import utility.SessionManager;
 import utility.sqlgenerator.EntityManager;
 import java.nio.file.Paths;
 import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -143,6 +146,7 @@ import module.tm.entity.EntityTmRole;
 import module.tm.entity.EntityTmRolePermission;
 import module.tm.entity.EntityTmUserPermission;
 import utility.QUtility;
+import utility.sqlgenerator.DBConnection;
 import utility.sqlgenerator.SQLConnection;
 import utility.sqlgenerator.SQLGenerator;
 
@@ -198,6 +202,11 @@ public class TmModel {
     /////////////////////////////////////////
     //// type code here
     ///////////////////////////////////////////////
+    public Carrier getEmptyApiZad(Carrier carrier) throws QException {
+
+        return carrier;
+    }
+
     public Carrier getTaskInfo(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkTaskId", cp.hasValue(carrier, "fkTaskId"));
@@ -1154,6 +1163,21 @@ public class TmModel {
         return carrier;
     }
 
+    public static Carrier getProjectInputCount(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String sql = "select count(id) count from " + SessionManager.getCurrentDomain() + ".tm_input where status='A' and fk_project_id=?";
+        Carrier crIn = EntityManager.selectBySql(sql, new String[]{carrier.get("fkProjectId")});
+        crIn.set("count", crIn.getValue(CoreLabel.RESULT_SET, 0, "count"));
+
+        return crIn;
+    }
+
     public static Carrier updateJSCode4Short(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController(EntityTmDocument.ID, cp.hasValue(carrier, EntityTmDocument.ID));
@@ -1730,6 +1754,110 @@ public class TmModel {
         return carrier;
     }
 
+    public static Carrier copyAllInputsToProjectProperties(Carrier carrier) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
+        filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
+        File theDir = new File(filedir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/" + carrier.get("fkProjectId") + ".properties";
+        File theFile = new File(filename);
+        if (!theFile.exists()) {
+            theFile.createNewFile();
+        }
+
+        Properties prop = new Properties();
+
+        try (InputStream input = new FileInputStream(filename)) {
+            prop.load(input);
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        EntityTmInput ent = new EntityTmInput();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        EntityManager.select(ent);
+        Carrier crIn = EntityManager.select(ent);
+
+        String tn = ent.toTableName();
+        int rc = crIn.getTableRowCount(tn);
+        for (int i = 0; i < rc; i++) {
+            EntityManager.mapCarrierToEntity(crIn, tn, i, ent);
+
+            Gson gson = new Gson();
+            String json = gson.toJson(ent);
+            prop.setProperty(ent.getId(), json);
+        }
+
+        try (OutputStream output = new FileOutputStream(filename)) {
+            prop.store(output, "");
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        return carrier;
+    }
+
+    public static Carrier copyAllInputsToProjectPropertiesOld(Carrier carrier) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
+        filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
+        File theDir = new File(filedir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/" + carrier.get("fkProjectId") + ".properties";
+        File theFile = new File(filename);
+        if (!theFile.exists()) {
+            theFile.createNewFile();
+        }
+
+        Properties prop = new Properties();
+
+        try (InputStream input = new FileInputStream(filename)) {
+            prop.load(input);
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        EntityTmInput ent = new EntityTmInput();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        EntityManager.select(ent);
+        Carrier crIn = EntityManager.select(ent);
+
+        String tn = ent.toTableName();
+        int rc = crIn.getTableRowCount(tn);
+        for (int i = 0; i < rc; i++) {
+            EntityManager.mapCarrierToEntity(crIn, tn, i, ent);
+
+            Gson gson = new Gson();
+            String json = gson.toJson(ent);
+            prop.setProperty(ent.getId(), json);
+        }
+
+        try (OutputStream output = new FileOutputStream(filename)) {
+            prop.store(output, "");
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        return carrier;
+    }
+
     public static Carrier getProjectEntireInputList(Carrier carrier) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
@@ -1739,10 +1867,9 @@ public class TmModel {
 
         String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/" + carrier.get("fkProjectId") + ".properties";
 
-        try (OutputStream output = new FileOutputStream(filename)) {
+        try (InputStream input = new FileInputStream(filename)) {
             Properties prop = new Properties();
-            prop.setProperty(carrier.get("fkInputId"), carrier.get("inputList"));
-            prop.store(output, null);
+            prop.load(input);
 
             JSONObject jsonProps = new JSONObject(prop);
             carrier.set("jsonOut", jsonProps.toString());
@@ -1753,12 +1880,34 @@ public class TmModel {
         return carrier;
     }
 
-    public static Carrier setProjectInputList(String fkProjectId, String fkInputId, String inputList) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
-        Carrier carrier = new Carrier();
-        carrier.set("fkProjectId", fkProjectId);
-        carrier.set("fkInputId", fkInputId);
-        carrier.set("inputList", inputList);
-        return setProjectInputList(carrier);
+    public static Carrier setProjectInputList(String fkProjectId, String fkInputId, String inputList) throws QException {
+
+        if (fkInputId.trim().length() == 0) {
+            return new Carrier();
+        }
+
+        EntityTmInput ent = new EntityTmInput();
+        ent.setId(fkInputId);
+        EntityManager.select(ent);
+
+        try {
+            deleteBacklogEntireInputList(ent.getFkBacklogId());
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(TmModel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(TmModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+//        try {
+//            Carrier carrier = new Carrier();
+//            carrier.set("fkProjectId", fkProjectId);
+//            carrier.set("fkInputId", fkInputId);
+//            carrier.set("inputList", inputList);
+//            return setProjectInputList(carrier);
+//        } catch (Exception e) {
+//            System.out.println("err=>" + e.getMessage());
+//        }
+        return new Carrier();
     }
 
     public static Carrier setProjectInputList(Carrier carrier) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
@@ -1778,11 +1927,21 @@ public class TmModel {
         }
 
         String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/" + carrier.get("fkProjectId") + ".properties";
+        File theFile = new File(filename);
+        if (!theFile.exists()) {
+            theFile.createNewFile();
+        }
 
+        Properties prop = new Properties();
         try (InputStream input = new FileInputStream(filename)) {
-            Properties prop = new Properties();
             prop.load(input);
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
 
+        try (OutputStream output = new FileOutputStream(filename)) {
+            prop.setProperty(carrier.get("fkInputId"), carrier.get("inputList"));
+            prop.store(output, "");
         } catch (IOException io) {
             io.printStackTrace();
         }
@@ -4729,17 +4888,17 @@ public class TmModel {
         carrier.addController("value", cp.isKeyExist(carrier, "value"));
         if (carrier.hasError()) {
             return carrier;
-        } 
+        }
 
         EntityTmInput ent = new EntityTmInput();
         ent.setId(carrier.get("id"));
         EntityManager.select(ent);
         EntityManager.setEntityValue(ent, carrier.get("type"), carrier.get("value"));
-        EntityManager.update(ent); 
+        EntityManager.update(ent);
 
         Gson gson = new Gson();
         String json = gson.toJson(ent);
-        setProjectInputList(ent.getFkProjectId(),ent.getId(),json);
+        setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
 
         getInputList4Select(ent.getId()).copyTo(carrier);
         return carrier;
@@ -4821,6 +4980,10 @@ public class TmModel {
         ent.setSendToInputId(carrier.get("sendToInputId"));
         EntityManager.update(ent);
 
+        Gson gson = new Gson();
+        String json = gson.toJson(ent);
+        setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
+
         getInputList4Select(ent.getId()).copyTo(carrier);
 
         return carrier;
@@ -4878,6 +5041,10 @@ public class TmModel {
 
         EntityManager.update(ent);
 
+        Gson gson = new Gson();
+        String json = gson.toJson(ent);
+        setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
+
         getInputList4Select(ent.getId()).copyTo(carrier);
 
         return carrier;
@@ -4897,6 +5064,10 @@ public class TmModel {
         ent.setSendToBacklogId("");
         ent.setSendToInputId("");
         EntityManager.update(ent);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(ent);
+        setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
 
         getInputList4Select(ent.getId()).copyTo(carrier);
 
@@ -4918,6 +5089,10 @@ public class TmModel {
         ent.setSendToFieldId("");
         EntityManager.update(ent);
 
+        Gson gson = new Gson();
+        String json = gson.toJson(ent);
+        setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
+
         getInputList4Select(ent.getId()).copyTo(carrier);
 
         return carrier;
@@ -4938,6 +5113,10 @@ public class TmModel {
         ent.setSelectFromFieldId("");
         EntityManager.update(ent);
 
+        Gson gson = new Gson();
+        String json = gson.toJson(ent);
+        setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
+
         getInputList4Select(ent.getId()).copyTo(carrier);
 
         return carrier;
@@ -4957,6 +5136,10 @@ public class TmModel {
         ent.setSelectFromBacklogId("");
         ent.setSelectFromInputId("");
         EntityManager.update(ent);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(ent);
+        setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
 
         getInputList4Select(ent.getId()).copyTo(carrier);
 
@@ -5835,6 +6018,11 @@ public class TmModel {
             EntityManager.select(ent);
             ent.setTableName(tname);
             EntityManager.update(ent);
+
+            Gson gson = new Gson();
+            String json = gson.toJson(ent);
+            setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
+
         }
 
         if (ids.length() > 0) {
@@ -7164,15 +7352,30 @@ public class TmModel {
         crFile = crFile.getKVPairListFromTable(entFile.toTableName(), "fkBacklogId",
                 EntityTmTaskFile.FILE_URL);
 
-        EntityTmInput entIn = new EntityTmInput();
-        entIn.setFkProjectId(carrier.getValue("fkProjectId").toString());
-        entIn.setFkBacklogId(carrier.getValue("fkBacklogId").toString());
-        entIn.addSortBy("orderNo");
-        entIn.setSortByAsc(true);
-        Carrier crIn = EntityManager.select(entIn);
-        crIn = crIn.getKVPairListFromTable(entIn.toTableName(), "fkBacklogId",
-                EntityTmBacklogTaskList.ID);
+        ///
+//        EntityTmInput entIn = new EntityTmInput();
+//        entIn.setFkProjectId(carrier.getValue("fkProjectId").toString());
+//        entIn.setFkBacklogId(carrier.getValue("fkBacklogId").toString());
+//        entIn.addSortBy("orderNo");
+//        entIn.setSortByAsc(true);
+//        Carrier crIn = EntityManager.select(entIn);
+//        crIn = crIn.getKVPairListFromTable(entIn.toTableName(), "fkBacklogId",
+//                EntityTmBacklogTaskList.ID);
+        try {
+            EntityManager.executeUpdateByQuery("SET SESSION group_concat_max_len = 1000000;");
+        } catch (Exception ex) {
+            Logger.getLogger(TmModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
+        String ln4InputSql = " select fk_backlog_id,GROUP_CONCAT(id order by order_no asc) as id from " + SessionManager.getCurrentDomain() + ".tm_input\n";
+        ln4InputSql += " where status='A' ";
+        ln4InputSql += (carrier.get("fkProjectId").length() > 1) ? " and fk_project_id in (" + carrier.get("fkProjectId").replaceAll(CoreLabel.IN, ",") + ") " : "";
+        ln4InputSql += (carrier.get("fkBacklog").length() > 1) ? " and fk_backlog_id in (" + carrier.get("fkBacklog").replaceAll(CoreLabel.IN, ",") + ") " : "";
+        ln4InputSql += " group by FK_BACKLOG_ID";
+        Carrier crIn = EntityManager.selectBySql(ln4InputSql);
+        crIn = crIn.getKVPairListFromTable(CoreLabel.RESULT_SET, "fkBacklogId", "id");
+
+        /////
         EntityTmBacklogTaskList entList = new EntityTmBacklogTaskList();
         entList.setFkProjectId(carrier.getValue("fkProjectId").toString());
         entList.setFkBacklogId(carrier.getValue("fkBacklogId").toString());
@@ -8470,6 +8673,10 @@ public class TmModel {
         entIn.setId(inputId);
         EntityManager.delete(entIn);
 
+        Gson gson = new Gson();
+        String json = gson.toJson(entIn);
+        setProjectInputList(entIn.getFkProjectId(), entIn.getId(), json);
+
         EntityTmRelTableInput entRel = new EntityTmRelTableInput();
         entRel.setFkTableId(inputTableId);
         String ids = EntityManager.select(entRel).getValueLine(entRel.toTableName());
@@ -8515,6 +8722,10 @@ public class TmModel {
         ent.setParam3(Config.getProperty("component.design"));
         EntityManager.insert(ent);
 
+        Gson gson = new Gson();
+        String json = gson.toJson(ent);
+        setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
+
         increaseBacklogInputCount(ent.getFkBacklogId(), 1);
 
         Carrier cout = new Carrier();
@@ -8550,6 +8761,10 @@ public class TmModel {
         ent.setParam3(Config.getProperty("component.design"));
         EntityManager.insert(ent);
 
+        Gson gson = new Gson();
+        String json = gson.toJson(ent);
+        setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
+
         Carrier cout = new Carrier();
         EntityManager.mapEntityToCarrier(ent, cout, true);
         return cout;
@@ -8567,6 +8782,10 @@ public class TmModel {
         ent.setCellNo(cellNo);
         ent.setParam3(Config.getProperty("component.design"));
         EntityManager.insert(ent);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(ent);
+        setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
 
         Carrier cout = new Carrier();
         EntityManager.mapEntityToCarrier(ent, cout, true);
@@ -8592,6 +8811,11 @@ public class TmModel {
 
         } catch (Exception ex) {
             EntityManager.delete(ent);
+
+            Gson gson = new Gson();
+            String json = gson.toJson(ent);
+            setProjectInputList(ent.getFkProjectId(), ent.getId(), "deleted");
+
             cout.set("hasError", "1");
             return cout;
         }
@@ -8817,6 +9041,11 @@ public class TmModel {
         EntityManager.select(entity);
         EntityManager.mapCarrierToEntity(carrier, entity, false);
         EntityManager.update(entity);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
+
         carrier = EntityManager.select(entity);
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
         setNewBacklogHistory4InputUpdate(entity);
@@ -8845,10 +9074,10 @@ public class TmModel {
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
         setNewBacklogHistory4InputUpdateName(entity, oldName);
 
-         Gson gson = new Gson();
+        Gson gson = new Gson();
         String json = gson.toJson(entity);
-        setProjectInputList(entity.getFkProjectId(),entity.getId(),json);
-        
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
+
         getInputList4Select(entity.getId()).copyTo(carrier);
         return carrier;
     }
@@ -8873,6 +9102,10 @@ public class TmModel {
         entity.setTableName(carrier.getValue(EntityTmInput.TABLE_NAME).toString());
         entity.setCellNo("12");
         EntityManager.update(entity);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
 
         carrier = EntityManager.select(entity);
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
@@ -8919,6 +9152,11 @@ public class TmModel {
                 entity.setOrderNo("1");
             }
             EntityManager.update(entity);
+
+            Gson gson = new Gson();
+            String json = gson.toJson(entity);
+            setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
+
 //        carrier = EntityManager.select(entity);
 //        carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
             setNewBacklogHistory4InputUpdateComponentType(entity, componentTypeName);
@@ -8938,6 +9176,11 @@ public class TmModel {
             entity.setOrderNo("1");
         }
         EntityManager.update(entity);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
+
         carrier = EntityManager.select(entity);
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
 //        setNewBacklogHistory4InputUpdateComponentType(entity, componentTypeName);
@@ -8954,6 +9197,11 @@ public class TmModel {
             entity.setOrderNo("1");
         }
         EntityManager.update(entity);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
+
         carrier = EntityManager.select(entity);
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
 //        setNewBacklogHistory4InputUpdateComponentType(entity, componentTypeName);
@@ -8974,6 +9222,11 @@ public class TmModel {
             entity.setOrderNo("1");
         }
         EntityManager.update(entity);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
+
         carrier = EntityManager.select(entity);
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
 //        setNewBacklogHistory4InputUpdateComponentType(entity, componentTypeName);
@@ -8992,6 +9245,11 @@ public class TmModel {
         EntityManager.select(entity);
         entity.setOrderNo(orderNo);
         EntityManager.update(entity);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
+
         carrier = EntityManager.select(entity);
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
         setNewBacklogHistory4InputUpdateOrderNo(entity, orderNo);
@@ -9017,6 +9275,11 @@ public class TmModel {
             EntityManager.select(entity);
             entity.setCellNo(cellNo);
             EntityManager.update(entity);
+
+            Gson gson = new Gson();
+            String json = gson.toJson(entity);
+            setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
+
             carrier = EntityManager.select(entity);
             carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
 //            setNewBacklogHistory4InputUpdateCellNo(entity, cellNo);
@@ -9045,6 +9308,11 @@ public class TmModel {
         entity.setParam3(manualStyle);
         entity.setParam4(css);
         EntityManager.update(entity);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
+
         carrier = EntityManager.select(entity);
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
 
@@ -9074,6 +9342,11 @@ public class TmModel {
 
         entity.setParam1(carrier.getValue(EntityTmInput.PARAM_1).toString());
         EntityManager.update(entity);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
+
         carrier = EntityManager.select(entity);
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
 
@@ -9101,6 +9374,10 @@ public class TmModel {
         EntityManager.select(entity);
         entity.setFkBacklogSectionId(sectionBacklogId);
         EntityManager.update(entity);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
 
         EntityTmInput entIn = new EntityTmInput();
         entIn.setFkBacklogId(sectionBacklogId);
@@ -9247,6 +9524,11 @@ public class TmModel {
         EntityManager.select(entity);
         entity.setFkDependentBacklogId(carrier.getValue(EntityTmInput.FK_DEPENDENT_BACKLOG_ID).toString());
         EntityManager.update(entity);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
+
         carrier = EntityManager.select(entity);
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
         return carrier;
@@ -9266,6 +9548,10 @@ public class TmModel {
         entity.setFkDependentOutputId(carrier.getValue(EntityTmInput.FK_DEPENDENT_OUTPUT_ID).toString());
         entity.setFkDependentBacklogId(carrier.getValue(EntityTmInput.FK_DEPENDENT_BACKLOG_ID).toString());
         EntityManager.update(entity);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
 
         carrier = EntityManager.select(entity);
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
@@ -9311,6 +9597,10 @@ public class TmModel {
         entity.setFkDependentOutputId("");
         entity.setFkDependentBacklogId("");
         EntityManager.update(entity);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
 
         carrier = EntityManager.select(entity);
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
@@ -9382,6 +9672,10 @@ public class TmModel {
         entity.setId(carrier.getValue(EntityTmInput.ID).toString());
         EntityManager.select(entity);
         EntityManager.delete(entity);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), "deleted");
 
         EntityTmRelTableInput entTbl = new EntityTmRelTableInput();
         entTbl.setFkInputId(carrier.get("id"));
@@ -9485,6 +9779,342 @@ public class TmModel {
         cr = getInputList4Select(cr);
         cr.renameTableName(CoreLabel.RESULT_SET, "inputTable");
         return cr;
+    }
+
+    public static Carrier getInputList4Select4TabNew(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+        String fkProjectId = carrier.get("fkProjectId");
+
+        Carrier crIn = new Carrier();
+
+        getTabListOfInput("", fkProjectId).copyTo(crIn);
+
+        return crIn;
+    }
+
+    public static Carrier getInputList4Select4TableNew(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+        String fkProjectId = carrier.get("fkProjectId");
+
+        Carrier crIn = new Carrier();
+
+        getTableListOfInput("", fkProjectId).copyTo(crIn);
+
+        return crIn;
+    }
+
+    public static Carrier getInputList4Select4DescriptionIdsNew(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String fkProjectId = carrier.get("fkProjectId");
+
+        EntityTmInputDescription entInDesc = new EntityTmInputDescription();
+        entInDesc.setFkProjectId(fkProjectId);
+        entInDesc.setFkInputId(carrier.get("fkInputId"));
+        entInDesc.addSortBy("id");
+        entInDesc.setSortByAsc(true);
+        Carrier crInDesc = EntityManager.select(entInDesc);
+        crInDesc = crInDesc.getKVPairListFromTable(entInDesc.toTableName(),
+                EntityTmInputDescription.FK_INPUT_ID,
+                EntityTmInputDescription.ID);
+
+        return crInDesc;
+    }
+
+    public static Carrier getInputList4Select4ChildDependenceIdNew4Input(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkInputId", cp.isKeyExist(carrier, "fkInputId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmInput ent = new EntityTmInput();
+        ent.setId(carrier.get("fkInputId"));
+        ent.setFkBacklogId(carrier.get("fkBacklogId"));
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.addSortBy("orderNo");
+        ent.setSortByAsc(true);
+        Carrier crIn = EntityManager.select(ent);
+        Carrier crChildDependence = crIn.getKVPairListFromTable(ent.toTableName(),
+                EntityTmInput.FK_DEPENDENT_OUTPUT_ID,
+                EntityTmInputDescription.ID);
+
+        return crChildDependence;
+    }
+
+    public static Carrier getInputList4Select4ChildDependenceIdNew(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String fkProjectId = carrier.get("fkProjectId");
+
+        EntityTmInput ent = new EntityTmInput();
+        ent.setId(carrier.get("fkInputId"));
+        ent.setFkBacklogId(carrier.get("fkBacklogId"));
+        ent.setFkProjectId(fkProjectId);
+        ent.addSortBy("orderNo");
+        ent.setSortByAsc(true);
+        Carrier crIn = EntityManager.select(ent);
+        Carrier crChildDependence = crIn.getKVPairListFromTable(ent.toTableName(),
+                EntityTmInput.FK_DEPENDENT_OUTPUT_ID,
+                EntityTmInputDescription.ID);
+
+        return crChildDependence;
+    }
+
+    private static String convertTableFieldNameToEntityfieldName(String arg) {
+        String UNDERSCORE = "_";
+        String st[] = arg.split(UNDERSCORE);
+        String res = st[0].toLowerCase(Locale.ENGLISH);
+        for (int i = 1; i <= st.length - 1; i++) {
+            res = res + st[i].substring(0, 1).toUpperCase(Locale.ENGLISH) + st[i].substring(1, st[i].length()).toLowerCase(Locale.ENGLISH);
+        }
+        return res;
+    }
+
+    public static Carrier getInputList4SelectNewOld(Carrier carrier) throws QException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        Carrier crIn = new Carrier();
+        String[] cols1 = {"id", "input_name", "fk_backlog_id", "fk_dependent_backlog_id", "fk_dependent_output_id", "table_name", "input_type", "component_type", "input_content", "order_no", "cell_no", "align", "css_style", "css_template_name", "param_1", "param_2", "param_3", "param_4", "scenario_status", "scenario_date", "input_event", "action", "section", "input_param", "fk_backlog_section_id", "fk_project_id", "fk_related_comp_id", "select_from_backlog_id", "select_from_project_id", "select_from_input_id", "send_to_input_id", "send_to_backlog_id", "send_to_project_id", "select_from_db_id", "select_from_table_id", "select_from_field_id", "send_to_db_id", "send_to_table_id", "send_to_field_id"};
+
+        try {
+
+            String select = "select id,input_name,fk_backlog_id,fk_dependent_backlog_id,fk_dependent_output_id,\"\n"
+                    + "                    + \"table_name,input_type,component_type,input_content,order_no,cell_no,align,css_style,css_template_name,\"\n"
+                    + "                    + \"param_1,param_2,param_3,param_4,scenario_status,scenario_date,input_event,action,section,\"\n"
+                    + "                    + \"input_param,fk_backlog_section_id,fk_project_id,fk_related_comp_id,select_from_backlog_id,\"\n"
+                    + "                    + \"select_from_project_id,select_from_input_id,send_to_input_id,send_to_backlog_id,\"\n"
+                    + "                    + \"send_to_project_id,select_from_db_id,select_from_table_id,select_from_field_id,send_to_db_id,\"\n"
+                    + "                    + \"send_to_table_id,send_to_field_id from " + SessionManager.getCurrentDomain() + ".tm_input "
+                    + " where fk_project_id=?  ";
+            Connection conn = SessionManager.getCurrentConnection();
+            conn.setCatalog(SessionManager.getCurrentDomain());
+            PreparedStatement stmt = conn.prepareStatement(select);
+            stmt.setObject(1, carrier.get("fkProjectId"));
+
+            int idxx = 0;
+            String outStr = "";
+            try (ResultSet rs = stmt.executeQuery()) {
+                try {
+                    while (rs.next()) {
+                        // System.out.println(idxx+" ----------------------------");
+                        idxx++;
+                        String ln = "";
+                        for (String cols11 : cols1) {
+                            String val = rs.getString(cols11) == null ? "" : rs.getString(cols11);
+                            ln += "{'" + convertTableFieldNameToEntityfieldName(cols11) + "':'" + val + "'},";
+                        }
+                        outStr = "{'" + rs.getString("id") + "':" + ln + "}";
+                    }
+                } catch (Exception e) {
+                }
+            }
+            outStr = "{" + outStr + "}";
+            crIn.set("jsonOut", outStr);
+
+            stmt.close();
+        } catch (SQLException e) {
+            crIn.set("err", e.getMessage());
+        }
+
+//        Carrier crIn =  getProjectEntireInputList(carrier);
+        return crIn;
+    }
+
+    public static Carrier getInputList4SelectNew4SAInput(Carrier carrier) throws QException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+//        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        Carrier crIn = new Carrier();
+
+        String json = getBacklogEntireInputList(carrier.get("fkBacklogId"));
+        if (json.trim().length() == 0) {
+            EntityTmInput ent = new EntityTmInput();
+            ent.setFkProjectId(carrier.get("fkProjectId"));
+            ent.setFkBacklogId(carrier.get("fkBacklogId"));
+            EntityManager.select(ent);
+            crIn = EntityManager.select(ent);
+            crIn.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
+            crIn.set("bazadan goturdu", "yes");
+
+            setBacklogInputList(carrier.get("fkBacklogId"), crIn.getJson());
+        } else {
+            crIn.fromJson(json);
+            crIn.set("file-dan goturdu", "yes");
+
+        }
+
+        return crIn;
+    }
+
+    public static void deleteBacklogEntireInputList(String fkBacklogId) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        if (fkBacklogId.trim().length() == 0) {
+            return;
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/" + fkBacklogId + ".properties";
+        File theFile = new File(filename);
+        if (theFile.exists()) {
+            theFile.delete();
+        }
+//        try (InputStream input = new FileInputStream(filename)) {
+//            Properties prop = new Properties();
+//            prop.load(input);
+//
+//            prop.remove(fkBacklogId);
+//
+//        } catch (IOException io) {
+//            io.printStackTrace();
+//        }
+
+    }
+
+    public static String getBacklogEntireInputList(String fkBacklogId) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        if (fkBacklogId.trim().length() == 0) {
+            return "";
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/" + fkBacklogId + ".properties";
+
+        String res = "";
+        try (InputStream input = new FileInputStream(filename)) {
+            Properties prop = new Properties();
+            prop.load(input);
+
+            res = prop.getProperty(fkBacklogId);
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        return res;
+    }
+
+    private static void setBacklogInputList(String fkBacklogId, String json) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        if (fkBacklogId.trim().length() == 0) {
+            return;
+        }
+
+        String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
+        filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
+        File theDir = new File(filedir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/" + fkBacklogId + ".properties";
+        File theFile = new File(filename);
+        if (!theFile.exists()) {
+            theFile.createNewFile();
+        }
+
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream(filename)) {
+            prop.load(input);
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        try (OutputStream output = new FileOutputStream(filename)) {
+            prop.setProperty(fkBacklogId, json);
+            prop.store(output, "");
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+    }
+
+    public static Carrier getInputList4SelectNew(Carrier carrier) throws QException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        Properties prop = new Properties();
+
+        EntityTmInput ent = new EntityTmInput();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.setFkBacklogId(carrier.get("fkBacklogId"));
+        EntityManager.select(ent);
+        Carrier crIn = EntityManager.select(ent);
+
+        String tn = ent.toTableName();
+        int rc = crIn.getTableRowCount(tn);
+        for (int i = 0; i < rc; i++) {
+            EntityManager.mapCarrierToEntity(crIn, tn, i, ent);
+
+            Gson gson = new Gson();
+            String json = gson.toJson(ent);
+            prop.setProperty(ent.getId(), json);
+        }
+
+        JSONObject jsonProps = new JSONObject(prop);
+        crIn.set("jsonOut", jsonProps.toString());
+
+        prop.clear();
+
+        return crIn;
+    }
+
+    public static Carrier getInputList4SelectNewSection(Carrier carrier) throws QException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        carrier.addController("startLimit", cp.hasValue(carrier, "startLimit"));
+        carrier.addController("endLimit", cp.hasValue(carrier, "endLimit"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        Properties prop = new Properties();
+
+        EntityTmInput ent = new EntityTmInput();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.setStartLimit(carrier.get("startLimit"));
+        ent.setEndLimit(carrier.get("endLimit"));
+        EntityManager.select(ent);
+        Carrier crIn = EntityManager.select(ent);
+
+        String tn = ent.toTableName();
+        int rc = crIn.getTableRowCount(tn);
+        for (int i = 0; i < rc; i++) {
+            EntityManager.mapCarrierToEntity(crIn, tn, i, ent);
+
+            Gson gson = new Gson();
+            String json = gson.toJson(ent);
+            prop.setProperty(ent.getId(), json);
+        }
+
+        JSONObject jsonProps = new JSONObject(prop);
+        crIn.set("jsonOut", jsonProps.toString());
+
+        prop.clear();
+
+        return crIn;
     }
 
     public static Carrier getInputList4Select(Carrier carrier) throws QException {
@@ -12675,6 +13305,10 @@ public class TmModel {
             ent.setFkProjectId(projectId);
             EntityManager.insert(ent);
 
+            Gson gson = new Gson();
+            String json = gson.toJson(ent);
+            setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
+
             setNewBacklogHistory4InputNew(ent);
 
             copyInputAttributesByInputId(oldId, ent.getId(), ent.getFkBacklogId(), ent.getFkProjectId());
@@ -13280,6 +13914,10 @@ public class TmModel {
             ent.setFkBacklogId(fkDestinationBacklogId);
             EntityManager.insert(ent);
 
+            Gson gson = new Gson();
+            String json = gson.toJson(ent);
+            setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
+
             copyInputAttributesByInputId(oldId, ent.getId(), ent.getFkBacklogId(), ent.getFkProjectId());
             copyInputRelatedEvenByInputId(oldId, ent.getId(), ent.getFkProjectId());
             copyInputClassesByInputId(oldId, ent.getId(), ent.getFkProjectId());
@@ -13336,6 +13974,11 @@ public class TmModel {
             EntityManager.select(ent);
             ent.setFkBacklogId(fkDestinationBacklogId);
             EntityManager.update(ent);
+
+            Gson gson = new Gson();
+            String json = gson.toJson(ent);
+            setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
+
         }
 
         EntityTmBacklog entBacklog = new EntityTmBacklog();
@@ -13371,6 +14014,10 @@ public class TmModel {
             EntityManager.select(ent);
             ent.setInputType("IN");
             EntityManager.update(ent);
+            Gson gson = new Gson();
+            String json = gson.toJson(ent);
+            setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
+
         }
 
         getBacklogList4Select(backlodId).copyTo(carrier);
@@ -13397,6 +14044,10 @@ public class TmModel {
             EntityManager.select(ent);
             ent.setInputType("OUT");
             EntityManager.update(ent);
+            Gson gson = new Gson();
+            String json = gson.toJson(ent);
+            setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
+
         }
 
         getBacklogList4Select(backlodId).copyTo(carrier);
@@ -15397,6 +16048,11 @@ public class TmModel {
                 String cntnt = entOut.getInputContent() + "\n" + carrier.get(k);
                 entOut.setInputContent(cntnt);
                 EntityManager.update(entOut);
+
+                Gson gson = new Gson();
+                String json = gson.toJson(entOut);
+                setProjectInputList(entOut.getFkProjectId(), entOut.getId(), json);
+
             }
         }
 
@@ -15432,6 +16088,10 @@ public class TmModel {
                 }
                 ent.setInputContent(st);
                 EntityManager.update(ent);
+
+                Gson gson = new Gson();
+                String json = gson.toJson(ent);
+                setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
 
             }
 

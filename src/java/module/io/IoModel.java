@@ -11,6 +11,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,24 +47,23 @@ import static utility.sqlgenerator.SQLConnection.convertResultSetToCarrier;
  *
  * @author user
  */
-   
 public class IoModel {
-    
-     public static void main(String[] arg) throws Exception {
-         Gson gson = new Gson();
-         
-         EntityTmInput ent = new EntityTmInput();
-          
-         ent.setInputName("order");
-         ent.setInputContent("Name");
-         
-         String objStr = gson.toJson(ent);
-         String objCore = "{\"b\":\""+objStr+"\"}";
-          
-         System.out.println(gson.toJson(objCore));
-      EntityTmInput ent1 =  gson.fromJson("b",EntityTmInput.class);
-         System.out.println("name"+ent1.getInputName());
-     }
+
+    public static void main(String[] arg) throws Exception {
+        Gson gson = new Gson();
+
+        EntityTmInput ent = new EntityTmInput();
+
+        ent.setInputName("order");
+        ent.setInputContent("Name");
+
+        String objStr = gson.toJson(ent);
+        String objCore = "{\"b\":\"" + objStr + "\"}";
+
+        System.out.println(gson.toJson(objCore));
+        EntityTmInput ent1 = gson.fromJson("b", EntityTmInput.class);
+        System.out.println("name" + ent1.getInputName());
+    }
 
     public static void main1(String[] arg) throws Exception {
         try {
@@ -80,7 +80,7 @@ public class IoModel {
                     for (int i = 0; i <= 5; i++) {
 
                         String val = rs.getString(i) == null ? "" : rs.getString(i).trim();
-                        System.out.println("res="+val);
+                        System.out.println("res=" + val);
                     }
 
                 }
@@ -105,13 +105,20 @@ public class IoModel {
 
         String fnName = carrier.get("fnName");
 
-        Carrier cr = new Carrier();
-        Class<?> c = Class.forName("resources.src." + SessionManager.getCurrentDomain() + "." + fnName);
-        Method method = c.getDeclaredMethod(fnName, Carrier.class);
-        carrier = (Carrier) method.invoke(c, carrier);
+        try {
+            Carrier cr = new Carrier();
+
+            Class<?> c = Class.forName("resources.src." + SessionManager.getCurrentDomain() + "." + fnName);
+            Method method = c.getDeclaredMethod(fnName, Carrier.class);
+            carrier = (Carrier) method.invoke(c, carrier);
+        } catch (InvocationTargetException e) {
+            System.out.println("runFunction-da error zad oldu");
+            System.out.println("runFunction-da error zad oldu message beledir:"+e.getMessage());
+            carrier.addController("general", e.getMessage());
+        }
 
         return carrier;
-    }
+    } 
 
     public static Carrier compileJava(Carrier carrier) throws Exception {
         ControllerPool cp = new ControllerPool();

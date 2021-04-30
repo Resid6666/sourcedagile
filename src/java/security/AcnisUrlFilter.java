@@ -96,6 +96,7 @@ public class AcnisUrlFilter implements Filter {
 //        ArrayUtils.contains(res, arg);
         if (url.trim().length() == 0 || url.trim().equals("/tsn/")
                 || url.trim().equals("/tsn1/")
+                || url.trim().equals("/tsn3/")
                 || url.trim().equals("/tsn2/") || url.trim().equals("/")) {
 //            System.out.println(url + "--> forward to index.html......");
 // System.out.println("ok 3 - 2"+"  "+url);
@@ -133,8 +134,7 @@ public class AcnisUrlFilter implements Filter {
             response.addHeader("Access-Control-Allow-Methods", "*");
             response.addHeader("Access-Control-Allow-Credentials", "true");
             response.addHeader("Access-Control-Allow-Headers", "Accept");
-          response.addHeader("Access-Control-Allow-Headers", "momo,MCTotal");
-//          response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+          response.addHeader("Access-Control-Allow-Headers", "momo,MCTotal"); 
 //            response.addHeader("Access-Control-Allow-Headers", "x-requested-with");
             
             System.out.println(url + "--> forward edildi......");

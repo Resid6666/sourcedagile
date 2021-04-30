@@ -22676,7 +22676,7 @@ User.prototype = {
                 $('#myAccountModal_txtUserEmail').val((res.tbl[0].r[0].email1));
             },
             error: function () {
-                document.location = "login.html";
+//                document.location = "login.html";
 //                Toaster.showError("Something went wrong. This might be caused by duplicate table.");
             }
         });
@@ -22712,7 +22712,7 @@ User.prototype = {
             error: function () {
                 //bu hisse de error atmalidir. lakin atmir
 
-                document.location = "login.html";
+//                document.location = "login.html";
 //                Toaster.showError("Something went wrong. This might be caused by duplicate table.");
             }
         });
