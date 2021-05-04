@@ -6,11 +6,13 @@
 package module.io;
 
 import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import controllerpool.ControllerPool;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -18,19 +20,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
+import javax.xml.bind.DatatypeConverter;
 import module.cr.entity.EntityCrUser;
 import module.tm.entity.EntityTmBacklog;
 import module.tm.entity.EntityTmDatabase;
 import module.tm.entity.EntityTmInput;
 import module.tm.entity.EntityTmJsCode;
 import module.tm.entity.EntityTmTable;
+import org.apache.commons.codec.binary.Base64;
 import resources.config.Config;
 import utility.Carrier;
 import utility.GeneralProperties;
@@ -50,19 +57,16 @@ import static utility.sqlgenerator.SQLConnection.convertResultSetToCarrier;
 public class IoModel {
 
     public static void main(String[] arg) throws Exception {
-        Gson gson = new Gson();
-
-        EntityTmInput ent = new EntityTmInput();
-
-        ent.setInputName("order");
-        ent.setInputContent("Name");
-
-        String objStr = gson.toJson(ent);
-        String objCore = "{\"b\":\"" + objStr + "\"}";
-
-        System.out.println(gson.toJson(objCore));
-        EntityTmInput ent1 = gson.fromJson("b", EntityTmInput.class);
-        System.out.println("name" + ent1.getInputName());
+    
+        
+        
+   String key = "0393e944ee8108bb66fc9fa4f99f9c862481e9e0519e18232ba61b0767eee8c6";
+    Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
+    sha256_HMAC.init(new SecretKeySpec(key.getBytes(), "HmacSHA256"));
+    byte[] result = sha256_HMAC.doFinal("example".getBytes());
+    String shaCoded = DatatypeConverter.printHexBinary(result);
+    
+    System.out.println(shaCoded);
     }
 
     public static void main1(String[] arg) throws Exception {
@@ -103,6 +107,7 @@ public class IoModel {
             return carrier;
         }
 
+        
         String fnName = carrier.get("fnName");
 
         try {

@@ -1377,9 +1377,13 @@ public class Carrier implements Serializable {
         if (jsonString.trim().length() == 0) {
             return;
         }
-        JsonObject object;
+        JsonObject object = new JsonObject();
         JsonParser parser = new JsonParser();
+        try{
         object = parser.parse(jsonString).getAsJsonObject();
+        }catch(Exception e){
+            System.out.println("ex"+e.getMessage());
+            }
 
         if (object.has("kv")) {
             JsonObject kvObject = object.get("kv").getAsJsonObject();

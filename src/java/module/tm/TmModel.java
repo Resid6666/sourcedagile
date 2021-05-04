@@ -7376,31 +7376,28 @@ public class TmModel {
         crIn = crIn.getKVPairListFromTable(CoreLabel.RESULT_SET, "fkBacklogId", "id");
 
         /////
-        EntityTmBacklogTaskList entList = new EntityTmBacklogTaskList();
-        entList.setFkProjectId(carrier.getValue("fkProjectId").toString());
-        entList.setFkBacklogId(carrier.getValue("fkBacklogId").toString());
-        Carrier crList = EntityManager.select(entList);
-        Carrier crKVList = crList.getKVPairListFromTable(entList.toTableName(), "fkBacklogId",
-                EntityTmBacklogTaskList.FK_TASK_TYPE_ID);
-        Carrier crAssigneeList = crList.getKVPairListFromTable(entList.toTableName(), "fkBacklogId",
-                EntityTmBacklogTaskList.FK_ASSIGNEE_ID);
-
-        EntityTmChangeReqLabel entChangeLabel = new EntityTmChangeReqLabel();
-        entChangeLabel.setFkProjectId(carrier.get("fkProjectId"));
-        entChangeLabel.setFkBacklogId(carrier.get("fkBacklogId"));
-        Carrier crChangeLabelFull = EntityManager.select(entChangeLabel);
-        Carrier crChangeLabel = crChangeLabelFull.getKVPairListFromTable(entChangeLabel.toTableName(), "fkBacklogId",
-                EntityTmChangeReqLabel.FK_LABEL_ID);
-        Carrier crNotifiedLabel = crChangeLabelFull.getKVPairListFromTable(entChangeLabel.toTableName(), "fkBacklogId",
-                EntityTmChangeReqLabel.ID);
-
-        EntityTmRelBacklogAndLabel entLabel = new EntityTmRelBacklogAndLabel();
-        entLabel.setFkProjectId(carrier.get("fkProjectId"));
-        entLabel.setFkBacklogId(carrier.get("fkBacklogId"));
-        Carrier crLabel = EntityManager.select(entLabel);
-        crLabel = crLabel.getKVPairListFromTable(entLabel.toTableName(), "fkBacklogId",
-                EntityTmRelBacklogAndLabel.FK_TASK_LABEL_ID);
-
+//        EntityTmBacklogTaskList entList = new EntityTmBacklogTaskList();
+//        entList.setFkProjectId(carrier.getValue("fkProjectId").toString());
+//        entList.setFkBacklogId(carrier.getValue("fkBacklogId").toString());
+//        Carrier crList = EntityManager.select(entList);
+//        Carrier crKVList = crList.getKVPairListFromTable(entList.toTableName(), "fkBacklogId",
+//                EntityTmBacklogTaskList.FK_TASK_TYPE_ID);
+//        Carrier crAssigneeList = crList.getKVPairListFromTable(entList.toTableName(), "fkBacklogId",
+//                EntityTmBacklogTaskList.FK_ASSIGNEE_ID);
+//        EntityTmChangeReqLabel entChangeLabel = new EntityTmChangeReqLabel();
+//        entChangeLabel.setFkProjectId(carrier.get("fkProjectId"));
+//        entChangeLabel.setFkBacklogId(carrier.get("fkBacklogId"));
+//        Carrier crChangeLabelFull = EntityManager.select(entChangeLabel);
+//        Carrier crChangeLabel = crChangeLabelFull.getKVPairListFromTable(entChangeLabel.toTableName(), "fkBacklogId",
+//                EntityTmChangeReqLabel.FK_LABEL_ID);
+//        Carrier crNotifiedLabel = crChangeLabelFull.getKVPairListFromTable(entChangeLabel.toTableName(), "fkBacklogId",
+//                EntityTmChangeReqLabel.ID);
+//        EntityTmRelBacklogAndLabel entLabel = new EntityTmRelBacklogAndLabel();
+//        entLabel.setFkProjectId(carrier.get("fkProjectId"));
+//        entLabel.setFkBacklogId(carrier.get("fkBacklogId"));
+//        Carrier crLabel = EntityManager.select(entLabel);
+//        crLabel = crLabel.getKVPairListFromTable(entLabel.toTableName(), "fkBacklogId",
+//                EntityTmRelBacklogAndLabel.FK_TASK_LABEL_ID);
         EntityTmBacklogDescription entDesc = new EntityTmBacklogDescription();
         entDesc.setFkProjectId(carrier.get("fkProjectId"));
         entDesc.setFkBacklogId(carrier.get("fkBacklogId"));
@@ -7410,12 +7407,81 @@ public class TmModel {
         Carrier crDescName = crDesc.getKVPairListFromTable(entDesc.toTableName(), "fkBacklogId",
                 EntityTmBacklogDescription.SHORT_DESC_FORR_API, "###");
 
-        EntityTmRelBacklogAndSprint entSprint = new EntityTmRelBacklogAndSprint();
-        entSprint.setFkProjectId(carrier.get("fkProjectId"));
-        entSprint.setFkBacklogId(carrier.get("fkBacklogId"));
-        Carrier crSprint = EntityManager.select(entSprint);
-        crSprint = crSprint.getKVPairListFromTable(entSprint.toTableName(), "fkBacklogId",
-                EntityTmRelBacklogAndSprint.FK_TASK_SPRINT_ID);
+//        EntityTmRelBacklogAndSprint entSprint = new EntityTmRelBacklogAndSprint();
+//        entSprint.setFkProjectId(carrier.get("fkProjectId"));
+//        entSprint.setFkBacklogId(carrier.get("fkBacklogId"));
+//        Carrier crSprint = EntityManager.select(entSprint);
+//        crSprint = crSprint.getKVPairListFromTable(entSprint.toTableName(), "fkBacklogId",
+//                EntityTmRelBacklogAndSprint.FK_TASK_SPRINT_ID);
+//        EntityTmBacklogList ent = new EntityTmBacklogList();
+        EntityTmBacklog ent = new EntityTmBacklog();
+        ent.setId(carrier.get("fkBacklogId"));
+        ent.addAndStatementField(EntityTmBacklogList.BACKLOG_NAME);
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.addSortBy("backlogNo");
+        ent.setSortByAsc(true);
+        carrier = EntityManager.select(ent);
+        carrier.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
+
+        String tn = CoreLabel.RESULT_SET;
+        int rc = carrier.getTableRowCount(tn);
+        for (int i = 0; i < rc; i++) {
+            EntityManager.mapCarrierToEntity(carrier, tn, i, ent);
+
+            carrier.setValue(tn, i, "inputIds", crIn.get(ent.getId()));
+//            carrier.setValue(tn, i, "taskTypeIds", crKVList.get(ent.getId()));
+//            carrier.setValue(tn, i, "assigneeIds", crAssigneeList.get(ent.getId()));
+//            carrier.setValue(tn, i, "assignedLabelIds", crChangeLabel.get(ent.getId()));
+//            carrier.setValue(tn, i, "notifiedLabelIds", crNotifiedLabel.get(ent.getId()));
+//            carrier.setValue(tn, i, "labelIds", crLabel.get(ent.getId()));
+//            carrier.setValue(tn, i, "sprintIds", crSprint.get(ent.getId()));
+            carrier.setValue(tn, i, "fileUrl", crFile.get(ent.getId()));
+            carrier.setValue(tn, i, "fileUrlIds", crFileId.get(ent.getId()));
+            carrier.setValue(tn, i, "descRelatedId", crDescNew.get(ent.getId()));
+            carrier.setValue(tn, i, "descRelatedNote", crDescName.get(ent.getId()));
+            carrier.setValue(tn, i, "lastModification", getBacklogLastModificationDateAndTime(ent.getId()));
+            crFileIsPinned.copyTo(carrier);
+
+        }
+
+        return carrier;
+    }
+
+    public static Carrier getBacklogList4Select4ZadNew(Carrier carrier) throws QException {
+        EntityTmTaskFile entFile = new EntityTmTaskFile();
+        entFile.setFkProjectId(carrier.getValue("fkProjectId").toString());
+        entFile.setFkBacklogId(carrier.getValue("fkBacklogId").toString());
+        entFile.setSortByAsc(true);
+        Carrier crFile = EntityManager.select(entFile);
+        Carrier crFileId = crFile.getKVPairListFromTable(entFile.toTableName(), "fkBacklogId",
+                EntityTmTaskFile.ID);
+        Carrier crFileIsPinned = crFile.getKVPairListFromTable(entFile.toTableName(), EntityTmTaskFile.ID,
+                EntityTmTaskFile.IS_PINNED);
+        crFile = crFile.getKVPairListFromTable(entFile.toTableName(), "fkBacklogId",
+                EntityTmTaskFile.FILE_URL);
+
+        ///
+//        EntityTmInput entIn = new EntityTmInput();
+//        entIn.setFkProjectId(carrier.getValue("fkProjectId").toString());
+//        entIn.setFkBacklogId(carrier.getValue("fkBacklogId").toString());
+//        entIn.addSortBy("orderNo");
+//        entIn.setSortByAsc(true);
+//        Carrier crIn = EntityManager.select(entIn);
+//        crIn = crIn.getKVPairListFromTable(entIn.toTableName(), "fkBacklogId",
+//                EntityTmBacklogTaskList.ID);
+        try {
+            EntityManager.executeUpdateByQuery("SET SESSION group_concat_max_len = 1000000;");
+        } catch (Exception ex) {
+            Logger.getLogger(TmModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        String ln4InputSql = " select fk_backlog_id,GROUP_CONCAT(id order by order_no asc) as id from " + SessionManager.getCurrentDomain() + ".tm_input\n";
+        ln4InputSql += " where status='A' ";
+        ln4InputSql += (carrier.get("fkProjectId").length() > 1) ? " and fk_project_id in (" + carrier.get("fkProjectId").replaceAll(CoreLabel.IN, ",") + ") " : "";
+        ln4InputSql += (carrier.get("fkBacklog").length() > 1) ? " and fk_backlog_id in (" + carrier.get("fkBacklog").replaceAll(CoreLabel.IN, ",") + ") " : "";
+        ln4InputSql += " group by FK_BACKLOG_ID";
+        Carrier crIn = EntityManager.selectBySql(ln4InputSql);
+        crIn = crIn.getKVPairListFromTable(CoreLabel.RESULT_SET, "fkBacklogId", "id");
 
         EntityTmBacklogList ent = new EntityTmBacklogList();
         ent.setId(carrier.get("fkBacklogId"));
@@ -7432,16 +7498,6 @@ public class TmModel {
             EntityManager.mapCarrierToEntity(carrier, tn, i, ent);
 
             carrier.setValue(tn, i, "inputIds", crIn.get(ent.getId()));
-            carrier.setValue(tn, i, "taskTypeIds", crKVList.get(ent.getId()));
-            carrier.setValue(tn, i, "assigneeIds", crAssigneeList.get(ent.getId()));
-            carrier.setValue(tn, i, "assignedLabelIds", crChangeLabel.get(ent.getId()));
-            carrier.setValue(tn, i, "notifiedLabelIds", crNotifiedLabel.get(ent.getId()));
-            carrier.setValue(tn, i, "labelIds", crLabel.get(ent.getId()));
-            carrier.setValue(tn, i, "sprintIds", crSprint.get(ent.getId()));
-            carrier.setValue(tn, i, "fileUrl", crFile.get(ent.getId()));
-            carrier.setValue(tn, i, "fileUrlIds", crFileId.get(ent.getId()));
-            carrier.setValue(tn, i, "descRelatedId", crDescNew.get(ent.getId()));
-            carrier.setValue(tn, i, "descRelatedNote", crDescName.get(ent.getId()));
             crFileIsPinned.copyTo(carrier);
 
         }
@@ -9953,6 +10009,7 @@ public class TmModel {
 
         String json = getBacklogEntireInputList(carrier.get("fkBacklogId"));
         if (json.trim().length() == 0) {
+            String lastModification = QDate.getCurrentDate() + QDate.getCurrentTime();
             EntityTmInput ent = new EntityTmInput();
             ent.setFkProjectId(carrier.get("fkProjectId"));
             ent.setFkBacklogId(carrier.get("fkBacklogId"));
@@ -9960,8 +10017,9 @@ public class TmModel {
             crIn = EntityManager.select(ent);
             crIn.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
             crIn.set("bazadan goturdu", "yes");
+            crIn.set("lastModification", lastModification);
 
-            setBacklogInputList(carrier.get("fkBacklogId"), crIn.getJson());
+            setBacklogInputList(carrier.get("fkBacklogId"), lastModification, crIn.getJson());
         } else {
             crIn.fromJson(json);
             crIn.set("file-dan goturdu", "yes");
@@ -9981,6 +10039,8 @@ public class TmModel {
         if (theFile.exists()) {
             theFile.delete();
         }
+
+        deleteBacklogLastModificationDateAndTime(fkBacklogId);
 //        try (InputStream input = new FileInputStream(filename)) {
 //            Properties prop = new Properties();
 //            prop.load(input);
@@ -10014,7 +10074,7 @@ public class TmModel {
         return res;
     }
 
-    private static void setBacklogInputList(String fkBacklogId, String json) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+    private static void setBacklogInputList(String fkBacklogId, String lastModification, String json) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
         if (fkBacklogId.trim().length() == 0) {
             return;
         }
@@ -10042,10 +10102,114 @@ public class TmModel {
         try (OutputStream output = new FileOutputStream(filename)) {
             prop.setProperty(fkBacklogId, json);
             prop.store(output, "");
+
+            setBacklogLastModificationDateAndTime(fkBacklogId, lastModification);
         } catch (IOException io) {
             io.printStackTrace();
         }
 
+    }
+
+    private static String getBacklogLastModificationDateAndTime(String backlogId) throws QException {
+        if (backlogId.trim().length() == 0) {
+            return "";
+        }
+
+        String lastModification = "";
+
+        String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
+        filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
+        File theDir = new File(filedir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/" + "backlog_last_modification.properties";
+        File theFile = new File(filename);
+        if (!theFile.exists()) {
+            try {
+                theFile.createNewFile();
+            } catch (IOException ex) {
+                Logger.getLogger(TmModel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream(filename)) {
+            prop.load(input);
+            lastModification = prop.getProperty(backlogId, "");
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        return lastModification;
+
+    }
+
+    private static void deleteBacklogLastModificationDateAndTime(String backlogId) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        if (backlogId.trim().length() == 0) {
+            return;
+        }
+
+        String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
+        filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
+        File theDir = new File(filedir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/" + "backlog_last_modification.properties";
+        File theFile = new File(filename);
+        if (!theFile.exists()) {
+            theFile.createNewFile();
+        }
+
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream(filename)) {
+            prop.load(input);
+            prop.remove(backlogId);
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        try (OutputStream output = new FileOutputStream(filename)) {
+            prop.store(output, "");
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+    }
+
+    private static void setBacklogLastModificationDateAndTime(String backlogId, String lastModification) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        if (backlogId.trim().length() == 0) {
+            return;
+        }
+
+        String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
+        filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
+        File theDir = new File(filedir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/" + "backlog_last_modification.properties";
+        File theFile = new File(filename);
+        if (!theFile.exists()) {
+            theFile.createNewFile();
+        }
+
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream(filename)) {
+            prop.load(input);
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        try (OutputStream output = new FileOutputStream(filename)) {
+            prop.setProperty(backlogId, lastModification);
+            prop.store(output, "");
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
     }
 
     public static Carrier getInputList4SelectNew(Carrier carrier) throws QException, FileNotFoundException, IOException {

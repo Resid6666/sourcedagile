@@ -446,9 +446,8 @@ public class PostServices {
 
             String entity = "{\"fullname\":\"" + fullname + "\",\"token\":\"" + token + "\"}";
 
-            System.out.println("filpagebody");
+//            System.out.println("filpagebody");
 //            CrModel.fillPageBody();
-
             conn.commit();
             conn.close();
 
@@ -596,6 +595,21 @@ public class PostServices {
     }
 
     @POST
+    @Path(value = "zdfna/{domain}/{function}")
+    @Compress
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public void runFunctionDirect(@Context HttpHeaders headers, @Suspended
+            final AsyncResponse asyncResponse,
+            @PathParam(value = "servicename") final String servicename,
+            @PathParam("domain") String domain,
+            @PathParam(value = "function") final String fname,
+            final String json) {
+        executorService.submit(() -> {
+            asyncResponse.resume(doCallFunctionDirect(headers, domain, fname, json));
+        });
+    }
+
+    @POST
     @Path(value = "zd/{domain}/{api}")
     @Compress
     @Produces(value = MediaType.APPLICATION_JSON)
@@ -724,6 +738,70 @@ public class PostServices {
 
             asyncResponse.resume(doCallDispatcher(headers, servicename, jsonNew));
         });
+    }
+
+    private Response doCallFunctionDirect(@Context HttpHeaders headers,
+            @PathParam("domain") String domain,
+            @PathParam("function") String fname,
+            String json) {
+
+        String jsonCore = "{\"kv\":{"
+                + "\"pureJson\":'" + json + "'"
+                + "}}";
+        if (fname.trim().length() == 0) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        Connection conn = null;
+        try {
+
+            String servicename = "serviceIoRunFunction";
+
+            Carrier c = new Carrier();
+            c.setServiceName(servicename);
+            c.set("fnName", fname);
+            c.fromJson(jsonCore);
+
+//            System.out.println("ok 2 - 1"+"  "+servicename);
+            QLogger.saveServiceLog(servicename);
+
+            conn = new DBConnection().getConnection();
+            conn.setAutoCommit(false);
+            SessionManager.setConnection(Thread.currentThread().getId(), conn);
+
+            SessionManager.setDomain(Thread.currentThread().getId(), "backlog");
+            EntityCrCompany entComp = new EntityCrCompany();
+            entComp.setCompanyDomain(domain);
+            entComp.setEndLimit(0);
+            EntityManager.select(entComp);
+
+            if (entComp.getCompanyDb().trim().length() == 0) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            SessionManager.setUserName(Thread.currentThread().getId(), "-1");
+            SessionManager.setLang(Thread.currentThread().getId(), "ENG");
+            SessionManager.setDomain(Thread.currentThread().getId(), entComp.getCompanyDb());
+            SessionManager.setUserId(Thread.currentThread().getId(), "-1");
+            SessionManager.setCompanyId(Thread.currentThread().getId(), "-1");
+
+            Response res = CallDispatcher.callServiceWithPureJson(c);
+           
+            conn.commit();
+            //conn.close();
+
+            return res;
+        } catch (JoseException ex) {
+            DBConnection.rollbackConnection(conn);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (Exception ex) {
+            DBConnection.rollbackConnection(conn);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } finally {
+            DBConnection.closeConnection(conn);
+            SessionManager.cleanSessionThread();
+        }
+
     }
 
     private Response doCallFunction(@Context HttpHeaders headers,

@@ -49,6 +49,20 @@ public class CallDispatcher {
         
         return entity;
     }
+    
+    public static Response callServiceWithPureJson(Carrier carrier) throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, Exception {
+ 
+        String entity = "";
+        String serviceName = carrier.getServiceName();
+
+        String module = getModuleName(serviceName);
+        createKeyValuePairInCarrier(carrier);
+        carrier = executeDispatcher(module, carrier);
+        entity = carrier.get("pureJson");
+        
+        return Response.status(Response.Status.OK).entity(entity).build();
+    }
 
     public static Response callService(Carrier carrier) throws ClassNotFoundException, InstantiationException,
             IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, Exception {
