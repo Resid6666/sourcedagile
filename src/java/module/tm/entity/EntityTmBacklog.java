@@ -31,6 +31,9 @@ public class EntityTmBacklog extends CoreEntity {
     private String priority = "";
     public static String IS_SOURCED = "isSourced";
     private String isSourced = "";
+    public static String IS_BOUNED = "isBounded";
+    private String isBounded = "";
+    
     public static String DESCRIPTION_SOURCED = "descriptionSourced";
     private String descriptionSourced = "";
     public static String FK_SOURCED_ID = "fkSourcedId";
@@ -82,6 +85,16 @@ public class EntityTmBacklog extends CoreEntity {
     public static String API_SYNC_REQUEST = "apiSyncRequest";
     private String apiSyncRequest = "";
 
+    public String getIsBounded() {
+        return isBounded;
+    }
+
+    public void setIsBounded(String isBounded) {
+        this.isBounded = isBounded;
+    }
+
+    
+    
     public String getApiSyncRequest() {
         return apiSyncRequest;
     }

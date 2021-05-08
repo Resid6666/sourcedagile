@@ -207,9 +207,83 @@ public class TmModel {
         return carrier;
     }
 
+    public Carrier getBacklogProductionDetailedInfo(Carrier carrier) throws QException, IOException {
+        ControllerPool cp = new ControllerPool();
+            carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+//        EntityTmBacklog ent= new EntityTmBacklog();
+//        ent.setId(carrier.get("fkBacklogId"));
+//        EntityManager.select(ent);
+        Carrier crOut = getInputList4SelectNew4SAInput(carrier);
+
+        EntityTmInput entIn = new EntityTmInput();
+        entIn.setFkBacklogId(carrier.get("fkBacklogId"));
+        Carrier crIn = EntityManager.select(entIn);
+        String fkInputIds = crIn.getValueLine(entIn.toTableName(), "id");
+
+        Carrier crClasses = getInputClassRelByInputIds(fkInputIds);
+        crClasses.renameTableName(CoreLabel.RESULT_SET, "inputClassesTable");
+        crClasses.copyTo(crOut);
+
+        Carrier crActionRel = getInputActionRelListByInputs(fkInputIds);
+        crActionRel.renameTableName(CoreLabel.RESULT_SET, "inputActionRelTable");
+        crActionRel.copyTo(crOut);
+
+        Carrier crAttr = getInputAttributeListByInput(fkInputIds);
+        crAttr.renameTableName(CoreLabel.RESULT_SET, "inputAttrTable");
+        crAttr.copyTo(crOut);
+
+        Carrier crBacklogDesc = getProjectDescriptionByBacklog(carrier.get("fkBacklogId"));
+        crBacklogDesc.renameTableName(CoreLabel.RESULT_SET, "backlogDescList");
+        crBacklogDesc.copyTo(crOut);
+
+        Carrier crJSList = getJsCodeListByIds(
+                crBacklogDesc.getValueLine("backlogDescList", EntityTmBacklogDescription.FK_RELATED_SC_ID));
+        crJSList.renameTableName(CoreLabel.RESULT_SET, "jsList");
+        crJSList.copyTo(crOut);
+
+        Carrier crInDesc = getInputList4Select4DescriptionIdsNewByInputId(fkInputIds);
+        crInDesc.renameTableName(CoreLabel.RESULT_SET, "inputDescList");
+        crInDesc.copyTo(crOut);
+
+        Carrier crCss = getGuiClassList(crClasses.getValueLine(CoreLabel.RESULT_SET, "fkClassId"));
+        crCss.renameTableName(CoreLabel.RESULT_SET, "cssList");
+        crCss.copyTo(crOut);
+
+        getBacklogList4Select(carrier.get("fkBacklogId")).copyTo(crOut);
+//        getBacklogDescriptionList4Select(carrier.get("fkBacklogId")).copyTo(crIn);
+        getTableListOfInputByBacklog(carrier.get("fkBacklogId"), "").copyTo(crOut);
+        getTabListOfInputByBacklog(carrier.get("fkBacklogId"), "").copyTo(crOut);
+
+        String dbId = crIn.getValueLine(entIn.toTableName(), EntityTmInput.SEND_TO_DB_ID);
+        dbId += CoreLabel.IN + crIn.getValueLine(entIn.toTableName(), EntityTmInput.SELECT_FROM_DB_ID);
+        if (dbId.length() > 8) {
+            getDBStructureList4Select(dbId).copyTo(crOut);
+            getFieldRelStructureList4Select(dbId).copyTo(crOut);
+        }
+
+        String tableId = crIn.getValueLine(entIn.toTableName(), EntityTmInput.SEND_TO_TABLE_ID);
+        tableId += CoreLabel.IN + crIn.getValueLine(entIn.toTableName(), EntityTmInput.SELECT_FROM_TABLE_ID);
+        if (tableId.length() > 8) {
+            getTableStructureList4Select(tableId).copyTo(crOut);
+        }
+
+        String fieldId = crIn.getValueLine(entIn.toTableName(), EntityTmInput.SEND_TO_FIELD_ID);
+        fieldId += CoreLabel.IN + crIn.getValueLine(entIn.toTableName(), EntityTmInput.SELECT_FROM_FIELD_ID);
+        if (tableId.length() > 8) {
+            getFieldStructureList4Select(fieldId).copyTo(crOut);
+        }
+
+        return crOut;
+    }
+
     public Carrier getTaskInfo(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkTaskId", cp.hasValue(carrier, "fkTaskId"));
+
         if (carrier.hasError()) {
             return carrier;
         }
@@ -965,6 +1039,21 @@ public class TmModel {
         return carrier;
     }
 
+    public static Carrier getProjectDescriptionByBacklog(String fkBacklogId) throws QException {
+        if (fkBacklogId.trim().length() < 5) {
+            return new Carrier();
+        }
+
+        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
+        ent.addSortBy("orderNo");
+        ent.setSortByAsc(true);
+        ent.setFkBacklogId(fkBacklogId);
+        Carrier carrier = EntityManager.select(ent);
+        carrier.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
+
+        return carrier;
+    }
+
     public static Carrier getProjectDescriptionByProject(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
@@ -1034,6 +1123,19 @@ public class TmModel {
         return carrier;
     }
 
+    public static Carrier getInputActionRelListByInputs(String fkInputId) throws QException {
+        if (fkInputId.trim().length() < 5) {
+            return new Carrier();
+        }
+
+        EntityTmInputActionRel ent = new EntityTmInputActionRel();
+        ent.setFkInputId(fkInputId);
+        Carrier carrier = EntityManager.select(ent);
+        carrier.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
+
+        return carrier;
+    }
+
     public static Carrier deleteInputActionRel(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("id", cp.isKeyExist(carrier, "id"));
@@ -1074,6 +1176,19 @@ public class TmModel {
         return carrier;
     }
 
+    public static Carrier getInputClassRelByInputIds(String fkInputIds) throws QException {
+        if (fkInputIds.trim().length() < 5) {
+            return new Carrier();
+        }
+
+        EntityTmInputClassRelation ent = new EntityTmInputClassRelation();
+        ent.setFkInputId(fkInputIds);
+        Carrier carrier = EntityManager.select(ent);
+        carrier.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
+
+        return carrier;
+    }
+
     public static Carrier getInputClassRelByProject(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
@@ -1109,6 +1224,21 @@ public class TmModel {
         EntityManager.insert(ent);
 
         carrier.set("id", ent.getId());
+        return carrier;
+    }
+
+    public static Carrier getJsCodeListByIds(String fkJsCodeId) throws QException {
+        if (fkJsCodeId.length() == 0) {
+            return new Carrier();
+        }
+
+        EntityTmJsCode ent = new EntityTmJsCode();
+        ent.setId(fkJsCodeId);
+        ent.addSortBy(EntityTmJsCode.FN_DESCRIPTION);
+        ent.setSortByAsc(true);
+        Carrier carrier = EntityManager.select(ent);
+        carrier.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
+
         return carrier;
     }
 
@@ -1297,6 +1427,18 @@ public class TmModel {
         return cr;
     }
 
+    public static Carrier getGuiClassList(String fkCssId) throws QException {
+        if (fkCssId.length() == 0) {
+            return new Carrier();
+        }
+
+        EntityTmGuiClass ent = new EntityTmGuiClass();
+        ent.setId(fkCssId);
+        Carrier cr = EntityManager.select(ent);
+        cr.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
+        return cr;
+    }
+
     public static Carrier getGuiClassList(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
@@ -1429,6 +1571,19 @@ public class TmModel {
         ent.setAttrType("comp");
         ent.setAttrName("sa-selectedfield");
         Carrier cr = EntityManager.select(ent);
+
+        return cr;
+    }
+
+    public static Carrier getInputAttributeListByInput(String fkInputId) throws QException {
+        if (fkInputId.trim().length() < 5) {
+            return new Carrier();
+        }
+
+        EntityTmInputAttributes ent = new EntityTmInputAttributes();
+        ent.setFkInputId(fkInputId);
+        Carrier cr = EntityManager.select(ent);
+        cr.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
 
         return cr;
     }
@@ -4326,6 +4481,65 @@ public class TmModel {
         getFieldRelStructureList4Select(carrier).copyTo(cout);
 
         return cout;
+    }
+
+    public static Carrier getFieldRelStructureList4Select(String dbId) throws QException {
+        if (dbId.length() == 0) {
+            return new Carrier();
+        }
+
+        EntityTmFieldRelation entF = new EntityTmFieldRelation();
+        entF.setFkDbId(dbId);
+        Carrier carrier = EntityManager.select(entF);
+        carrier.renameTableName(entF.toTableName(), "fieldRelList");
+
+        return carrier;
+    }
+
+    public static Carrier getFieldStructureList4Select(String id) throws QException {
+        if (id.length() == 0) {
+            return new Carrier();
+        }
+
+        EntityTmField entF = new EntityTmField();
+        entF.setId(id);
+        entF.addSortBy(EntityTmField.FIELD_NAME);
+        entF.setSortByAsc(true);
+        Carrier carrier = EntityManager.select(entF);
+        carrier.renameTableName(entF.toTableName(), "fieldList");
+
+        return carrier;
+    }
+
+    public static Carrier getTableStructureList4Select(String id) throws QException {
+        if (id.length() == 0) {
+            return new Carrier();
+        }
+
+        EntityTmTable entTbl = new EntityTmTable();
+        entTbl.setId(id);
+        entTbl.addSortBy(EntityTmTable.TABLE_NAME);
+        entTbl.setSortByAsc(true);
+        Carrier carrier = EntityManager.select(entTbl);
+        carrier.renameTableName(entTbl.toTableName(), "tableList");
+
+        return carrier;
+    }
+
+    public static Carrier getDBStructureList4Select(String fkDbId) throws QException {
+        if (fkDbId.length() == 0) {
+            return new Carrier();
+        }
+
+        EntityTmDatabase ent = new EntityTmDatabase();
+        ent.setId(fkDbId);
+        ent.addSortBy(EntityTmDatabase.DB_NAME);
+        ent.setSortByAsc(true);
+        Carrier carrier = EntityManager.select(ent);
+        carrier.renameTableName(ent.toTableName(), "dbList");
+
+        return carrier;
+
     }
 
     public static Carrier getDBStructureList4Select(Carrier carrier) throws QException {
@@ -7368,12 +7582,23 @@ public class TmModel {
         }
 
         String ln4InputSql = " select fk_backlog_id,GROUP_CONCAT(id order by order_no asc) as id from " + SessionManager.getCurrentDomain() + ".tm_input\n";
-        ln4InputSql += " where status='A' ";
+        ln4InputSql += " where   status='A' ";
         ln4InputSql += (carrier.get("fkProjectId").length() > 1) ? " and fk_project_id in (" + carrier.get("fkProjectId").replaceAll(CoreLabel.IN, ",") + ") " : "";
         ln4InputSql += (carrier.get("fkBacklog").length() > 1) ? " and fk_backlog_id in (" + carrier.get("fkBacklog").replaceAll(CoreLabel.IN, ",") + ") " : "";
         ln4InputSql += " group by FK_BACKLOG_ID";
         Carrier crIn = EntityManager.selectBySql(ln4InputSql);
         crIn = crIn.getKVPairListFromTable(CoreLabel.RESULT_SET, "fkBacklogId", "id");
+
+        Carrier crInZZ = new Carrier();
+        if (carrier.get("fkBacklog").length() == 0) {
+            String ln4InputSqlZZ = " select fk_backlog_id,GROUP_CONCAT(id order by order_no asc) as id from " + SessionManager.getCurrentDomain() + ".tm_input\n";
+            ln4InputSqlZZ += " where   status='A' ";
+            ln4InputSqlZZ += " and fk_backlog_id in (select id from  " + SessionManager.getCurrentDomain() + ".tm_backlog a where a.is_bounded='1' )";
+            ln4InputSqlZZ += " group by FK_BACKLOG_ID";
+            crInZZ = EntityManager.selectBySql(ln4InputSqlZZ);
+            crInZZ = crInZZ.getKVPairListFromTable(CoreLabel.RESULT_SET, "fkBacklogId", "id");
+            crInZZ.copyTo(crIn);
+        }
 
         /////
 //        EntityTmBacklogTaskList entList = new EntityTmBacklogTaskList();
@@ -7398,15 +7623,13 @@ public class TmModel {
 //        Carrier crLabel = EntityManager.select(entLabel);
 //        crLabel = crLabel.getKVPairListFromTable(entLabel.toTableName(), "fkBacklogId",
 //                EntityTmRelBacklogAndLabel.FK_TASK_LABEL_ID);
-        EntityTmBacklogDescription entDesc = new EntityTmBacklogDescription();
-        entDesc.setFkProjectId(carrier.get("fkProjectId"));
-        entDesc.setFkBacklogId(carrier.get("fkBacklogId"));
-        Carrier crDesc = EntityManager.select(entDesc);
-        Carrier crDescNew = crDesc.getKVPairListFromTable(entDesc.toTableName(), "fkBacklogId",
-                EntityTmBacklogDescription.FK_RELATED_API_ID);
-        Carrier crDescName = crDesc.getKVPairListFromTable(entDesc.toTableName(), "fkBacklogId",
-                EntityTmBacklogDescription.SHORT_DESC_FORR_API, "###");
-
+//        EntityTmBacklogDescription entDesc = new EntityTmBacklogDescription();
+//        entDesc.setFkProjectId(carrier.get("fkProjectId"));
+//        entDesc.setFkBacklogId(carrier.get("fkBacklogId"));
+//        Carrier crDesc = EntityManager.select(entDesc);
+//        Carrier crDescNew = crDesc.getKVPairListFromTable(entDesc.toTableName(), "fkBacklogId",
+//                EntityTmBacklogDescription.ID);
+//        crDesc.renameTableName(entDesc.toTableName(),"backlogDescList");
 //        EntityTmRelBacklogAndSprint entSprint = new EntityTmRelBacklogAndSprint();
 //        entSprint.setFkProjectId(carrier.get("fkProjectId"));
 //        entSprint.setFkBacklogId(carrier.get("fkBacklogId"));
@@ -7423,12 +7646,23 @@ public class TmModel {
         carrier = EntityManager.select(ent);
         carrier.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
 
+        EntityTmBacklog ent4Shared = new EntityTmBacklog();
+        ent4Shared.setIsBounded("1");
+        ent4Shared.addAndStatementField(EntityTmBacklogList.BACKLOG_NAME);
+        ent4Shared.addSortBy("backlogNo");
+        ent4Shared.setSortByAsc(true);
+        Carrier cr4Shared = EntityManager.select(ent4Shared);
+        cr4Shared.renameTableName(ent4Shared.toTableName(), CoreLabel.RESULT_SET);
+        cr4Shared.copyTo((carrier));
+
+//        crDesc.copyTo(carrier);
         String tn = CoreLabel.RESULT_SET;
         int rc = carrier.getTableRowCount(tn);
         for (int i = 0; i < rc; i++) {
             EntityManager.mapCarrierToEntity(carrier, tn, i, ent);
 
             carrier.setValue(tn, i, "inputIds", crIn.get(ent.getId()));
+
 //            carrier.setValue(tn, i, "taskTypeIds", crKVList.get(ent.getId()));
 //            carrier.setValue(tn, i, "assigneeIds", crAssigneeList.get(ent.getId()));
 //            carrier.setValue(tn, i, "assignedLabelIds", crChangeLabel.get(ent.getId()));
@@ -7437,8 +7671,8 @@ public class TmModel {
 //            carrier.setValue(tn, i, "sprintIds", crSprint.get(ent.getId()));
             carrier.setValue(tn, i, "fileUrl", crFile.get(ent.getId()));
             carrier.setValue(tn, i, "fileUrlIds", crFileId.get(ent.getId()));
-            carrier.setValue(tn, i, "descRelatedId", crDescNew.get(ent.getId()));
-            carrier.setValue(tn, i, "descRelatedNote", crDescName.get(ent.getId()));
+//            carrier.setValue(tn, i, "descRelatedId", crDescNew.get(ent.getId()));
+//            carrier.setValue(tn, i, "descRelatedNote", crDescName.get(ent.getId()));
             carrier.setValue(tn, i, "lastModification", getBacklogLastModificationDateAndTime(ent.getId()));
             crFileIsPinned.copyTo(carrier);
 
@@ -9867,6 +10101,21 @@ public class TmModel {
         return crIn;
     }
 
+    public static Carrier getInputList4Select4DescriptionIdsNewByInputId(String fkInputId) throws QException {
+        if (fkInputId.trim().length() < 5) {
+            return new Carrier();
+        }
+
+        EntityTmInputDescription entInDesc = new EntityTmInputDescription();
+        entInDesc.setFkInputId(fkInputId);
+        entInDesc.addSortBy("id");
+        entInDesc.setSortByAsc(true);
+        Carrier crInDesc = EntityManager.select(entInDesc);
+        crInDesc.renameTableName(entInDesc.toTableName(), CoreLabel.RESULT_SET);
+
+        return crInDesc;
+    }
+
     public static Carrier getInputList4Select4DescriptionIdsNew(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
@@ -10023,10 +10272,25 @@ public class TmModel {
         } else {
             crIn.fromJson(json);
             crIn.set("file-dan goturdu", "yes");
-
         }
 
+//       
         return crIn;
+    }
+
+    public static Carrier getBacklogDescriptionList4Select(String backlogId) throws QException {
+        if (backlogId.length() < 3) {
+            return new Carrier();
+        }
+
+        EntityTmBacklogDescription entDesc = new EntityTmBacklogDescription();
+        entDesc.setFkBacklogId(backlogId);
+        Carrier crDesc = EntityManager.select(entDesc);
+        Carrier crDescNew = crDesc.getKVPairListFromTable(entDesc.toTableName(), "fkBacklogId",
+                EntityTmBacklogDescription.ID);
+        crDesc.renameTableName(entDesc.toTableName(), "backlogDescList");
+
+        return crDesc;
     }
 
     public static void deleteBacklogEntireInputList(String fkBacklogId) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
@@ -10396,9 +10660,9 @@ public class TmModel {
     }
 
     private static Carrier getTabListOfInputByBacklog(String fkBacklogId, String fkProjectId) throws QException {
-        if (fkProjectId.length() == 0 || fkBacklogId.length() == 0) {
-            return new Carrier();
-        }
+//        if (fkProjectId.length() == 0 || fkBacklogId.length() == 0) {
+//            return new Carrier();
+//        }
 
         EntityTmInputTabComp ent = new EntityTmInputTabComp();
         ent.setFkBacklogId(fkBacklogId);
@@ -10427,9 +10691,9 @@ public class TmModel {
     }
 
     private static Carrier getTableListOfInputByBacklog(String fkBacklogId, String fkProjectId) throws QException {
-        if (fkProjectId.length() == 0 || fkBacklogId.length() == 0) {
-            return new Carrier();
-        }
+//        if (fkProjectId.length() == 0 || fkBacklogId.length() == 0) {
+//            return new Carrier();
+//        }
 
         EntityTmInputTableComp ent = new EntityTmInputTableComp();
         ent.setFkBacklogId(fkBacklogId);

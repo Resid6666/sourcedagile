@@ -18,7 +18,6 @@ import org.ehcache.Status;
  *
  * @author 02483577
  */
- 
 public class CallDispatcher {
 
     static String SERVICE = "Service";
@@ -46,13 +45,13 @@ public class CallDispatcher {
         createKeyValuePairInCarrier(carrier);
         carrier = executeDispatcher(module, carrier);
         entity = carrier.getJson();
-        
+
         return entity;
     }
-    
+
     public static Response callServiceWithPureJson(Carrier carrier) throws ClassNotFoundException, InstantiationException,
             IllegalAccessException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException, Exception {
- 
+
         String entity = "";
         String serviceName = carrier.getServiceName();
 
@@ -60,8 +59,16 @@ public class CallDispatcher {
         createKeyValuePairInCarrier(carrier);
         carrier = executeDispatcher(module, carrier);
         entity = carrier.get("pureJson");
+
+        if (carrier.get("err").equals("400")) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("").build();
+        } else if (carrier.get("err").equals("401")) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("").build();
+        } else {
+            return Response.status(Response.Status.OK).entity(entity).build();
+        }
         
-        return Response.status(Response.Status.OK).entity(entity).build();
+//        return Response.status(Response.Status.OK).entity(entity).build();
     }
 
     public static Response callService(Carrier carrier) throws ClassNotFoundException, InstantiationException,

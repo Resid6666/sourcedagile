@@ -762,7 +762,7 @@ public class PostServices {
             c.set("fnName", fname);
             c.fromJson(jsonCore);
 
-//            System.out.println("ok 2 - 1"+"  "+servicename);
+            System.out.println("servicename:"+servicename+", json=  "+jsonCore);
             QLogger.saveServiceLog(servicename);
 
             conn = new DBConnection().getConnection();
