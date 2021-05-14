@@ -207,16 +207,271 @@ public class TmModel {
         return carrier;
     }
 
-    public Carrier getBacklogProductionDetailedInfo(Carrier carrier) throws QException, IOException {
+    public static Carrier getBacklogLastModificationDateAndTime(Carrier carrier) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
         ControllerPool cp = new ControllerPool();
-            carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
         if (carrier.hasError()) {
             return carrier;
         }
 
-//        EntityTmBacklog ent= new EntityTmBacklog();
-//        ent.setId(carrier.get("fkBacklogId"));
-//        EntityManager.select(ent);
+        Carrier crOut = getBacklogLastModificationDateAndTimeByProject(carrier);
+        getBacklogLastModificationDateAndTimeByShare(carrier).copyTo(crOut);
+        return crOut;
+    }
+
+    public static Carrier getBacklogLastModificationDateAndTimeByShare(Carrier carrier) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
+        filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
+        File theDir = new File(filedir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/pr_shared_backlog.properties";
+        File theFile = new File(filename);
+        if (!theFile.exists()) {
+            theFile.createNewFile();
+        }
+
+        String out = "";
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream(filename)) {
+            prop.load(input);
+
+            JSONObject jsonProps = new JSONObject(prop);
+            out = jsonProps.toString();
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+        carrier.set("outShared", out);
+        return carrier;
+    }
+
+    public static Carrier getBacklogLastModificationDateAndTimeByProject(Carrier carrier) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
+        filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
+        File theDir = new File(filedir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/pr_" + carrier.get("fkProjectId") + ".properties";
+        File theFile = new File(filename);
+        if (!theFile.exists()) {
+            theFile.createNewFile();
+        }
+
+        String out = "";
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream(filename)) {
+            prop.load(input);
+
+            JSONObject jsonProps = new JSONObject(prop);
+            out = jsonProps.toString();
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+        carrier.set("out", out);
+        return carrier;
+    }
+
+    public static void updateBacklogLastModificationDateAndTime(String fkBacklogId) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        Carrier cr = new Carrier();
+
+        cr.set("fkBacklogId", fkBacklogId);
+        updateBacklogLastModificationDateAndTime(cr);
+    }
+
+    public static Carrier updateBacklogLastModificationDateAndTime(Carrier carrier) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmBacklog ent = new EntityTmBacklog();
+        ent.setId(carrier.get("fkBacklogId"));
+        ent.setStartLimit(0);
+        ent.setEndLimit(0);
+        EntityManager.select(ent);
+
+        String lastModification = QDate.getCurrentDate() + QDate.getCurrentTime();
+
+        String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
+        filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
+        File theDir = new File(filedir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/pr_" + ent.getFkProjectId() + ".properties";
+        File theFile = new File(filename);
+        if (!theFile.exists()) {
+            theFile.createNewFile();
+        }
+
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream(filename)) {
+            prop.load(input);
+            prop.setProperty(ent.getId(), lastModification);
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+        boolean ff = hasInSharedProjectModificationDateAndTimeList(ent.getId());
+
+        try (OutputStream output = new FileOutputStream(filename)) {
+            prop.store(output, "");
+            if (ent.getIsBounded().equals("1") || ff) {
+                updateSharedBacklogLastModificationDateAndTime(ent.getId(), lastModification);
+            }
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+        return carrier;
+    }
+
+    public static boolean hasInSharedProjectModificationDateAndTimeList(String fkBacklogId) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+
+        if (fkBacklogId.length() == 0) {
+            return false;
+        }
+
+        boolean f = false;
+
+        String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
+        filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
+        File theDir = new File(filedir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/pr_shared_backlog.properties";
+        File theFile = new File(filename);
+        if (!theFile.exists()) {
+            theFile.createNewFile();
+        }
+
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream(filename)) {
+            prop.load(input);
+            String resB = prop.getOrDefault(fkBacklogId, "-2").toString();
+            if (!resB.equals("-2")) {
+                f = true;
+            } else {
+                f = false;
+            }
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        return f;
+    }
+
+    public static void updateSharedBacklogLastModificationDateAndTime(String fkBacklogId, String lastModification) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+
+        if (fkBacklogId.length() == 0) {
+            return;
+        }
+
+        String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
+        filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
+        File theDir = new File(filedir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/pr_shared_backlog.properties";
+        File theFile = new File(filename);
+        if (!theFile.exists()) {
+            theFile.createNewFile();
+        }
+
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream(filename)) {
+            prop.load(input);
+            prop.setProperty(fkBacklogId, lastModification);
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        try (OutputStream output = new FileOutputStream(filename)) {
+            prop.store(output, "");
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+    }
+
+    public static String getBacklogLastModificationDateAndTime(String fkProjectId, String fkBacklogId, String isShared, String sourceProjectId) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        String lastModification = "";
+
+        String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
+        filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
+        File theDir = new File(filedir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/pr_" + fkProjectId + ".properties";
+        File theFile = new File(filename);
+        if (!theFile.exists()) {
+            theFile.createNewFile();
+        }
+
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream(filename)) {
+            prop.load(input);
+            lastModification = prop.getProperty(fkBacklogId, "");
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        if (lastModification.equals("")) {
+            lastModification = QDate.getCurrentDate() + QDate.getCurrentTime();
+            try (OutputStream output = new FileOutputStream(filename)) {
+                prop.setProperty(fkBacklogId, lastModification);
+                prop.store(output, "");
+
+            } catch (IOException io) {
+                io.printStackTrace();
+            }
+        }
+
+        if (isShared.equals("1") || (!sourceProjectId.equals(fkProjectId))) {
+            updateSharedBacklogLastModificationDateAndTime(fkBacklogId, lastModification);
+        }
+
+        return lastModification;
+    }
+
+    public Carrier getBacklogProductionDetailedInfo(Carrier carrier) throws QException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String sourceProjectId = carrier.get("fkProjectId");
+        carrier.set("fkProjectId", "");
+
+        EntityTmBacklog ent = new EntityTmBacklog();
+        ent.setId(carrier.get("fkBacklogId"));
+        EntityManager.select(ent);
+
         Carrier crOut = getInputList4SelectNew4SAInput(carrier);
 
         EntityTmInput entIn = new EntityTmInput();
@@ -249,7 +504,7 @@ public class TmModel {
         crInDesc.renameTableName(CoreLabel.RESULT_SET, "inputDescList");
         crInDesc.copyTo(crOut);
 
-        Carrier crCss = getGuiClassList(crClasses.getValueLine(CoreLabel.RESULT_SET, "fkClassId"));
+        Carrier crCss = getGuiClassList(crClasses.getValueLine("inputClassesTable", "fkClassId"));
         crCss.renameTableName(CoreLabel.RESULT_SET, "cssList");
         crCss.copyTo(crOut);
 
@@ -276,6 +531,9 @@ public class TmModel {
         if (tableId.length() > 8) {
             getFieldStructureList4Select(fieldId).copyTo(crOut);
         }
+
+        String lastModification = getBacklogLastModificationDateAndTime(ent.getFkProjectId(), ent.getId(), ent.getIsBounded(), sourceProjectId);
+        crOut.set("modificationTime", lastModification);
 
         return crOut;
     }
@@ -2046,7 +2304,8 @@ public class TmModel {
         EntityManager.select(ent);
 
         try {
-            deleteBacklogEntireInputList(ent.getFkBacklogId());
+            //deleteBacklogEntireInputList(ent.getFkBacklogId());
+            updateBacklogLastModificationDateAndTime(ent.getFkBacklogId());
         } catch (FileNotFoundException ex) {
             Logger.getLogger(TmModel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -10256,6 +10515,31 @@ public class TmModel {
 
         Carrier crIn = new Carrier();
 
+        String lastModification = QDate.getCurrentDate() + QDate.getCurrentTime();
+        EntityTmInput ent = new EntityTmInput();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.setFkBacklogId(carrier.get("fkBacklogId"));
+        EntityManager.select(ent);
+        crIn = EntityManager.select(ent);
+        crIn.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
+        crIn.set("bazadan goturdu", "yes");
+        crIn.set("lastModification", lastModification);
+
+//        setBacklogInputList(carrier.get("fkBacklogId"), lastModification, crIn.getJson());
+//       
+        return crIn;
+    }
+
+    public static Carrier getInputList4SelectNew4SAInput_old(Carrier carrier) throws QException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+//        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+        carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        Carrier crIn = new Carrier();
+
         String json = getBacklogEntireInputList(carrier.get("fkBacklogId"));
         if (json.trim().length() == 0) {
             String lastModification = QDate.getCurrentDate() + QDate.getCurrentTime();
@@ -10415,6 +10699,8 @@ public class TmModel {
             return;
         }
 
+        String lastModification = QDate.getCurrentDate() + QDate.getCurrentTime();
+
         String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
         filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
         File theDir = new File(filedir);
@@ -10431,7 +10717,7 @@ public class TmModel {
         Properties prop = new Properties();
         try (InputStream input = new FileInputStream(filename)) {
             prop.load(input);
-            prop.remove(backlogId);
+            prop.setProperty(backlogId, lastModification);
         } catch (IOException io) {
             io.printStackTrace();
         }
