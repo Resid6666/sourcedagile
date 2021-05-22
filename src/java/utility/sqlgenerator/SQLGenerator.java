@@ -796,6 +796,11 @@ public class SQLGenerator {
                 if (!values[i].trim().isEmpty()) {
                     String val = values[i].trim();
                     String atrName = methodNames[i];
+                    
+                    if (crin.hasOrStatementField(atrName)){
+                        continue;
+                    }
+                    
                     String operation = EQUAL;
                     String key = seperateTableFieldNameWithUnderscore(atrName)
                             .toUpperCase(Locale.ENGLISH);
@@ -819,10 +824,19 @@ public class SQLGenerator {
 //                    whereCondition += (crin.hasCurrentTimeField(atrName))
 //                            ? key + " = '" + QDate.getCurrentTime() + "' AND "
 //                            : "";
-
                 }
             }
 
+            if (crin.hasOrStatementField()) {
+                System.out.println("---------->   "+ crin.getJson());
+                String orStatement = getOrStatementOfWhereClause(crin, valueArr);
+                if (orStatement.length() > 0) {
+                    whereCondition += orStatement;
+                    whereCondition += SPACE + AND;
+                }
+            }
+
+//            String orStatementFields[] = crin.get("orStatementField").split(",");
             if (!whereCondition.trim().equals("")) {
                 whereCondition = SPACE + WHERE + SPACE + whereCondition.substring(0, whereCondition.length() - AND.length() - 1);
             }
@@ -882,7 +896,6 @@ public class SQLGenerator {
                     whereCondition += andOrStatement;
                     whereCondition += SPACE + AND;
                 }
-
             }
 
             //add or statement
@@ -1023,6 +1036,34 @@ public class SQLGenerator {
             }
 
         }
+        return res;
+    }
+
+    public static String getOrStatementOfWhereClause(Carrier crin, ArrayList valueArr) throws QException {
+        String res = "";
+        String orStatementList[] = crin.getOrStatementField();
+
+        for (String field : orStatementList) {
+            if (field.trim().length() == 0) {
+                continue;
+            }
+
+            String key = field;
+            String val = crin.get(key);
+
+            key = seperateTableFieldNameWithUnderscore(key).toUpperCase(Locale.ENGLISH);
+            String singleClause = getSingleClausOfWherePartOfSelect("tname", key, val, valueArr);
+            if (singleClause.trim().length() > 0) {
+                res += SPACE + singleClause + OR;
+            }
+        }
+
+        if (res.length() > 0) {
+            res = "(" + SPACE + res;
+            res = res.substring(0, res.length() - OR.length());
+            res += ")" + SPACE;
+        }
+
         return res;
     }
 

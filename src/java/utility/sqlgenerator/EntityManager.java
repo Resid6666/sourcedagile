@@ -179,6 +179,21 @@ public class EntityManager {
     public static Carrier select(Carrier carrier) throws QException {
         Carrier cout = new Carrier();
         try {
+
+            try {
+                if (carrier.hasCurrentUserField() 
+                        && carrier.get("currentUserField").length()>0) {
+                    String st[] = carrier.get("currentUserField").split(",");
+                    for (String s : st) {
+                        if (s.trim().length() > 0) {
+                            carrier.set(s.trim(), SessionManager.getCurrentUserId());
+                        }
+                    }
+                } 
+            } catch (Exception ex) {
+            }
+
+
             cout = coreSelect(carrier);
 
             String tn = carrier.getEntityFullname();
@@ -191,7 +206,7 @@ public class EntityManager {
                     cout.set(colName, val);
                 }
             }
-            
+
             return cout;
         } catch (Exception ex) {
             throw new QException(new Object() {
@@ -224,9 +239,15 @@ public class EntityManager {
 
         String methodNames[] = getEntityFields(entityDb, entityName);//SQLGenerator.getAllGetMethodNames(entity);
         String[] values = getEntityFieldValues(crin, methodNames); //SQLGenerator.getValuesOfAllGetMethodsOfEntity(entity, methodNames);
+
+//        System.out.println("-------------------------");
+//        System.out.println("crin-> " + crin.getJson());
+//        System.out.println("-------------------------");
+
         ArrayList valueArr = new ArrayList();
         String query = SQLGenerator.selectGenerator(entityFullname, crin, methodNames, values, valueArr);
-//        System.out.println("query select->"+query);
+//        System.out.println("query select->" + query);
+//        System.out.println("query values->" + valueArr.toString());
 
         Carrier carrier = SQLConnection.execSelectSql(query, entityFullname, "", valueArr);
 
@@ -294,6 +315,7 @@ public class EntityManager {
                     ? QDate.getCurrentTime()
                     : carrier.get(key);
 
+            
             arr[i] = val;
         }
 

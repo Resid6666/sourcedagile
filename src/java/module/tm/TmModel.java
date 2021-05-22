@@ -9352,18 +9352,18 @@ public class TmModel {
         ent.setId(carrier.get("fkInputId"));
         EntityManager.select(ent);
         try {
-            increaseBacklogInputCount(ent.getFkBacklogId(), 1);
+//            increaseBacklogInputCount(ent.getFkBacklogId(), 1);
 
-            cout.setValue("isSourced", isBacklogSourced(ent.getFkBacklogId()));
+//            cout.setValue("isSourced", isBacklogSourced(ent.getFkBacklogId()));
             cout.setValue("id", ent.getId());
-            setNewBacklogHistory4InputNew(ent);
+//            setNewBacklogHistory4InputNew(ent);
 
         } catch (Exception ex) {
             EntityManager.delete(ent);
 
-            Gson gson = new Gson();
-            String json = gson.toJson(ent);
-            setProjectInputList(ent.getFkProjectId(), ent.getId(), "deleted");
+//            Gson gson = new Gson();
+//            String json = gson.toJson(ent);
+//            setProjectInputList(ent.getFkProjectId(), ent.getId(), "deleted");
 
             cout.set("hasError", "1");
             return cout;
@@ -10234,9 +10234,9 @@ public class TmModel {
             EntityManager.delete(entTbl);
         }
 
-        decreaseBacklogInputCount(entity.getFkBacklogId(), 1);
+//        decreaseBacklogInputCount(entity.getFkBacklogId(), 1);
 
-        carrier.setValue("isSourced", isBacklogSourced(entity.getFkBacklogId()));
+//        carrier.setValue("isSourced", isBacklogSourced(entity.getFkBacklogId()));
         setNewBacklogHistory4InputDelete(entity);
 
         if (entity.getFkBacklogId().length() == 0) {
@@ -10255,7 +10255,7 @@ public class TmModel {
         ent1.setInputType("OUT");
         Carrier cout1 = EntityManager.select(ent1);
         cout1.renameTableName(ent1.toTableName(), "inputOutputList");
-        cout1.copyTo(carrier);
+        cout1.copyTo(carrier); 
 
         getBacklogList4Select(entity.getFkBacklogId()).copyTo(carrier);
         getTableListOfInput(entity.getFkBacklogId(), entity.getFkProjectId()).copyTo(carrier);

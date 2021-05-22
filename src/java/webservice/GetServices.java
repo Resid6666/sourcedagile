@@ -228,6 +228,73 @@ public class GetServices {
             DBConnection.closeConnection(conn);
         }
     }
+    
+     @GET
+    @Path("/zdfilespdf/{domain}/{filename}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response helloWorldZipsDirectPdf(@PathParam(value = "domain") final String domain,
+            @PathParam(value = "filename") final String filename) throws Exception {
+
+        if (domain.trim().length() == 0 || filename.length() == 0) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        Connection conn = null;
+        try {
+            conn = new DBConnection().getConnection();
+
+            conn.setAutoCommit(false);
+            SessionManager.setConnection(Thread.currentThread().getId(), conn);
+            SessionManager.setDomain(Thread.currentThread().getId(), "backlog");
+            EntityCrCompany entComp = new EntityCrCompany();
+            entComp.setCompanyDomain(domain);
+            entComp.setEndLimit(0);
+            EntityManager.select(entComp);
+
+            if (entComp.getCompanyDb().trim().length() == 0) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            SessionManager.setUserName(Thread.currentThread().getId(), "-1");
+            SessionManager.setLang(Thread.currentThread().getId(), "ENG");
+            SessionManager.setDomain(Thread.currentThread().getId(), entComp.getCompanyDb());
+            SessionManager.setUserId(Thread.currentThread().getId(), "-1");
+            SessionManager.setCompanyId(Thread.currentThread().getId(), "-1");
+
+            StreamingOutput sout = new StreamingOutput() {
+                @Override
+                public void write(OutputStream arg0) throws IOException, WebApplicationException {
+                    // TODO Auto-generated method stub
+                    System.out.println("fname= will be upload started");
+                    BufferedOutputStream bus = new BufferedOutputStream(arg0);
+                    System.out.println("fname= will be uploaded");
+                    try {
+                        java.net.URL uri = Thread.currentThread().getContextClassLoader().getResource("");
+                        String fname = getFullname(filename);//new FileUpload().getUploadPath() + filename;
+                        System.out.println("fname=" + fname);
+                        File file = new File(fname);
+//                    File file = new File("D:\\"+filename);
+                        FileInputStream fizip = new FileInputStream(file);
+                        byte[] buffer2 = IOUtils.toByteArray(fizip);
+                        bus.write(buffer2);
+                    } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    
+                    SessionManager.cleanSessionThread();
+                }
+            };
+ 
+            return Response.ok(sout).header("Content-Disposition", "inline;filename=\"" + filename + "")
+                .header("Content-Type", "application/pdf").build();
+        } catch (Exception ex) {
+            DBConnection.rollbackConnection(conn);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } finally {
+            DBConnection.closeConnection(conn);
+        }
+    }
 
     @GET
     @Path("/files/{filename}")
@@ -240,9 +307,42 @@ public class GetServices {
             @Override
             public void write(OutputStream arg0) throws IOException, WebApplicationException {
                 // TODO Auto-generated method stub
-                System.out.println("fname= will be upload started");
+                System.out.println("fname = will be upload started");
                 BufferedOutputStream bus = new BufferedOutputStream(arg0);
-                System.out.println("fname= will be uploaded");
+                System.out.println("fname = will be uploaded");
+                try {
+                    java.net.URL uri = Thread.currentThread().getContextClassLoader().getResource("");
+                    String fname = getFullname(filename);//new FileUpload().getUploadPath() + filename;
+                    System.out.println("fname=" + fname);
+                    File file = new File(fname);
+//                    File file = new File("D:\\"+filename);
+                    FileInputStream fizip = new FileInputStream(file);
+                    byte[] buffer2 = IOUtils.toByteArray(fizip);
+                    bus.write(buffer2);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        };
+        return Response.ok(sout).header("Content-Disposition", "inline;filename=\"" + filename + "")
+                .header("Content-Type", "image/png").build();
+    }
+    
+    @GET
+    @Path("/filez/{filename}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response helloWorldZipsDirectZ(@PathParam(value = "filename")
+            final String filename) throws Exception {
+
+        StreamingOutput sout = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream arg0) throws IOException, WebApplicationException {
+                // TODO Auto-generated method stub
+                System.out.println("fname = will be upload started");
+                BufferedOutputStream bus = new BufferedOutputStream(arg0);
+                System.out.println("fname = will be uploaded");
                 try {
                     java.net.URL uri = Thread.currentThread().getContextClassLoader().getResource("");
                     String fname = getFullname(filename);//new FileUpload().getUploadPath() + filename;
