@@ -147,15 +147,35 @@ public class Carrier implements Serializable {
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
         return res.length > 0;
     }
+    
+    public boolean hasOrStatementField() throws QException {
+        String ln = this.get("orStatementField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+        return res.length > 0;
+    }
+    
+    
 
     public boolean hasSelectedField() throws QException {
         String ln = this.get("selectedField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
         return res.length > 0;
     }
+    
+    public boolean hasCurrentUserField() throws QException {
+        String ln = this.get("currentUserField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+        return res.length > 0;
+    }
 
     public boolean hasCurrentUserField(String arg) throws QException {
         String ln = this.get("currentUserField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+        return ArrayUtils.contains(res, arg);
+    }
+    
+    public boolean hasOrStatementField(String arg) throws QException {
+        String ln = this.get("orStatementField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
         return ArrayUtils.contains(res, arg);
     }
@@ -232,6 +252,15 @@ public class Carrier implements Serializable {
         return res.length > 0;
     }
 
+    public String[] getOrStatementField() throws QException {
+        String ln = this.get("orStatementField");
+        String res[] = (ln.trim().length() > 0)
+                ? ln.replaceAll("undefined", "").replaceAll("null", "").split(",")
+                : new String[]{};
+        return res;
+    }
+
+    
     public String[] getIsMaximumField() throws QException {
         String ln = this.get("isMaximumField");
         String res[] = (ln.trim().length() > 0)
