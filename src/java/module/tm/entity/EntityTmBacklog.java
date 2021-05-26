@@ -84,6 +84,31 @@ public class EntityTmBacklog extends CoreEntity {
     private String apiAction = "";
     public static String API_SYNC_REQUEST = "apiSyncRequest";
     private String apiSyncRequest = "";
+    
+    public static String RUN_IN_BACKEND = "runInBackend";
+    private String runInBackend = "";
+    
+    public static String BACKEND_PLATFORM = "backendPlatform";
+    private String backendPlatform = "";
+
+    public String getRunInBackend() {
+        return runInBackend;
+    }
+
+    public void setRunInBackend(String runInBackend) {
+        this.runInBackend = runInBackend;
+    }
+
+    public String getBackendPlatform() {
+        return backendPlatform;
+    }
+
+    public void setBackendPlatform(String backendPlatform) {
+        this.backendPlatform = backendPlatform;
+    }
+    
+    
+    
 
     public String getIsBounded() {
         return isBounded;

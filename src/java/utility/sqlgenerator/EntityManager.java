@@ -551,6 +551,8 @@ public class EntityManager {
         entityFullname = entityFullname.toLowerCase();
 
         crin.set("modificationDate", QDate.getCurrentDate());
+        String updatedField = crin.get("updatedField");
+        crin.setUpdatedField(updatedField+",modificationDate");
         String methodNames[] = crin.getUpdatedField(); //getEntityFields(entityDb, entityName);
         String[] values = getEntityFieldValues(crin, methodNames);
 

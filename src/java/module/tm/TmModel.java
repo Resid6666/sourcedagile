@@ -7416,12 +7416,12 @@ public class TmModel {
         entity.setId(carrier.getValue(EntityTmBacklog.ID).toString());
         Carrier c = EntityManager.select(entity);
 
-        if (entity.getIsSourced().equals("1")) {
-            c.setValue("isSourced", entity.getIsSourced());
-            c.setValue("backlogStatus", status);
-            c.addController("general", "Sourced User Story can not be binded.");
-            return c;
-        }
+//        if (entity.getIsSourced().equals("1")) {
+//            c.setValue("isSourced", entity.getIsSourced());
+//            c.setValue("backlogStatus", status);
+//            c.addController("general", "Sourced User Story can not be binded.");
+//            return c;
+//        }
 
         entity.setFkSourcedId(carrier.getValue(EntityTmBacklog.FK_SOURCED_ID).toString());
         entity.setBacklogStatus(status);
@@ -7429,7 +7429,7 @@ public class TmModel {
         carrier = EntityManager.select(entity);
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
         carrier.setValue("backlogStatus", status);
-        carrier.setValue("isSourced", entity.getIsSourced());
+//        carrier.setValue("isSourced", entity.getIsSourced());
 
         //gonderen backlog ticket-dirse, o zaman source US ucun general task type elave edilmelidir.        
         if (isBacklogTicket(carrier.getValueAsString("id"))) {
@@ -7455,7 +7455,7 @@ public class TmModel {
             entMain.setCreatedBy(SessionManager.getCurrentUserId());
             entMain.setCreatedDate(QDate.getCurrentDate());
             entMain.setCreatedTime(QDate.getCurrentTime());
-            entMain.setIsSourced("1");
+//            entMain.setIsSourced("1");
             entMain.setFkSourcedId("");
             entMain.setOrderNo(nextBKLOrderNo(entMain.getFkProjectId()));
             EntityManager.insert(entMain);
@@ -7491,12 +7491,12 @@ public class TmModel {
         entity.setId(carrier.getValue(EntityTmBacklog.ID).toString());
         Carrier c = EntityManager.select(entity);
 
-        if (entity.getIsSourced().equals("1")) {
-            c.setValue("isSourced", entity.getIsSourced());
-            c.setValue("backlogStatus", status);
-            c.addController("general", "Sourced User Story can not be binded.");
-            return c;
-        }
+//        if (entity.getIsSourced().equals("1")) {
+//            c.setValue("isSourced", entity.getIsSourced());
+//            c.setValue("backlogStatus", status);
+//            c.addController("general", "Sourced User Story can not be binded.");
+//            return c;
+//        }
 
         entity.setFkSourcedId(sourcedId);
         entity.setBacklogStatus(status);
@@ -7504,7 +7504,7 @@ public class TmModel {
         carrier = EntityManager.select(entity);
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
         carrier.setValue("backlogStatus", status);
-        carrier.setValue("isSourced", entity.getIsSourced());
+//        carrier.setValue("isSourced", entity.getIsSourced());
 
         setBacklogStatus(sourcedId);
 
@@ -7561,12 +7561,12 @@ public class TmModel {
         entity.setId(carrier.getValue(EntityTmBacklog.ID).toString());
         Carrier c = EntityManager.select(entity);
 
-        if (entity.getIsSourced().equals("1")) {
-            c.setValue("isSourced", entity.getIsSourced());
-            c.setValue("backlogStatus", status);
-            c.addController("general", "Sourced User Story can not be binded.");
-            return c;
-        }
+//        if (entity.getIsSourced().equals("1")) {
+//            c.setValue("isSourced", entity.getIsSourced());
+//            c.setValue("backlogStatus", status);
+//            c.addController("general", "Sourced User Story can not be binded.");
+//            return c;
+//        }
 
         entity.setFkSourcedId(carrier.getValue(EntityTmBacklog.FK_SOURCED_ID).toString());
         entity.setBacklogStatus(status);
@@ -7607,7 +7607,7 @@ public class TmModel {
         carrier = EntityManager.select(entity);
         carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
         carrier.setValue("backlogStatus", status);
-        carrier.setValue("isSourced", entity.getIsSourced());
+//        carrier.setValue("isSourced", entity.getIsSourced());
         return carrier;
     }
 
@@ -8260,7 +8260,7 @@ public class TmModel {
         EntityTmBacklog ent = new EntityTmBacklog();
         ent.setDeepWhere(false);
         ent.setFkProjectId(carrier.getValueAsString("fkProjectId"));
-        ent.setIsSourced("1");
+//        ent.setIsSourced("1");
         carrier = EntityManager.select(ent);
 
         EntityTmBacklogTask entTask = new EntityTmBacklogTask();
@@ -8271,7 +8271,7 @@ public class TmModel {
         EntityTmBacklog entFinal = new EntityTmBacklog();
         entFinal.setDeepWhere(false);
         entFinal.setFkProjectId(carrier.getValueAsString("fkProjectId"));
-        entFinal.setIsSourced("1");
+//        entFinal.setIsSourced("1");
         entFinal.setId("-1" + CoreLabel.IN + carrier.getValueLine(entTask.toTableName(), "fkBacklogId"));
         entFinal.addSortBy("backlogName");
         entFinal.setSortByAsc(true);
@@ -8309,7 +8309,7 @@ public class TmModel {
         EntityTmBacklog ent = new EntityTmBacklog();
         ent.setFkProjectId(carrier.getValue("fkProjectId").toString());
         ent.addSortBy("backlogName");
-        ent.setIsSourced("1");
+//        ent.setIsSourced("1");
         ent.setSortByAsc(true);
         carrier = EntityManager.select(ent);
 
@@ -8328,8 +8328,8 @@ public class TmModel {
         EntityTmBacklog ent = new EntityTmBacklog();
         ent.setFkProjectId(carrier.getValue("fkProjectId").toString());
         ent.addSortBy("backlogName");
-        ent.setIsSourced("1");
-        ent.setInputCount(CoreLabel.GT + '0');
+//        ent.setIsSourced("1");
+//        ent.setInputCount(CoreLabel.GT + '0');
         ent.setSortByAsc(true);
         carrier = EntityManager.select(ent);
 
@@ -9287,7 +9287,7 @@ public class TmModel {
         cout.renameTableName("inputListTable", "inputOutputList");
         coutT.copyTo(cout);
 
-        cout.setValue("isSourced", isBacklogSourced(ent.getFkBacklogId()));
+//        cout.setValue("isSourced", isBacklogSourced(ent.getFkBacklogId()));
         cout.setValue("id", ent.getId());
 
         setNewBacklogHistory4InputNew(ent);
@@ -11255,7 +11255,7 @@ public class TmModel {
         ent1.setId(ent.getId());
         EntityManager.select(ent1);
 
-        carrier.setValue("isSourced", isBacklogSourced(ent.getFkBacklogId()));
+//        carrier.setValue("isSourced", isBacklogSourced(ent.getFkBacklogId()));
         carrier.setValue("backlogStatus", setBacklogStatus(ent.getFkBacklogId()));
 
         setNewBacklogHistory4TaskTypeNew(ent1);
@@ -12312,11 +12312,11 @@ public class TmModel {
 
         EntityManager.delete(entity);
 
-        carrier.setValue("isSourced", "");
+//        carrier.setValue("isSourced", "");
         carrier.setValue("backlogStatus", "");
 
         try {
-            carrier.setValue("isSourced", isBacklogSourced(entity.getFkBacklogId()));
+//            carrier.setValue("isSourced", isBacklogSourced(entity.getFkBacklogId()));
             carrier.setValue("backlogStatus", setBacklogStatus(entityList.getFkBacklogId()));
 
             setBacklogStatus(entity.getFkBacklogId());
@@ -12621,7 +12621,7 @@ public class TmModel {
 
     private static boolean isBacklogSourced(String fkBacklogId) throws QException {
         if (fkBacklogId.trim().length() == 0) {
-            return false;
+            return true;
         }
         boolean isSourced = false;
 
@@ -12648,7 +12648,7 @@ public class TmModel {
         EntityTmBacklog entUs = new EntityTmBacklog();
         entUs.setId(fkBacklogId);
         EntityManager.select(entUs);
-        entUs.setIsSourced(sourcedVal);
+//        entUs.setIsSourced(sourcedVal);
         if (sourcedVal.equals("1")) {
             entUs.setFkSourcedId("");
         }
@@ -14641,7 +14641,7 @@ public class TmModel {
         EntityTmBacklog entBacklog = new EntityTmBacklog();
         entBacklog.setId(fkDestinationBacklogId);
         EntityManager.select(entBacklog);
-        entBacklog.setIsSourced("1");
+//        entBacklog.setIsSourced("1");
         EntityManager.update(entBacklog);
 
         increaseBacklogInputCount(fkDestinationBacklogId, ids.length);
@@ -14698,7 +14698,7 @@ public class TmModel {
         EntityTmBacklog entBacklog = new EntityTmBacklog();
         entBacklog.setId(fkDestinationBacklogId);
         EntityManager.select(entBacklog);
-        entBacklog.setIsSourced("1");
+//        entBacklog.setIsSourced("1");
         EntityManager.update(entBacklog);
 
         decreaseBacklogInputCount(backlodId, ids.length);
@@ -15011,7 +15011,7 @@ public class TmModel {
 
     public Carrier getBacklogListWithInputs(Carrier carrier) throws QException {
         EntityTmBacklog ent = new EntityTmBacklog();
-        ent.setIsSourced("1");
+//        ent.setIsSourced("1");
         ent.setInputCount(CoreLabel.GT + '0');
         ent.addSortBy(EntityTmBacklog.BACKLOG_NAME);
         ent.setSortByAsc(true);

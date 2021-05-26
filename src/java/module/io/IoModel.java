@@ -39,6 +39,7 @@ import module.tm.entity.EntityTmJsCode;
 import module.tm.entity.EntityTmTable;
 import org.apache.commons.codec.binary.Base64;
 import resources.config.Config;
+import utility.BEAction;
 import utility.Carrier;
 import utility.GeneralProperties;
 import utility.MailSender;
@@ -57,16 +58,14 @@ import static utility.sqlgenerator.SQLConnection.convertResultSetToCarrier;
 public class IoModel {
 
     public static void main(String[] arg) throws Exception {
-    
-        
-        
-   String key = "0393e944ee8108bb66fc9fa4f99f9c862481e9e0519e18232ba61b0767eee8c6";
-    Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-    sha256_HMAC.init(new SecretKeySpec(key.getBytes(), "HmacSHA256"));
-    byte[] result = sha256_HMAC.doFinal("example".getBytes());
-    String shaCoded = DatatypeConverter.printHexBinary(result);
-    
-    System.out.println(shaCoded);
+
+        String key = "0393e944ee8108bb66fc9fa4f99f9c862481e9e0519e18232ba61b0767eee8c6";
+        Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
+        sha256_HMAC.init(new SecretKeySpec(key.getBytes(), "HmacSHA256"));
+        byte[] result = sha256_HMAC.doFinal("example".getBytes());
+        String shaCoded = DatatypeConverter.printHexBinary(result);
+
+        System.out.println(shaCoded);
     }
 
     public static void main1(String[] arg) throws Exception {
@@ -100,6 +99,18 @@ public class IoModel {
     }
 
     //////////////////////////////////////////////////////
+    public static Carrier callActionApi(Carrier carrier) throws QException, Exception {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("apiId", cp.hasValue(carrier, "apiId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        carrier = BEAction.callApi(carrier);
+
+        return carrier;
+    }
+
     public static Carrier runFunction(Carrier carrier) throws QException, Exception {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fnName", cp.hasValue(carrier, "fnName"));
@@ -107,7 +118,6 @@ public class IoModel {
             return carrier;
         }
 
-        
         String fnName = carrier.get("fnName");
 
         try {
@@ -118,12 +128,12 @@ public class IoModel {
             carrier = (Carrier) method.invoke(c, carrier);
         } catch (InvocationTargetException e) {
             System.out.println("runFunction-da error zad oldu");
-            System.out.println("runFunction-da error zad oldu message beledir:"+e.getMessage());
+            System.out.println("runFunction-da error zad oldu message beledir:" + e.getMessage());
             carrier.addController("general", e.getMessage());
         }
 
         return carrier;
-    } 
+    }
 
     public static Carrier compileJava(Carrier carrier) throws Exception {
         ControllerPool cp = new ControllerPool();
@@ -247,7 +257,7 @@ public class IoModel {
         }
 
         return res;
-    }
+    } 
 
     public static Carrier coreSelect(Carrier carrier) throws QException, Exception {
         ControllerPool cp = new ControllerPool();
