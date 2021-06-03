@@ -207,6 +207,46 @@ public class TmModel {
         return carrier;
     }
 
+    public static Carrier getRelatedStoryCardByApiId(Carrier carrier) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String backlogId = carrier.get("fkBacklogId");
+
+        EntityTmInput ent1 = new EntityTmInput();
+        ent1.setSelectFromBacklogId(backlogId);
+        String ln = EntityManager.select(ent1).getValueLine(ent1.toTableName(), "fkBacklogId");
+
+        EntityTmInput ent2 = new EntityTmInput();
+        ent2.setSendToBacklogId(backlogId);
+        ln += CoreLabel.IN + EntityManager.select(ent2).getValueLine(ent2.toTableName(), "fkBacklogId");
+
+        EntityTmInput ent3 = new EntityTmInput();
+        ent3.setFkDependentBacklogId(backlogId);
+        ln += CoreLabel.IN + EntityManager.select(ent3).getValueLine(ent3.toTableName(), "fkBacklogId");
+
+        EntityTmInputActionRel ent5 = new EntityTmInputActionRel();
+        ent5.setFkApiId(backlogId);
+        String inIds = EntityManager.select(ent5).getValueLine(ent5.toTableName(), "fkInputId");
+
+        if (inIds.length() > 5) {
+            EntityTmInput ent6 = new EntityTmInput();
+            ent6.setId(inIds);
+            ln += CoreLabel.IN + EntityManager.select(ent6).getValueLine(ent6.toTableName(), "fkBacklogId");
+        }
+
+        if (ln.length() > 5) {
+            EntityTmBacklog entB = new EntityTmBacklog();
+            entB.setId(ln);
+            carrier = EntityManager.select(entB);
+        }
+
+        return carrier;
+    }
+
     public static Carrier getBacklogLastModificationDateAndTime(Carrier carrier) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
@@ -7422,7 +7462,6 @@ public class TmModel {
 //            c.addController("general", "Sourced User Story can not be binded.");
 //            return c;
 //        }
-
         entity.setFkSourcedId(carrier.getValue(EntityTmBacklog.FK_SOURCED_ID).toString());
         entity.setBacklogStatus(status);
         EntityManager.update(entity);
@@ -7497,7 +7536,6 @@ public class TmModel {
 //            c.addController("general", "Sourced User Story can not be binded.");
 //            return c;
 //        }
-
         entity.setFkSourcedId(sourcedId);
         entity.setBacklogStatus(status);
         EntityManager.update(entity);
@@ -7567,7 +7605,6 @@ public class TmModel {
 //            c.addController("general", "Sourced User Story can not be binded.");
 //            return c;
 //        }
-
         entity.setFkSourcedId(carrier.getValue(EntityTmBacklog.FK_SOURCED_ID).toString());
         entity.setBacklogStatus(status);
         EntityManager.update(entity);
@@ -9332,9 +9369,12 @@ public class TmModel {
         ent.setParam3(Config.getProperty("component.design"));
         EntityManager.insert(ent);
 
-        Gson gson = new Gson();
-        String json = gson.toJson(ent);
-        setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
+        try {
+            Gson gson = new Gson();
+            String json = gson.toJson(ent);
+            setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
+        } catch (Exception err) {
+        }
 
         Carrier cout = new Carrier();
         EntityManager.mapEntityToCarrier(ent, cout, true);
@@ -9364,7 +9404,6 @@ public class TmModel {
 //            Gson gson = new Gson();
 //            String json = gson.toJson(ent);
 //            setProjectInputList(ent.getFkProjectId(), ent.getId(), "deleted");
-
             cout.set("hasError", "1");
             return cout;
         }
@@ -10235,7 +10274,6 @@ public class TmModel {
         }
 
 //        decreaseBacklogInputCount(entity.getFkBacklogId(), 1);
-
 //        carrier.setValue("isSourced", isBacklogSourced(entity.getFkBacklogId()));
         setNewBacklogHistory4InputDelete(entity);
 
@@ -10255,7 +10293,7 @@ public class TmModel {
         ent1.setInputType("OUT");
         Carrier cout1 = EntityManager.select(ent1);
         cout1.renameTableName(ent1.toTableName(), "inputOutputList");
-        cout1.copyTo(carrier); 
+        cout1.copyTo(carrier);
 
         getBacklogList4Select(entity.getFkBacklogId()).copyTo(carrier);
         getTableListOfInput(entity.getFkBacklogId(), entity.getFkProjectId()).copyTo(carrier);
