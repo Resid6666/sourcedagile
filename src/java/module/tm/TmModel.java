@@ -227,6 +227,10 @@ public class TmModel {
         EntityTmInput ent3 = new EntityTmInput();
         ent3.setFkDependentBacklogId(backlogId);
         ln += CoreLabel.IN + EntityManager.select(ent3).getValueLine(ent3.toTableName(), "fkBacklogId");
+        
+        EntityTmBacklogDescription entBD = new EntityTmBacklogDescription();
+        entBD.setFkRelatedApiId(backlogId);
+        ln += CoreLabel.IN + EntityManager.select(entBD).getValueLine(entBD.toTableName(), "fkBacklogId");
 
         EntityTmInputActionRel ent5 = new EntityTmInputActionRel();
         ent5.setFkApiId(backlogId);

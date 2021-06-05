@@ -3298,7 +3298,7 @@ public class CrModel {
 //        Carrier cAttr = getAttributeList(carrier);
 //        cIns.mergeCarrier(tnIns, "fkAttributeId", cAttr, CoreLabel.RESULT_SET,
 //                "id", new String[]{"attributeCode", "attributeName"});
-
+        
         //get and merge module info
         carrier.setValue("id", cIns.getValueLine(tnIns, "fkModuleId"));
         Carrier cModule = getModuleList(carrier);
