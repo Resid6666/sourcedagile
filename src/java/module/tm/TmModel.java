@@ -227,7 +227,7 @@ public class TmModel {
         EntityTmInput ent3 = new EntityTmInput();
         ent3.setFkDependentBacklogId(backlogId);
         ln += CoreLabel.IN + EntityManager.select(ent3).getValueLine(ent3.toTableName(), "fkBacklogId");
-        
+
         EntityTmBacklogDescription entBD = new EntityTmBacklogDescription();
         entBD.setFkRelatedApiId(backlogId);
         ln += CoreLabel.IN + EntityManager.select(entBD).getValueLine(entBD.toTableName(), "fkBacklogId");
@@ -460,7 +460,10 @@ public class TmModel {
         }
     }
 
-    public static String getBacklogLastModificationDateAndTime(String fkProjectId, String fkBacklogId, String isShared, String sourceProjectId) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+    public static String getBacklogLastModificationDateAndTime(String fkProjectId,
+            String fkBacklogId, String isShared, String sourceProjectId)
+            throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+
         String lastModification = "";
 
         String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
@@ -502,7 +505,84 @@ public class TmModel {
         return lastModification;
     }
 
-    public Carrier getBacklogProductionDetailedInfo(Carrier carrier) throws QException, IOException {
+    public static void setBacklogJSONInLocalStorage(String fkProjectId, String fkBacklogId, String jsonContent) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+
+        String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
+        filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
+        File theDir = new File(filedir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/us_" + fkBacklogId + ".properties";
+        File theFile = new File(filename);
+        if (!theFile.exists()) {
+            theFile.createNewFile();
+        }
+
+        Properties prop = new Properties();
+//        try (InputStream input = new FileInputStream(filename)) {
+//            prop.load(input);
+//            
+//        } catch (IOException io) {
+//            io.printStackTrace();
+//        }
+
+        try (OutputStream output = new FileOutputStream(filename)) {
+            prop.setProperty(fkBacklogId, jsonContent);
+            prop.store(output, "");
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+    }
+
+    public static Carrier getBacklogProductionStorageInfo(Carrier carrier)
+            throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String fkBacklogId = carrier.get("fkBacklogId");
+
+        String filedir = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/";
+        filedir = filedir.trim().toLowerCase().replaceAll(" ", "");
+        File theDir = new File(filedir);
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
+
+        String filename = Config.getProperty("structure.inputlist.path") + SessionManager.getCurrentDomain() + "/us_" + fkBacklogId + ".properties";
+        File theFile = new File(filename);
+        if (!theFile.exists()) {
+            theFile.createNewFile();
+        }
+
+        String jsonCnt = "";
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream(filename)) {
+            prop.load(input);
+            jsonCnt = prop.getProperty(fkBacklogId, "");
+
+        } catch (IOException io) {
+            io.printStackTrace();
+        }
+
+        if (jsonCnt.length() == 0) {
+            Carrier crOut = new Carrier();
+            crOut.set("fkBacklogId", fkBacklogId);
+            crOut = getBacklogProductionDetailedInfo(crOut);
+            jsonCnt = crOut.getJson();
+        }
+
+        carrier.set("json", jsonCnt);
+        return carrier;
+    }
+
+    public static Carrier getBacklogProductionDetailedInfo(Carrier carrier) throws QException, IOException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
         if (carrier.hasError()) {
@@ -578,6 +658,9 @@ public class TmModel {
 
         String lastModification = getBacklogLastModificationDateAndTime(ent.getFkProjectId(), ent.getId(), ent.getIsBounded(), sourceProjectId);
         crOut.set("modificationTime", lastModification);
+
+        String jsonContent = crOut.getJson();
+        setBacklogJSONInLocalStorage(ent.getFkProjectId(), ent.getId(), jsonContent);
 
         return crOut;
     }

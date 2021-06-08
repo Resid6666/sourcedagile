@@ -54,7 +54,7 @@ public class CacheUtil {
             logger.debug("getCache " + e.getMessage());
             e.printStackTrace();
         }
-    }
+    }  
 
     public static void closeCache() {
         if (cacheManager != null && cacheManager.getStatus() != Status.UNINITIALIZED) {
