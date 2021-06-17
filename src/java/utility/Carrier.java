@@ -47,6 +47,7 @@ public class Carrier implements Serializable {
     private final String ROW_AND_COLUMN_INDEX_MUST_BE_POSITIV_NUMBER = "QCarry: Row and column index must be positiv";
     private final String TABLE_KEY_SEPERATOR = ":";
     JsonObject jsonRootObject;
+    JSONObject jsonRootObjectNew;
     private final Map<String, Object> params;
     private final Map<String, String> slimits;
     private final Map<String, String> elimits;
@@ -147,21 +148,19 @@ public class Carrier implements Serializable {
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
         return res.length > 0;
     }
-    
+
     public boolean hasOrStatementField() throws QException {
         String ln = this.get("orStatementField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
         return res.length > 0;
     }
-    
-    
 
     public boolean hasSelectedField() throws QException {
         String ln = this.get("selectedField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
         return res.length > 0;
     }
-    
+
     public boolean hasCurrentUserField() throws QException {
         String ln = this.get("currentUserField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
@@ -173,7 +172,7 @@ public class Carrier implements Serializable {
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
         return ArrayUtils.contains(res, arg);
     }
-    
+
     public boolean hasOrStatementField(String arg) throws QException {
         String ln = this.get("orStatementField");
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
@@ -260,7 +259,6 @@ public class Carrier implements Serializable {
         return res;
     }
 
-    
     public String[] getIsMaximumField() throws QException {
         String ln = this.get("isMaximumField");
         String res[] = (ln.trim().length() > 0)
@@ -1408,11 +1406,11 @@ public class Carrier implements Serializable {
         }
         JsonObject object = new JsonObject();
         JsonParser parser = new JsonParser();
-        try{
-        object = parser.parse(jsonString).getAsJsonObject();
-        }catch(Exception e){
-            System.out.println("ex"+e.getMessage());
-            }
+        try {
+            object = parser.parse(jsonString).getAsJsonObject();
+        } catch (Exception e) {
+            System.out.println("ex" + e.getMessage());
+        }
 
         if (object.has("kv")) {
             JsonObject kvObject = object.get("kv").getAsJsonObject();
@@ -1679,7 +1677,7 @@ public class Carrier implements Serializable {
 
         int rowCount = this.getTableRowCount(tablename);
         String[] colNames = this.getTableColumnNames(tablename);
-        Carrier carrier = getColNamesDefination(colNames);
+        //Carrier carrier = getColNamesDefination(colNames);
         try {
 
             //set column name
@@ -1754,6 +1752,41 @@ public class Carrier implements Serializable {
         return object.toString();
     }
 
+    public JSONObject toJsonNew(String tablename) throws QException {
+        JSONObject object = new JSONObject();
+        JSONArray array = new JSONArray();
+
+        int rowCount = this.getTableRowCount(tablename);
+        String[] colNames = this.getTableColumnNames(tablename);
+
+        try {
+
+            for (int i = 0; i < rowCount; i++) {
+                try{
+                    JSONObject jsonRow = new JSONObject();
+                
+                String value;
+                for (int j = 0; j < colNames.length; j++) {
+                    value = this.getValue(tablename, i, colNames[j]).toString();
+                    jsonRow.put(colNames[j], value);
+                }
+                array.put(jsonRow);
+                }catch(Exception e){}
+            }
+            object.put("r", array);
+            object.put("tn", tablename);
+            object.put("startLimit", this.getTableStartLimit(tablename));
+            object.put("endLimit", this.getTableEndLimit(tablename));
+            object.put("rowCount", this.getTableRowCount4Json(tablename));
+            object.put("seq", this.getTableSequence(tablename));
+
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+
+        return object;
+    }
+
     public String toErrorJson() throws QException {
         try {
 
@@ -1780,6 +1813,33 @@ public class Carrier implements Serializable {
                     }.getClass().getEnclosingMethod().getName(), ex);
         }
     }
+    
+     public JSONArray toErrorJsonNew() throws QException {
+        try {
+
+            JSONArray array = new JSONArray();
+
+            String tablename = USER_ERROR_TABLE;
+            int rowCount = this.getTableRowCount(tablename);
+
+            //end add table name
+            for (int i = 0; i < rowCount; i++) {
+                JSONObject jsonRow = new JSONObject();
+                String code = this.getValue(tablename, i, USER_ERROR_KEY).toString();
+                String val = this.getValue(tablename, i, USER_ERROR_MESSAGE).toString();
+                jsonRow.put(USER_ERROR_CODE, code);
+                jsonRow.put(USER_ERROR_VALUE, val);
+                array.put(jsonRow);
+            }
+//            object.put(CoreLabel.JSON_ERROR_TABLE_RESULT_TABLE_NAME, array);
+            return array;
+        } catch (Exception ex) {
+            throw new QException(new Object() {
+            }.getClass().getEnclosingClass().getName(),
+                    new Object() {
+                    }.getClass().getEnclosingMethod().getName(), ex);
+        }
+    }
 
     public String toJsonKeyValue() throws QException {
         JSONObject jsonRow = new JSONObject();
@@ -1794,6 +1854,22 @@ public class Carrier implements Serializable {
             System.err.println(ex.getMessage());
         }
         return jsonRow.toString();
+
+    }
+
+    public JSONObject toJsonKeyValueAsObject() throws QException {
+        JSONObject jsonRow = new JSONObject();
+        try {
+
+            String[] keyNames = this.keyNames;
+            for (int j = 0; j < keyCount; j++) {
+                jsonRow.put(keyNames[j], this.getValue(keyNames[j]).toString());
+            }
+//           
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+        return jsonRow;
 
     }
 
@@ -1841,6 +1917,39 @@ public class Carrier implements Serializable {
             this.jsonRootObject.add(CoreLabel.JSON_ERROR_TABLE_RESULT_TABLE_NAME, ojbres1);
 
             return this.jsonRootObject.toString();
+        } catch (Exception ex) {
+            throw new QException(new Object() {
+            }.getClass().getEnclosingClass().getName(),
+                    new Object() {
+                    }.getClass().getEnclosingMethod().getName(), ex);
+        }
+    }
+
+    public JSONObject getJsonNew() throws QException {
+        try {
+            this.jsonRootObjectNew = new JSONObject();
+
+            JSONArray array = new JSONArray();
+
+//         
+            JSONObject ojbKV = this.toJsonKeyValueAsObject();
+            this.jsonRootObjectNew.put(CoreLabel.KEY_VALUE_TABLE, ojbKV);
+
+            JSONArray arrayTbl = new JSONArray();
+            for (int n = 0; n < this.tableCount; n++) {
+                String tn = this.tableNamesArray[n];
+                if (tn != null && !tn.equals("USER_ERROR_TABLE")) {
+                    JSONObject ojbres = this.toJsonNew(tn);
+                    arrayTbl.put(ojbres);
+                }
+
+            }
+            this.jsonRootObjectNew.put("tbl", arrayTbl);
+
+            JSONArray ojbres1 = this.toErrorJsonNew() ;
+            this.jsonRootObjectNew.put(CoreLabel.JSON_ERROR_TABLE_RESULT_TABLE_NAME, ojbres1);
+
+            return this.jsonRootObjectNew;
         } catch (Exception ex) {
             throw new QException(new Object() {
             }.getClass().getEnclosingClass().getName(),

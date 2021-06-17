@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 import label.CoreLabel;
 import org.ehcache.Cache;
 import org.ehcache.Status;
+import org.json.JSONObject;
 
 /**
  *
@@ -67,7 +68,7 @@ public class CallDispatcher {
         } else {
             return Response.status(Response.Status.OK).entity(entity).build();
         }
-        
+
 //        return Response.status(Response.Status.OK).entity(entity).build();
     }
 
@@ -94,13 +95,14 @@ public class CallDispatcher {
         String module = getModuleName(serviceName);
         createKeyValuePairInCarrier(carrier);
         carrier = executeDispatcher(module, carrier);
-        entity = carrier.getJson();
+//        entity = carrier.getJson();
+        entity = carrier.getJsonNew().toString();
+
 //            if (isServiceCachable && CacheUtil.cacheManager.getStatus()==Status.AVAILABLE 
 //                    && !carrier.hasError()) {
 //                serviceCache.put(cacheKey, entity);
 //            }
 //        }
-
 //        if (carrier.hasError()) {
 //            entity = carrier.getErrorJson();
 //        } else {
