@@ -436,7 +436,8 @@ public class PostServices {
             user.setDomain(user.selectDbname());
 
             String token = SessionHandler.encryptUser(user);
-            String fullname = "";
+            String fullname = user.getUserPersonName();
+            String img = user.getUserImage();
             String id = "";
 //           
             SessionManager.setUserName(Thread.currentThread().getId(), user.getUsername());
@@ -444,7 +445,7 @@ public class PostServices {
             SessionManager.setUserId(Thread.currentThread().getId(), user.getId());
             SessionManager.setCompanyId(Thread.currentThread().getId(), user.selectCompanyId());
 
-            String entity = "{\"fullname\":\"" + fullname + "\",\"token\":\"" + token + "\"}";
+            String entity = "{\"fullname\":\"" + fullname + "\",\"img\":\""+img+"\",\"token\":\"" + token + "\"}";
 
 //            System.out.println("filpagebody");
 //            CrModel.fillPageBody();

@@ -7,7 +7,6 @@ package security;
 
 import auth.SessionHandler;
 import java.io.IOException;
-import java.security.Key;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import javax.servlet.Filter;

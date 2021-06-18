@@ -1925,8 +1925,8 @@ public class Carrier implements Serializable {
         }
     }
 
-    public JSONObject getJsonNew() throws QException {
-        try {
+    public JSONObject getJsonNew() throws QException, JSONException {
+       
             this.jsonRootObjectNew = new JSONObject();
 
             JSONArray array = new JSONArray();
@@ -1950,12 +1950,7 @@ public class Carrier implements Serializable {
             this.jsonRootObjectNew.put(CoreLabel.JSON_ERROR_TABLE_RESULT_TABLE_NAME, ojbres1);
 
             return this.jsonRootObjectNew;
-        } catch (Exception ex) {
-            throw new QException(new Object() {
-            }.getClass().getEnclosingClass().getName(),
-                    new Object() {
-                    }.getClass().getEnclosingMethod().getName(), ex);
-        }
+        
     }
 
     public String getAllTableJsonString() {
