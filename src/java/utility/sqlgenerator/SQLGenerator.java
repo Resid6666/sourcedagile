@@ -341,7 +341,8 @@ public class SQLGenerator {
         for (int i = 0; i < countField.length; i++) {
             String field = countField[i].trim();
             if (field.length() > 0) {
-                res += ", COUNT(" + field + ") as COUNT_" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH);
+                res += ", COUNT(" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH) 
+                        + ") as COUNT_" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH);
             }
         }
 
@@ -349,7 +350,8 @@ public class SQLGenerator {
         for (int i = 0; i < maxield.length; i++) {
             String field = maxield[i].trim();
             if (field.length() > 0) {
-                res += ", MAX(" + field + ") as MAXIMUM_" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH);
+                res += ", MAX(" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH)
+                        + ") as MAXIMUM_" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH);
             }
         }
 
@@ -357,7 +359,8 @@ public class SQLGenerator {
         for (int i = 0; i < minField.length; i++) {
             String field = minField[i].trim();
             if (field.length() > 0) {
-                res += ", MIN(" + field + ") as MINIMUM_" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH);
+                res += ", MIN(" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH)
+                        + ") as MINIMUM_" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH);
             }
         }
 
@@ -365,7 +368,8 @@ public class SQLGenerator {
         for (int i = 0; i < avgField.length; i++) {
             String field = avgField[i].trim();
             if (field.length() > 0) {
-                res += ", AVG(" + field + ") as AVERAGE_" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH);
+                res += ", AVG(" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH)
+                        + ") as AVERAGE_" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH);
             }
         }
 
@@ -373,7 +377,8 @@ public class SQLGenerator {
         for (int i = 0; i < sumField.length; i++) {
             String field = sumField[i].trim();
             if (field.length() > 0) {
-                res += ", SUM(" + field + ") as SUM_" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH);
+                res += ", SUM(" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH)
+                        + ") as SUM_" + seperateTableFieldNameWithUnderscore(field).trim().toUpperCase(Locale.ENGLISH);
             }
         }
 

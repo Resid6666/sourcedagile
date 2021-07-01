@@ -9,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import label.CoreLabel;
 import org.ehcache.Cache;
@@ -110,6 +111,8 @@ public class CallDispatcher {
 //        }
 //        System.out.println("entity -> "+entity);
         return Response.status(Response.Status.OK).entity(entity).build();
+//        return Response.status(Response.Status.OK).entity(carrier.getJsonNew()).build();
+//       return  Response.ok(carrier.getJsonNew().toString(), MediaType.APPLICATION_JSON).build();
     }
 
     public static String getModuleName(String serviceName) {
