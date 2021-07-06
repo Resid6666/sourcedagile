@@ -55,11 +55,6 @@ public class BEAction {
 
         } else {
             carrier = callContainerAPI(carrier);
-//
-//            var outputList = be.ExecAPI.GetOutputsByAPI(apiId);
-//            var resOut = be.ExecAPI.SetInputValuesOnStoryCard(outputList, res);
-//            resOut['_table'] = res['_table'];
-//            res = resOut;
         }
 
         return carrier;
@@ -447,9 +442,14 @@ public class BEAction {
         String sendToBacklogId = crOutput.getValueLine(CoreLabel.RESULT_SET, "sendToBacklogId");
         Carrier cr1 = sendToRelatedApi(crOutputKV, sendToBacklogId);
         cr1.copyTo(crOutputKV);
+        
+        String tableName = carrier.getTableIndex(0);
+        carrier.copyTable(tableName, crOutputKV);
 
         return crOutputKV;
     }
+    
+    
 
     public static Carrier selectObjectsToDB(Carrier carrier) throws QException, Exception {
         String apiId = carrier.get("apiId");
@@ -557,7 +557,7 @@ public class BEAction {
         int rc = cr.getTableRowCount(tn);
         for (int i = 0; i < rc; i++) {
             EntityManager.mapCarrierToEntity(cr, tn, i, ent);
-            String fnName = ent.getDescription();
+            String fnName = ent.getDescription(); 
             if (SAFunction.IsDeleteCommand(fnName)) {
                 carrier.set("fnName", fnName);
 

@@ -11945,12 +11945,25 @@ public class TmModel {
         String status = carrier.get("taskStatus").length() == 0
                 ? "new"
                 : carrier.get("taskStatus");
+        
+      String taskNature = carrier.get("taskNature").length() == 0
+                ? "new"
+                : carrier.get("taskNature");
+        
+      String taskPriority = carrier.get("taskPriority").length() == 0
+                ? "1"
+                : carrier.get("taskPriorityv");
+        
+          
+        
+       
 
         EntityTmBacklogTask ent = new EntityTmBacklogTask();
+        ent.setFkTaskTypeId(carrier.get("fkTaskTypeId"));
         ent.setOrderNoSeq(orderNoSeq);
         ent.setTaskName(carrier.get("taskName"));
         ent.setTaskStatus(status);
-        ent.setTaskPriority("1");
+        ent.setTaskPriority(taskPriority);
         ent.setFkBacklogId(carrier.get("fkBacklogId"));
         ent.setFkAssigneeId(carrier.get("fkAssigneeId"));
         ent.setFkProjectId(carrier.get("fkProjectId"));
@@ -11960,7 +11973,7 @@ public class TmModel {
         ent.setCreatedBy(SessionManager.getCurrentUserId());
         ent.setCreatedDate(QDate.getCurrentDate());
         ent.setCreatedTime(QDate.getCurrentTime());
-        ent.setTaskNature("new");
+        ent.setTaskNature(taskNature);
         ent.setOrderNoSeq(nextTaskOrderNoSeq(carrier.get("fkProjectId")));
         EntityManager.insert(ent);
         carrier.setValue("id", ent.getId());

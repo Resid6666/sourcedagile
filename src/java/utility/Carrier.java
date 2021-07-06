@@ -166,6 +166,10 @@ public class Carrier implements Serializable {
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
         return res.length > 0;
     }
+    
+    public String getTableIndex(int index){
+        return this.tableNamesArray[index];
+    }
 
     public boolean hasCurrentUserField(String arg) throws QException {
         String ln = this.get("currentUserField");
@@ -369,7 +373,9 @@ public class Carrier implements Serializable {
             int rc = carrier.getTableRowCount(tableName);
             for (int row = 0; row < rowc; row++) {
                 for (String col : columns) {
-                    carrier.setValue(tableName, rc + row, col,
+//                    carrier.setValue(tableName, rc + row, col,
+//                            this.getValue(tableName, row, col));
+                    carrier.setValue(tableName, row, col,
                             this.getValue(tableName, row, col));
                 }
             }
@@ -379,6 +385,12 @@ public class Carrier implements Serializable {
         carrier.addExcludedFields(excludedFields.split(SEPERATOR_FIELDS));
         carrier.setServiceName(this.getServiceName());
 
+    }
+    
+     public void copyKeys(Carrier carrier) throws QException {
+        for (int i = 0; i < keyCount; i++) {
+            carrier.setValue(keyNames[i], this.getValue(keyNames[i]));
+        }
     }
 
     public void addIncludedFields(String field) {
@@ -681,6 +693,22 @@ public class Carrier implements Serializable {
                         String val = this.getValue(tablename, i, col).toString();
                         this.setValue(tablename, i, newColName, val);
                     }
+                }
+            }
+        } catch (Exception ex) {
+        }
+    }
+
+    public void copyTable(String tablename, Carrier carrier) {
+
+        try {
+            int rowCount = this.getTableRowCount(tablename);
+            String[] cols = this.getTableColumnNames(tablename);
+
+            for (int i = 0; i < rowCount; i++) {
+                for (String col : cols) {
+                    String val = this.getValue(tablename, i, col).toString();
+                    carrier.setValue(tablename, i, col, val);
                 }
             }
         } catch (Exception ex) {
@@ -1762,16 +1790,17 @@ public class Carrier implements Serializable {
         try {
 
             for (int i = 0; i < rowCount; i++) {
-                try{
+                try {
                     JSONObject jsonRow = new JSONObject();
-                
-                String value;
-                for (int j = 0; j < colNames.length; j++) {
-                    value = this.getValue(tablename, i, colNames[j]).toString();
-                    jsonRow.put(colNames[j], value);
+
+                    String value;
+                    for (int j = 0; j < colNames.length; j++) {
+                        value = this.getValue(tablename, i, colNames[j]).toString();
+                        jsonRow.put(colNames[j], value);
+                    }
+                    array.put(jsonRow);
+                } catch (Exception e) {
                 }
-                array.put(jsonRow);
-                }catch(Exception e){}
             }
             object.put("r", array);
             object.put("tn", tablename);
@@ -1813,8 +1842,8 @@ public class Carrier implements Serializable {
                     }.getClass().getEnclosingMethod().getName(), ex);
         }
     }
-    
-     public JSONArray toErrorJsonNew() throws QException {
+
+    public JSONArray toErrorJsonNew() throws QException {
         try {
 
             JSONArray array = new JSONArray();
@@ -1926,31 +1955,31 @@ public class Carrier implements Serializable {
     }
 
     public JSONObject getJsonNew() throws QException, JSONException {
-       
-            this.jsonRootObjectNew = new JSONObject();
 
-            JSONArray array = new JSONArray();
+        this.jsonRootObjectNew = new JSONObject();
+
+        JSONArray array = new JSONArray();
 
 //         
-            JSONObject ojbKV = this.toJsonKeyValueAsObject();
-            this.jsonRootObjectNew.put(CoreLabel.KEY_VALUE_TABLE, ojbKV);
+        JSONObject ojbKV = this.toJsonKeyValueAsObject();
+        this.jsonRootObjectNew.put(CoreLabel.KEY_VALUE_TABLE, ojbKV);
 
-            JSONArray arrayTbl = new JSONArray();
-            for (int n = 0; n < this.tableCount; n++) {
-                String tn = this.tableNamesArray[n];
-                if (tn != null && !tn.equals("USER_ERROR_TABLE")) {
-                    JSONObject ojbres = this.toJsonNew(tn);
-                    arrayTbl.put(ojbres);
-                }
-
+        JSONArray arrayTbl = new JSONArray();
+        for (int n = 0; n < this.tableCount; n++) {
+            String tn = this.tableNamesArray[n];
+            if (tn != null && !tn.equals("USER_ERROR_TABLE")) {
+                JSONObject ojbres = this.toJsonNew(tn);
+                arrayTbl.put(ojbres);
             }
-            this.jsonRootObjectNew.put("tbl", arrayTbl);
 
-            JSONArray ojbres1 = this.toErrorJsonNew() ;
-            this.jsonRootObjectNew.put(CoreLabel.JSON_ERROR_TABLE_RESULT_TABLE_NAME, ojbres1);
+        }
+        this.jsonRootObjectNew.put("tbl", arrayTbl);
 
-            return this.jsonRootObjectNew;
-        
+        JSONArray ojbres1 = this.toErrorJsonNew();
+        this.jsonRootObjectNew.put(CoreLabel.JSON_ERROR_TABLE_RESULT_TABLE_NAME, ojbres1);
+
+        return this.jsonRootObjectNew;
+
     }
 
     public String getAllTableJsonString() {
