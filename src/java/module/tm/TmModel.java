@@ -145,7 +145,7 @@ import module.tm.entity.EntityTmJsCode;
 import module.tm.entity.EntityTmRole;
 import module.tm.entity.EntityTmRolePermission;
 import module.tm.entity.EntityTmUserPermission;
-import utility.QUtility;
+import utility.ApiIntegration;
 import utility.sqlgenerator.DBConnection;
 import utility.sqlgenerator.SQLConnection;
 import utility.sqlgenerator.SQLGenerator;
@@ -273,6 +273,26 @@ public class TmModel {
     ///////////////////////////////////////////////
     public Carrier getEmptyApiZad(Carrier carrier) throws QException {
 
+        return carrier;
+    }
+    
+    public static Carrier sendApiIntegrationForTest(Carrier carrier) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("method", cp.hasValue(carrier, "method"));
+        carrier.addController("url", cp.hasValue(carrier, "url"));
+//        carrier.addController("content", cp.hasValue(carrier, "content"));
+        carrier.addController("contentType", cp.hasValue(carrier, "contentType"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        ApiIntegration api = new ApiIntegration();
+        api.setMethod(carrier.get("method"));
+        api.setUrl(carrier.get("url"));
+        api.setContent(carrier.get("content"));
+        api.setContentType(carrier.get("contentType"));
+        
+        
         return carrier;
     }
 
