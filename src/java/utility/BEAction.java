@@ -330,7 +330,7 @@ public class BEAction {
         return crInputField;
     }
 
-    private static Carrier convertOutputListToFieldKV4Select(Carrier outputList, Carrier crOutputKV, Carrier crOutputIdPair) throws Exception {
+    private static Carrier convertOutputListToFieldKV4Select(Carrier outputList, Carrier crInputKV, Carrier crOutputIdPair) throws Exception {
         String fieldIdLines = outputList.getValueLine(CoreLabel.RESULT_SET, "selectFromFieldId");
         Carrier crInputField = new Carrier();
         Carrier crFieldKV = new Carrier();
@@ -355,7 +355,7 @@ public class BEAction {
 
                 crFieldKV.set(fieldName, inputName);
 
-                String value = crOutputKV.get(inputName);
+                String value = crInputKV.get(fieldName);
 
                 crInputField.set(fieldName, value);
                 updatedField += "," + fieldName;
@@ -452,6 +452,9 @@ public class BEAction {
     
 
     public static Carrier selectObjectsToDB(Carrier carrier) throws QException, Exception {
+        Carrier crInputField= new Carrier();
+        carrier.copyKeys(crInputField);
+        
         String apiId = carrier.get("apiId");
         Carrier crOutput = getOutpuList(apiId);
         Carrier crOutputIdPair = crOutput.getKVFromTable(CoreLabel.RESULT_SET, "id", "inputName");
@@ -461,7 +464,8 @@ public class BEAction {
 
         String dbName = getDBNameByOutput4Select(crOutput);
         String tableName = getTableNameByOutput4Select(crOutput);
-        Carrier crInputField = convertOutputListToFieldKV4Select(crOutput, crOutputKV, crOutputIdPair);
+        
+        convertOutputListToFieldKV4Select(crOutput, crInputField, crOutputIdPair).copyTo(crInputField);
         Carrier crFieldKV = (Carrier) crInputField.getValue("fieldKV");
         String selectedFieldCore = crInputField.get("selectedFieldCore");
 

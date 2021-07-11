@@ -29,6 +29,7 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import module.cr.CrModel;
 import module.cr.entity.EntityCrCompany;
+import module.tm.entity.EntityTmBacklog;
 import org.apache.commons.lang.ArrayUtils;
 import org.jose4j.lang.JoseException;
 import resources.config.Config;
@@ -445,7 +446,7 @@ public class PostServices {
             SessionManager.setUserId(Thread.currentThread().getId(), user.getId());
             SessionManager.setCompanyId(Thread.currentThread().getId(), user.selectCompanyId());
 
-            String entity = "{\"fullname\":\"" + fullname + "\",\"img\":\""+img+"\",\"token\":\"" + token + "\"}";
+            String entity = "{\"fullname\":\"" + fullname + "\",\"img\":\"" + img + "\",\"token\":\"" + token + "\"}";
 
 //            System.out.println("filpagebody");
 //            CrModel.fillPageBody();
@@ -626,6 +627,21 @@ public class PostServices {
     }
 
     @POST
+    @Path(value = "cl/{domain}/{api}")
+    @Compress
+    @Produces(value = MediaType.APPLICATION_JSON)
+    public void callApiBackend(@Context HttpHeaders headers, @Suspended
+            final AsyncResponse asyncResponse,
+            @PathParam(value = "servicename") final String servicename,
+            @PathParam(value = "domain") final String domain,
+            @PathParam(value = "api") final String api,
+            final String json) {
+        executorService.submit(() -> {
+            asyncResponse.resume(doCallApiBackend(headers, domain, api, json));
+        });
+    }
+
+    @POST
     @Path(value = "nasrv/{servicename}")
     @Compress
     @Produces(value = MediaType.APPLICATION_JSON)
@@ -763,7 +779,7 @@ public class PostServices {
             c.set("fnName", fname);
             c.fromJson(jsonCore);
 
-            System.out.println("servicename:"+servicename+", json=  "+jsonCore);
+            System.out.println("servicename:" + servicename + ", json=  " + jsonCore);
             QLogger.saveServiceLog(servicename);
 
             conn = new DBConnection().getConnection();
@@ -787,7 +803,7 @@ public class PostServices {
             SessionManager.setCompanyId(Thread.currentThread().getId(), "-1");
 
             Response res = CallDispatcher.callServiceWithPureJson(c);
-           
+
             conn.commit();
             //conn.close();
 
@@ -904,6 +920,73 @@ public class PostServices {
             SessionManager.setDomain(Thread.currentThread().getId(), entComp.getCompanyDb());
             SessionManager.setUserId(Thread.currentThread().getId(), "-1");
             SessionManager.setCompanyId(Thread.currentThread().getId(), "-1");
+
+            Response res = CallDispatcher.callService(c);
+            conn.commit();
+            //conn.close();
+
+            return res;
+        } catch (JoseException ex) {
+            DBConnection.rollbackConnection(conn);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (Exception ex) {
+            DBConnection.rollbackConnection(conn);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } finally {
+            DBConnection.closeConnection(conn);
+            SessionManager.cleanSessionThread();
+        }
+
+    }
+
+    private Response doCallApiBackend(@Context HttpHeaders headers,
+            @PathParam("domain") String domain,
+            @PathParam("api") String api, String json) {
+
+        if (domain.trim().length() == 0 || api.trim().length() == 0) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        Connection conn = null;
+        try {
+
+            String servicename = "serviceIoCallActionApi";
+
+//            System.out.println("ok 2 - 1"+"  "+servicename);
+            QLogger.saveServiceLog(servicename);
+
+            conn = new DBConnection().getConnection();
+            conn.setAutoCommit(false);
+            SessionManager.setConnection(Thread.currentThread().getId(), conn);
+            SessionManager.setDomain(Thread.currentThread().getId(), "backlog");
+            EntityCrCompany entComp = new EntityCrCompany();
+            entComp.setCompanyDomain(domain);
+            entComp.setEndLimit(0);
+            EntityManager.select(entComp);
+
+            if (entComp.getCompanyDb().trim().length() == 0) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            SessionManager.setUserName(Thread.currentThread().getId(), "-1");
+            SessionManager.setLang(Thread.currentThread().getId(), "ENG");
+            SessionManager.setDomain(Thread.currentThread().getId(), entComp.getCompanyDb());
+            SessionManager.setUserId(Thread.currentThread().getId(), "-1");
+            SessionManager.setCompanyId(Thread.currentThread().getId(), "-1");
+
+            EntityTmBacklog ent = new EntityTmBacklog();
+            ent.setBacklogName(api);
+            ent.setEndLimit(0);
+            EntityManager.select(ent);
+
+            if (ent.getId().trim().length() == 0) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            Carrier c = new Carrier();
+            c.setServiceName(servicename);
+            c.set("apiId", ent.getId());
+            c.fromJson(json);
 
             Response res = CallDispatcher.callService(c);
             conn.commit();

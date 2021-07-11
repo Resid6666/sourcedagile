@@ -344,7 +344,7 @@ public class IoModel {
         return carrier;
     }
 
-    private static String getApiIdByName(String name) throws Exception {
+    public static String getApiIdByName(String name) throws Exception {
         EntityTmBacklog ent = new EntityTmBacklog();
         ent.setBacklogName(name);
         ent.setEndLimit(0);
