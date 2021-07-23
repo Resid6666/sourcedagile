@@ -166,8 +166,8 @@ public class Carrier implements Serializable {
         String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
         return res.length > 0;
     }
-    
-    public String getTableIndex(int index){
+
+    public String getTableIndex(int index) {
         return this.tableNamesArray[index];
     }
 
@@ -323,10 +323,32 @@ public class Carrier implements Serializable {
         this.setValue("selectedField", fieldName);
     }
 
+    public void addSelectedField(String fieldName) throws QException {
+        String arg = this.isKeyExist("selectedField")
+                ?this.get("selectedField")+","+fieldName
+                :fieldName;
+        this.setValue("selectedField", arg);
+    }
+
+    
     public String[] getSelectedField() throws QException {
         String res[] = this.get("selectedField").split(",");
 
         return res;
+    }
+
+    public void removeFromSelectedField(String field) throws QException {
+        String ln = this.get("selectedField");
+        String res[] = (ln.trim().length() > 0) ? ln.split(",") : new String[]{};
+        if (ArrayUtils.contains(res, field)) {
+            this.removeKey("selectedField");
+            for (String key:res){
+                if (key.trim().equals(field.trim())){
+                    continue;
+                }
+                this.addSelectedField(key);
+            }
+        }
     }
 
     public void setDistinctField(String fieldName) throws QException {
@@ -386,8 +408,8 @@ public class Carrier implements Serializable {
         carrier.setServiceName(this.getServiceName());
 
     }
-    
-     public void copyKeys(Carrier carrier) throws QException {
+
+    public void copyKeys(Carrier carrier) throws QException {
         for (int i = 0; i < keyCount; i++) {
             carrier.setValue(keyNames[i], this.getValue(keyNames[i]));
         }

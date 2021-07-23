@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import label.CoreLabel;
+import module.tm.TmModel;
 
 /**
  *
@@ -39,6 +40,8 @@ public class SAFunction {
         crList.set("settableobject", "SetTableObject");
         crList.set("gettable", "GetTable");
         crList.set("fortable", "ForTable");
+        crList.set("error", "Error");
+        crList.set("sendmail", "SendMail");
 
         return crList.get(key);
     }
@@ -192,6 +195,18 @@ public class SAFunction {
         return crTemp;
     }
 
+    public static Carrier Error(Carrier carrier) throws Exception {
+        Carrier crTemp = new Carrier();
+        String errorCode = carrier.get("param1");
+        String val = carrier.get("param2");
+
+        val = GetArgumentPureValue(val);
+        errorCode = GetArgumentPureValue(errorCode);
+
+        crTemp.addError(errorCode, val);
+        return crTemp;
+    }
+
     public static Carrier Inc(Carrier carrier) throws Exception {
         Carrier crTemp = new Carrier();
         String keyName = carrier.get("param1");
@@ -274,14 +289,15 @@ public class SAFunction {
 
     public static Carrier Function_If_Body_Statement(Carrier carrier) throws Exception {
         Carrier crOut = new Carrier();
+        carrier.copyTo(crOut);
 
         String commands[] = carrier.get(FUNCTION_BODY).split(";");
         for (int i = 0; i < commands.length; i++) {
             String cmd = commands[i];
             if (cmd.length() > 3) {
-                Carrier crIn = new Carrier();
-                crIn.set(FUNCTION_NAME, cmd);
-                crIn = ExecCommand(crIn);
+                 
+                crOut.set(FUNCTION_NAME, cmd);
+                Carrier crIn = ExecCommand(crOut);
                 crIn.copyTo(crOut);
 
             }
@@ -372,7 +388,7 @@ public class SAFunction {
     public static Carrier IfHasValue(Carrier carrier) throws Exception {
         Carrier crTemp = new Carrier();
         String keyCore = carrier.get("param1");
-        String key = GetArgumentValue(carrier, keyCore);
+        String key = GetArgumentPureValue(keyCore);
 
         if (carrier.get(key).length() > 0) {
             crTemp = Function_If_Body_Statement(carrier);
@@ -384,7 +400,10 @@ public class SAFunction {
     public static Carrier IfHasNotValue(Carrier carrier) throws Exception {
         Carrier crTemp = new Carrier();
         String keyCore = carrier.get("param1");
-        String key = GetArgumentValue(carrier, keyCore);
+
+        String key = GetArgumentPureValue(keyCore);
+
+        crTemp.set("zadshey", key);
 
         if (carrier.get(key).length() == 0) {
             crTemp = Function_If_Body_Statement(carrier);
@@ -474,6 +493,33 @@ public class SAFunction {
             crLine.copyTo(crOut);
 
         }
+
+        return crOut;
+    }
+
+    public static Carrier SendMail(Carrier carrier) throws Exception {
+        Carrier crOut = new Carrier();
+
+        String to = carrier.get("param1");
+        String subject = carrier.get("param2");
+        String message = carrier.get("param3");
+        String cc = carrier.get("param4");
+        String bb = carrier.get("param5");
+
+        to = GetArgumentValue(carrier, to);
+        subject = GetArgumentValue(carrier, subject);
+        message = GetArgumentValue(carrier, message);
+        cc = GetArgumentValue(carrier, cc);
+        bb = GetArgumentValue(carrier, bb);
+
+        crOut.set("to", to);
+        crOut.set("subject", subject);
+        crOut.set("message", message);
+        crOut.set("cc", cc);
+        crOut.set("bb", bb);
+//        crOut.set("json",carrier.getJsonNew());
+
+        crOut = TmModel.sendEmail(crOut);
 
         return crOut;
     }

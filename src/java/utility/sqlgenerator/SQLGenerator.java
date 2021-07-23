@@ -727,10 +727,12 @@ public class SQLGenerator {
         selectSql += wherePart;
 
         //add group by
+        boolean hasGroupBy = false;
         if (crin.hasIsCountField() || crin.hasIsMaximumField() || crin.hasIsMinimumField()
                 || crin.hasIsSumField() || crin.hasIsAverageField()) {
             if (coreSelectPart.length() > 1) {
                 selectSql += " group by " + coreSelectPart;
+                hasGroupBy = true;
             }
         }
 
@@ -741,7 +743,7 @@ public class SQLGenerator {
         String slimit = (crin.getStartLimit().trim().length() == 0) ? "0" : crin.getStartLimit();
         String elimit = (crin.getEndLimit().trim().length() == 0) ? "1000" : crin.getEndLimit();
         int idx = Integer.parseInt(elimit) - Integer.parseInt(slimit) + 1;
-        selectSql += " LIMIT " + slimit + ", " + idx;
+        selectSql += (hasGroupBy) ? "": " LIMIT " + slimit + ", " + idx;
 //        selectSql = selectSql.replace("İ", "I");
         return selectSql;
     }

@@ -131,12 +131,14 @@ import utility.SessionManager;
 import utility.sqlgenerator.EntityManager;
 import java.nio.file.Paths;
 import java.nio.file.Files;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import module.tm.entity.EntityTmBacklogMvp;
 import module.tm.entity.EntityTmGuiClass;
 import module.tm.entity.EntityTmInputActionRel;
 import module.tm.entity.EntityTmInputAttributes;
@@ -146,6 +148,7 @@ import module.tm.entity.EntityTmRole;
 import module.tm.entity.EntityTmRolePermission;
 import module.tm.entity.EntityTmUserPermission;
 import utility.ApiIntegration;
+import utility.QUtility;
 import utility.sqlgenerator.DBConnection;
 import utility.sqlgenerator.SQLConnection;
 import utility.sqlgenerator.SQLGenerator;
@@ -190,6 +193,17 @@ public class TmModel {
     private static String BACKLOG_HISTORY_TYPE_INPUT_CONTENT_UPDATE = "input_content_update";
     private static String BACKLOG_HISTORY_TYPE_INPUT_RELATION_ADDED = "input_relation_added";
     private static String BACKLOG_HISTORY_TYPE_INPUT_RELATION_DELETED = "input_relation_deleted";
+
+    private static String BACKLOG_SYSTEM_MVP_DB = "system_mvp_db";
+
+    private static String ENGLIS_ABC = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm012345678";
+
+    private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
+    private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
+    private static final String NUMBER = "0123456789";
+
+    private static final String DATA_FOR_RANDOM_STRING = CHAR_LOWER + CHAR_UPPER;
+    private static SecureRandom random = new SecureRandom();
 
     public static void main(String[] arg) throws QException, JSONException {
 
@@ -275,7 +289,702 @@ public class TmModel {
 
         return carrier;
     }
-    
+
+    public static Carrier createMvp(Carrier carrier) throws Exception {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmBacklog ent = new EntityTmBacklog();
+        ent.setId(carrier.get("fkBacklogId"));
+        ent.setEndLimit(0);
+        EntityManager.select(ent);
+
+        createMvpDBIssues(ent.getFkProjectId(), ent.getId(), ent.getBacklogName());
+
+        return carrier;
+    }
+
+    private static void createDeleteAPI4MVP(String fkProjectId,
+            String fkBacklogId, String backlogName,
+            String dbId, String dbName, String tableId, String tableName) throws QException {
+
+        String apiId = "";
+
+        EntityTmBacklogMvp ent = new EntityTmBacklogMvp();
+        ent.setFkBacklogId(fkBacklogId);
+        ent.setActionType("api");
+        ent.setActionNature("delete");
+        ent.setEndLimit(0);
+        EntityManager.select(ent);
+
+        if (ent.getApiId().length() == 0) {
+
+            String apiName = backlogName + " (Delete API)";
+            Carrier cr = new Carrier();
+            cr.set("backlogName", apiName);
+            cr.set("fkProjectId", fkProjectId);
+            cr.set("isApi", "1");
+            cr.set(EntityTmBacklog.API_ACTION, "D");
+            cr.set(EntityTmBacklog.API_SYNC_REQUEST, "async");
+            cr = insertNewBacklogShort(cr);
+
+            apiId = cr.get("id");
+
+            addBacklogMVCDBRelation4DeleteApi(fkBacklogId, apiId);
+        } else {
+            apiId = ent.getApiId();
+        }
+
+        createDeleteAPI4MVPFields(apiId, dbId, tableId);
+
+    }
+
+    private static void createSelectedFieldsRelation4MVP(String fkProjectId,
+            String fkBacklogId, String backlogName,
+            String dbId, String dbName, String tableId, String tableName) throws QException {
+
+        String apiId = "";
+
+//        carrier.addController("fkInputId", cp.isKeyExist(carrier, "fkInputId"));
+//        carrier.addController("attrName", cp.isKeyExist(carrier, "attrName"));
+//        carrier.addController("attrValue", cp.isKeyExist(carrier, "attrValue"));
+//        carrier.addController("attrType", cp.isKeyExist(carrier, "attrType"));
+//        carrier.addController("fkProjectId", cp.isKeyExist(carrier, "fkProjectId"));
+//        carrier.addController("fkBacklogId", cp.isKeyExist(carrier, "fkBacklogId"));
+        Carrier crout = new Carrier();
+
+    }
+
+    private static void createReadInfoAPI4MVP(String fkProjectId,
+            String fkBacklogId, String backlogName,
+            String dbId, String dbName, String tableId, String tableName) throws QException {
+
+        String apiId = "";
+
+        EntityTmBacklogMvp ent = new EntityTmBacklogMvp();
+        ent.setFkBacklogId(fkBacklogId);
+        ent.setActionType("api");
+        ent.setActionNature("info");
+        ent.setEndLimit(0);
+        EntityManager.select(ent);
+
+        if (ent.getApiId().length() == 0) {
+
+            String apiName = backlogName + " (Get Info API)";
+            Carrier cr = new Carrier();
+            cr.set("backlogName", apiName);
+            cr.set("fkProjectId", fkProjectId);
+            cr.set("isApi", "1");
+            cr.set(EntityTmBacklog.API_ACTION, "R");
+            cr.set(EntityTmBacklog.API_SYNC_REQUEST, "async");
+            cr = insertNewBacklogShort(cr);
+
+            apiId = cr.get("id");
+
+            addBacklogMVCDBRelation4InfoApi(fkBacklogId, apiId);
+        } else {
+            apiId = ent.getApiId();
+        }
+
+        createReadInfoAPI4MVPFields(apiId, dbId, tableId);
+
+    }
+
+    private static void createReadAPI4MVP(String fkProjectId,
+            String fkBacklogId, String backlogName,
+            String dbId, String dbName, String tableId, String tableName) throws QException {
+
+        String apiId = "";
+
+        EntityTmBacklogMvp ent = new EntityTmBacklogMvp();
+        ent.setFkBacklogId(fkBacklogId);
+        ent.setActionType("api");
+        ent.setActionNature("read");
+        ent.setEndLimit(0);
+        EntityManager.select(ent);
+
+        if (ent.getApiId().length() == 0) {
+
+            String apiName = backlogName + " (Read List API)";
+            Carrier cr = new Carrier();
+            cr.set("backlogName", apiName);
+            cr.set("fkProjectId", fkProjectId);
+            cr.set("isApi", "1");
+            cr.set(EntityTmBacklog.API_ACTION, "R");
+            cr.set(EntityTmBacklog.API_SYNC_REQUEST, "async");
+            cr = insertNewBacklogShort(cr);
+
+            apiId = cr.get("id");
+
+            addBacklogMVCDBRelation4ReadApi(fkBacklogId, apiId);
+        } else {
+            apiId = ent.getApiId();
+        }
+
+        createReadAPI4MVPFields(apiId, dbId, tableId);
+
+    }
+
+    private static void createUpdateAPI4MVP(String fkProjectId,
+            String fkBacklogId, String backlogName,
+            String dbId, String dbName, String tableId, String tableName) throws QException {
+
+        String apiId = "";
+
+        EntityTmBacklogMvp ent = new EntityTmBacklogMvp();
+        ent.setFkBacklogId(fkBacklogId);
+        ent.setActionType("api");
+        ent.setActionNature("update");
+        ent.setEndLimit(0);
+        EntityManager.select(ent);
+
+        if (ent.getApiId().length() == 0) {
+
+            String apiName = backlogName + " (Update API)";
+            Carrier cr = new Carrier();
+            cr.set("backlogName", apiName);
+            cr.set("fkProjectId", fkProjectId);
+            cr.set("isApi", "1");
+            cr.set(EntityTmBacklog.API_ACTION, "U");
+            cr.set(EntityTmBacklog.API_SYNC_REQUEST, "async");
+            cr = insertNewBacklogShort(cr);
+
+            apiId = cr.get("id");
+
+            addBacklogMVCDBRelation4UpdateApi(fkBacklogId, apiId);
+        } else {
+            apiId = ent.getApiId();
+        }
+
+        createUpdateAPI4MVPFields(apiId, dbId, tableId);
+
+    }
+
+    private static void createCreateAPI4MVP(String fkProjectId,
+            String fkBacklogId, String backlogName,
+            String dbId, String dbName, String tableId, String tableName) throws QException {
+
+        String apiId = "";
+
+        EntityTmBacklogMvp ent = new EntityTmBacklogMvp();
+        ent.setFkBacklogId(fkBacklogId);
+        ent.setActionType("api");
+        ent.setActionNature("create");
+        ent.setEndLimit(0);
+        EntityManager.select(ent);
+
+        if (ent.getApiId().length() == 0) {
+
+            String apiName = backlogName + " (Create API)";
+            Carrier cr = new Carrier();
+            cr.set("backlogName", apiName);
+            cr.set("fkProjectId", fkProjectId);
+            cr.set("isApi", "1");
+            cr.set(EntityTmBacklog.API_ACTION, "C");
+            cr.set(EntityTmBacklog.API_SYNC_REQUEST, "async");
+            cr = insertNewBacklogShort(cr);
+
+            apiId = cr.get("id");
+
+            addBacklogMVCDBRelation4CreateApi(fkBacklogId, apiId);
+        } else {
+            apiId = ent.getApiId();
+        }
+
+        createCreateAPI4MVPFields(apiId, dbId, tableId);
+
+    }
+
+    private static void emptyApiInputList(String fkBacklogId) throws QException {
+        if (fkBacklogId.trim().length() == 0) {
+            return;
+        }
+
+        EntityTmInput ent = new EntityTmInput();
+        ent.setFkBacklogId(fkBacklogId);
+        String idLine = EntityManager.select(ent).getValueLine(ent.toTableName());
+
+        if (idLine.length() > 3) {
+            ent.setId(idLine);
+            EntityManager.delete(ent);
+        }
+    }
+
+    private static void createDeleteAPI4MVPFields(String fkBacklogId, String dbId,
+            String tableId) throws QException {
+        if (tableId.trim().length() == 0) {
+            return;
+        }
+
+        emptyApiInputList(fkBacklogId);
+
+        EntityTmField ent = new EntityTmField();
+        ent.setFkTableId(tableId);
+        Carrier cr = EntityManager.select(ent);
+        String tn = ent.toTableName();
+        int rc = cr.getTableRowCount(tn);
+        for (int i = 0; i < rc; i++) {
+            EntityManager.mapCarrierToEntity(cr, tn, i, ent);
+
+            if (!ent.getFieldName().equals("id")) {
+                continue;
+            }
+
+            Carrier crIn = new Carrier();
+            crIn.set("fkBacklogId", fkBacklogId);
+            crIn.set("inputName", convertTableFieldNameToEntityfieldName(ent.getFieldName()));
+            crIn.set("inputType", "IN");
+            insertNewInput4Select4MVP(crIn);
+
+            Carrier crOut = new Carrier();
+            crOut.set("fkBacklogId", fkBacklogId);
+            crOut.set("inputName", convertTableFieldNameToEntityfieldName(ent.getFieldName()));
+            crOut.set("inputType", "OUT");
+            crOut.set(EntityTmInput.SEND_TO_DB_ID, dbId);
+            crOut.set(EntityTmInput.SEND_TO_TABLE_ID, tableId);
+            crOut.set(EntityTmInput.SEND_TO_FIELD_ID, ent.getId());
+            insertNewInput4Select4MVP(crOut);
+        }
+
+    }
+
+    private static void createUpdateAPI4MVPFields(String fkBacklogId, String dbId,
+            String tableId) throws QException {
+        if (tableId.trim().length() == 0) {
+            return;
+        }
+
+        emptyApiInputList(fkBacklogId);
+
+        EntityTmField ent = new EntityTmField();
+        ent.setFkTableId(tableId);
+        Carrier cr = EntityManager.select(ent);
+        String tn = ent.toTableName();
+        int rc = cr.getTableRowCount(tn);
+        for (int i = 0; i < rc; i++) {
+            EntityManager.mapCarrierToEntity(cr, tn, i, ent);
+
+            if (ent.getFieldName().equals("status")
+                    || ent.getFieldName().equals("insert_date")
+                    || ent.getFieldName().equals("modification_date")) {
+                continue;
+            }
+
+            Carrier crIn = new Carrier();
+            crIn.set("fkBacklogId", fkBacklogId);
+            crIn.set("inputName", convertTableFieldNameToEntityfieldName(ent.getFieldName()));
+            crIn.set("inputType", "IN");
+            insertNewInput4Select4MVP(crIn);
+
+            Carrier crOut = new Carrier();
+            crOut.set("fkBacklogId", fkBacklogId);
+            crOut.set("inputName", convertTableFieldNameToEntityfieldName(ent.getFieldName()));
+            crOut.set("inputType", "OUT");
+            crOut.set(EntityTmInput.SEND_TO_DB_ID, dbId);
+            crOut.set(EntityTmInput.SEND_TO_TABLE_ID, tableId);
+            crOut.set(EntityTmInput.SEND_TO_FIELD_ID, ent.getId());
+            insertNewInput4Select4MVP(crOut);
+        }
+
+    }
+
+    private static void createReadAPI4MVPFields(String fkBacklogId, String dbId,
+            String tableId) throws QException {
+        if (tableId.trim().length() == 0) {
+            return;
+        }
+
+        emptyApiInputList(fkBacklogId);
+
+        EntityTmField ent = new EntityTmField();
+        ent.setFkTableId(tableId);
+        Carrier cr = EntityManager.select(ent);
+        String tn = ent.toTableName();
+        int rc = cr.getTableRowCount(tn);
+        for (int i = 0; i < rc; i++) {
+            EntityManager.mapCarrierToEntity(cr, tn, i, ent);
+
+            if (ent.getFieldName().equals("status")
+                    || ent.getFieldName().equals("insert_date")
+                    || ent.getFieldName().equals("modification_date")) {
+                continue;
+            }
+
+            Carrier crIn = new Carrier();
+            crIn.set("fkBacklogId", fkBacklogId);
+            crIn.set("inputName", convertTableFieldNameToEntityfieldName(ent.getFieldName()));
+            crIn.set("inputType", "IN");
+            insertNewInput4Select4MVP(crIn);
+
+            Carrier crOut = new Carrier();
+            crOut.set("fkBacklogId", fkBacklogId);
+            crOut.set("inputName", convertTableFieldNameToEntityfieldName(ent.getFieldName()));
+            crOut.set("inputType", "OUT");
+            crOut.set(EntityTmInput.SELECT_FROM_DB_ID, dbId);
+            crOut.set(EntityTmInput.SELECT_FROM_TABLE_ID, tableId);
+            crOut.set(EntityTmInput.SELECT_FROM_FIELD_ID, ent.getId());
+            insertNewInput4Select4MVP(crOut);
+        }
+
+    }
+
+    private static void createReadInfoAPI4MVPFields(String fkBacklogId, String dbId,
+            String tableId) throws QException {
+        if (tableId.trim().length() == 0) {
+            return;
+        }
+
+        emptyApiInputList(fkBacklogId);
+
+        EntityTmField ent = new EntityTmField();
+        ent.setFkTableId(tableId);
+        Carrier cr = EntityManager.select(ent);
+
+        String tn = ent.toTableName();
+        int rc = cr.getTableRowCount(tn);
+        for (int i = 0; i < rc; i++) {
+            EntityManager.mapCarrierToEntity(cr, tn, i, ent);
+
+            if (ent.getFieldName().equals("status")
+                    || ent.getFieldName().equals("insert_date")
+                    || ent.getFieldName().equals("modification_date")) {
+                continue;
+            }
+
+            Carrier crOut = new Carrier();
+            crOut.set("fkBacklogId", fkBacklogId);
+            crOut.set("inputName", convertTableFieldNameToEntityfieldName(ent.getFieldName()));
+            crOut.set("inputType", "OUT");
+            crOut.set(EntityTmInput.SELECT_FROM_DB_ID, dbId);
+            crOut.set(EntityTmInput.SELECT_FROM_TABLE_ID, tableId);
+            crOut.set(EntityTmInput.SELECT_FROM_FIELD_ID, ent.getId());
+            insertNewInput4Select4MVP(crOut);
+        }
+
+        Carrier crIn = new Carrier();
+        crIn.set("fkBacklogId", fkBacklogId);
+        crIn.set("inputName", "id");
+        crIn.set("inputType", "IN");
+        insertNewInput4Select4MVP(crIn);
+
+    }
+
+    private static void createCreateAPI4MVPFields(String fkBacklogId, String dbId,
+            String tableId) throws QException {
+        if (tableId.trim().length() == 0) {
+            return;
+        }
+
+        emptyApiInputList(fkBacklogId);
+
+        EntityTmField ent = new EntityTmField();
+        ent.setFkTableId(tableId);
+        Carrier cr = EntityManager.select(ent);
+        String tn = ent.toTableName();
+        int rc = cr.getTableRowCount(tn);
+        for (int i = 0; i < rc; i++) {
+            EntityManager.mapCarrierToEntity(cr, tn, i, ent);
+
+            if (ent.getFieldName().equals("status")
+                    || ent.getFieldName().equals("id")
+                    || ent.getFieldName().equals("insert_date")
+                    || ent.getFieldName().equals("modification_date")) {
+                continue;
+            }
+
+            Carrier crIn = new Carrier();
+            crIn.set("fkBacklogId", fkBacklogId);
+            crIn.set("inputName", convertTableFieldNameToEntityfieldName(ent.getFieldName()));
+            crIn.set("inputType", "IN");
+            insertNewInput4Select4MVP(crIn);
+
+            Carrier crOut = new Carrier();
+            crOut.set("fkBacklogId", fkBacklogId);
+            crOut.set("inputName", convertTableFieldNameToEntityfieldName(ent.getFieldName()));
+            crOut.set("inputType", "OUT");
+            crOut.set(EntityTmInput.SEND_TO_DB_ID, dbId);
+            crOut.set(EntityTmInput.SEND_TO_TABLE_ID, tableId);
+            crOut.set(EntityTmInput.SEND_TO_FIELD_ID, ent.getId());
+            insertNewInput4Select4MVP(crOut);
+        }
+
+    }
+
+    private static void createMvpDBIssues(String fkProjectId, String fkBacklogId,
+            String tableName1) throws Exception {
+        String tableName = mapStringToMvpStyle(tableName1);
+        tableName = tableName.replaceAll(" ", "_");
+        tableName = tableName.toLowerCase(Locale.ENGLISH);
+
+        String dbName = BACKLOG_SYSTEM_MVP_DB;
+
+        Carrier carrier = new Carrier();
+        carrier.set("dbName", dbName);
+        carrier.set("dbname", dbName);
+        insertNewDb4Mvp(carrier);
+
+        carrier.set("dbId", carrier.get("id"));
+        carrier.set("dbid", carrier.get("id"));
+        commitDatabaseOnServer(carrier);
+
+        carrier.set("tableName", tableName);
+        Carrier crTbl = insertNewTable4Mvp(carrier);
+
+        String tableId = crTbl.get("id");
+
+        addField4MVP(fkBacklogId, carrier.get("dbid"), tableId);
+
+        Carrier crTbl2 = new Carrier();
+        crTbl2.set("tableId", tableId);
+
+        deleteTableOnServer(tableName);
+
+        createTableOnServer(crTbl2);
+
+        addBacklogMVCDBRelation(fkBacklogId, carrier.get("dbid"), dbName,
+                tableId, tableName);
+
+        createUpdateAPI4MVP(fkProjectId, fkBacklogId, tableName1, carrier.get("dbid"), dbName, tableId, tableName);
+        createCreateAPI4MVP(fkProjectId, fkBacklogId, tableName1, carrier.get("dbid"), dbName, tableId, tableName);
+        createDeleteAPI4MVP(fkProjectId, fkBacklogId, tableName1, carrier.get("dbid"), dbName, tableId, tableName);
+        createReadAPI4MVP(fkProjectId, fkBacklogId, tableName1, carrier.get("dbid"), dbName, tableId, tableName);
+        createReadInfoAPI4MVP(fkProjectId, fkBacklogId, tableName1, carrier.get("dbid"), dbName, tableId, tableName);
+
+    }
+
+    private static void addBacklogMVCDBRelation(String fkBacklogId, String dbId,
+            String dbName, String tableId, String tableName) throws QException {
+        EntityTmBacklogMvp ent = new EntityTmBacklogMvp();
+        ent.setFkBacklogId(fkBacklogId);
+        ent.setDbName(dbName);
+        ent.setDbId(dbId);
+        ent.setTableId(tableId);
+        ent.setTableName(tableName);
+        ent.setActionType("entity");
+        EntityManager.insert(ent);
+    }
+
+    private static void addBacklogMVCDBRelation4UpdateApi(String fkBacklogId, String apiId) throws QException {
+        EntityTmBacklogMvp ent = new EntityTmBacklogMvp();
+        ent.setFkBacklogId(fkBacklogId);
+        ent.setApiId(apiId);
+        ent.setActionType("api");
+        ent.setActionNature("update");
+        EntityManager.insert(ent);
+    }
+
+    private static void addBacklogMVCDBRelation4CreateApi(String fkBacklogId, String apiId) throws QException {
+        EntityTmBacklogMvp ent = new EntityTmBacklogMvp();
+        ent.setFkBacklogId(fkBacklogId);
+        ent.setApiId(apiId);
+        ent.setActionType("api");
+        ent.setActionNature("create");
+        EntityManager.insert(ent);
+    }
+
+    private static void addBacklogMVCDBRelation4DeleteApi(String fkBacklogId, String apiId) throws QException {
+        EntityTmBacklogMvp ent = new EntityTmBacklogMvp();
+        ent.setFkBacklogId(fkBacklogId);
+        ent.setApiId(apiId);
+        ent.setActionType("api");
+        ent.setActionNature("delete");
+        EntityManager.insert(ent);
+    }
+
+    private static void addBacklogMVCDBRelation4ReadApi(String fkBacklogId, String apiId) throws QException {
+        EntityTmBacklogMvp ent = new EntityTmBacklogMvp();
+        ent.setFkBacklogId(fkBacklogId);
+        ent.setApiId(apiId);
+        ent.setActionType("api");
+        ent.setActionNature("read");
+        EntityManager.insert(ent);
+    }
+
+    private static void addBacklogMVCDBRelation4InfoApi(String fkBacklogId, String apiId) throws QException {
+        EntityTmBacklogMvp ent = new EntityTmBacklogMvp();
+        ent.setFkBacklogId(fkBacklogId);
+        ent.setApiId(apiId);
+        ent.setActionType("api");
+        ent.setActionNature("info");
+        EntityManager.insert(ent);
+    }
+
+    private static void deleteTableOnServer(String tableName) throws Exception {
+        String query = "DROP TABLE IF EXISTS " + SessionManager.getCurrentDomain() + "."
+                + BACKLOG_SYSTEM_MVP_DB + "_" + tableName;
+        EntityManager.executeUpdateByQuery(query);
+    }
+
+    private static void addField4MVP(String fkBacklogId, String bdid, String tableId) throws QException {
+
+        if (fkBacklogId.trim().length() == 0) {
+            return;
+        }
+
+        emptyTableField4MVP(fkBacklogId, bdid, tableId);
+
+        EntityTmInput ent = new EntityTmInput();
+        ent.setFkBacklogId(fkBacklogId);
+        ent.setInputType("IN");
+        Carrier cr = EntityManager.select(ent);
+
+        String tn = ent.toTableName();
+        int rc = cr.getTableRowCount(tn);
+        for (int i = 0; i < rc; i++) {
+            EntityManager.mapCarrierToEntity(cr, tn, i, ent);
+            String fieldName = ent.getInputName();
+
+            fieldName = mapStringToMvpStyle(fieldName);
+            fieldName = fieldName.replaceAll(" ", "_");
+            fieldName = fieldName.toLowerCase(Locale.ENGLISH);
+
+            Carrier crin = new Carrier();
+            crin.set("dbid", bdid);
+            crin.set("tableId", tableId);
+            crin.set("fieldName", fieldName);
+            crin.set("fieldType", "text");
+            insertNewField4MVP(crin);
+
+            //Insert selected fields
+            Carrier crAt = new Carrier();
+            crAt.set("fkInputId", ent.getId());
+            crAt.set("attrName", "sa-selectedfield");
+            crAt.set("attrValue", convertTableFieldNameToEntityfieldName(fieldName));
+            crAt.set("attrType", "comp");
+            crAt.set("fkProjectId", ent.getFkProjectId());
+            crAt.set("fkBacklogId", ent.getFkBacklogId());
+            insertNewInputAttribute(crAt);
+
+        }
+
+        Carrier crin = new Carrier();
+        crin.set("dbid", bdid);
+        crin.set("tableId", tableId);
+        crin.set("fieldType", "varchar");
+        crin.set("fieldLength", "77");
+
+        crin.set("fieldName", "id");
+        insertNewField4MVP(crin);
+
+        crin.set("fieldName", "status");
+        insertNewField4MVP(crin);
+
+        crin.set("fieldName", "insert_date");
+        insertNewField4MVP(crin);
+
+        crin.set("fieldName", "modification_date");
+        insertNewField4MVP(crin);
+
+    }
+
+    private static void emptyTableField4MVP(String fkBacklogId, String bdid, String tableId) throws QException {
+
+        if (tableId.trim().length() == 0) {
+            return;
+        }
+
+        EntityTmField ent = new EntityTmField();
+        ent.setFkTableId(tableId);
+        Carrier cr = EntityManager.select(ent);
+
+        String tn = ent.toTableName();
+        int rc = cr.getTableRowCount(tn);
+        for (int i = 0; i < rc; i++) {
+            EntityManager.mapCarrierToEntity(cr, tn, i, ent);
+            EntityManager.delete(ent);
+        }
+
+    }
+
+    public static Carrier insertNewField4MVP(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("dbid", cp.hasValue(carrier, "dbid"));
+        carrier.addController("tableId", cp.hasValue(carrier, "tableId"));
+        carrier.addController("fieldName", cp.hasValue(carrier, "fieldName"));
+        carrier.addController("fieldType", cp.hasValue(carrier, "fieldType"));
+//        carrier.addController("fieldLength", cp.hasValue(carrier, "fieldLength"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String orderNo = carrier.get("orderNo").trim().length() == 0
+                ? getDbFieldNextOrderNo(carrier.get("tableId"))
+                : carrier.get("orderNo");
+
+        EntityTmField ent = new EntityTmField();
+        ent.setFieldName(carrier.get("fieldName"));
+        ent.setFieldType(carrier.get("fieldType"));
+        ent.setFieldLength(carrier.get("fieldLength"));
+        ent.setFkTableId(carrier.get("tableId"));
+        ent.setFkDbId(carrier.get("dbid"));
+        ent.setOrderNo(orderNo);
+        EntityManager.insert(ent);
+
+        return carrier;
+    }
+
+    private static String mapStringToMvpStyle(String arg) {
+        String res = "";
+
+        for (int pos = 0; pos < arg.length(); ++pos) {
+            char c = arg.charAt(pos);
+            String c1 = Character.toString(c);
+
+            if (c1.length() == 0) {
+                continue;
+            }
+
+            if (!c1.equals(" ") && !ENGLIS_ABC.contains(c1)) {
+                continue;
+            }
+
+            res += c1;
+        }
+
+        if (res.trim().length() == 0) {
+            res = generateRandomString(8);
+        }
+
+        return res;
+    }
+
+    public static String generateRandomString(int length) {
+        if (length < 1) {
+            throw new IllegalArgumentException();
+        }
+
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+
+            // 0-62 (exclusive), random returns 0-61
+            int rndCharAt = random.nextInt(DATA_FOR_RANDOM_STRING.length());
+            char rndChar = DATA_FOR_RANDOM_STRING.charAt(rndCharAt);
+
+            sb.append(rndChar);
+
+        }
+
+        return sb.toString();
+
+    }
+
+    public static Carrier sendEmail(Carrier carrier) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("to", cp.hasValue(carrier, "to"));
+        carrier.addController("subject", cp.hasValue(carrier, "subject"));
+        carrier.addController("message", cp.hasValue(carrier, "message"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        MailSender.sendMail(carrier.get("to"), carrier.get("subject"), carrier.get("message"), carrier.get("cc"), carrier.get("bb"));
+
+        return carrier;
+    }
+
     public static Carrier sendApiIntegrationForTest(Carrier carrier) throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("method", cp.hasValue(carrier, "method"));
@@ -291,8 +1000,7 @@ public class TmModel {
         api.setUrl(carrier.get("url"));
         api.setContent(carrier.get("content"));
         api.setContentType(carrier.get("contentType"));
-        
-        
+
         return carrier;
     }
 
@@ -5634,6 +6342,28 @@ public class TmModel {
         return carrier;
     }
 
+    public static Carrier insertNewDb4Mvp(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("dbName", cp.hasValue(carrier, "dbName"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmDatabase ent = new EntityTmDatabase();
+        ent.setDbName(carrier.get("dbName"));
+        ent.setEndLimit(0);
+        EntityManager.select(ent);
+
+        if (ent.getId().trim().length() == 0) {
+            ent.setDbName(carrier.get("dbName"));
+            EntityManager.insert(ent);
+        }
+
+        carrier.set("id", ent.getId());
+
+        return carrier;
+    }
+
     public static Carrier deleteDbTable(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("id", cp.hasValue(carrier, "id"));
@@ -5808,6 +6538,34 @@ public class TmModel {
 
         carrier.set("id", ent.getId());
 //        getDBStructureList4Select(carrier).copyTo(carrier);
+        return carrier;
+    }
+
+    public static Carrier insertNewTable4Mvp(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("dbid", cp.hasValue(carrier, "dbid"));
+        carrier.addController("tableName", cp.hasValue(carrier, "tableName"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmTable ent = new EntityTmTable();
+        ent.setTableName(carrier.get("tableName"));
+        ent.setFkDbId(carrier.get("dbid"));
+        ent.setEndLimit("0");
+        EntityManager.select(ent);
+
+        if (ent.getId().trim().length() == 0) {
+
+            String orderNo = carrier.get("orderNo").trim().length() == 0
+                    ? getDbTableNextOrderNo(carrier.get("dbid"))
+                    : carrier.get("orderNo");
+
+            ent.setOrderNo(orderNo);
+            EntityManager.insert(ent);
+
+        }
+        carrier.set("id", ent.getId());
         return carrier;
     }
 
@@ -7795,6 +8553,8 @@ public class TmModel {
         ent.setCreatedTime(QDate.getCurrentTime());
         ent.setBacklogStatus(backlogStatus);
         ent.setOrderNo(orderNo);
+        ent.setApiAction(carrier.get("apiAction"));
+        ent.setApiSyncRequest(carrier.get("apiSyncRequest"));
         ent.setBacklogNo(backlogNo);
         EntityManager.insert(ent);
 
@@ -8408,7 +9168,7 @@ public class TmModel {
     }
 
     public static Carrier getBacklogList4Select(Carrier carrier) throws QException {
-        
+
         String fkBacklogId = carrier.get("fkBacklogId");
         EntityTmTaskFile entFile = new EntityTmTaskFile();
         entFile.setFkProjectId(carrier.getValue("fkProjectId").toString());
@@ -9920,7 +10680,36 @@ public class TmModel {
         return cout;
     }
 
+    public static Carrier insertNewInput4Select4MVP(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController(EntityTmInput.FK_BACKLOG_ID, cp.hasValue(carrier, EntityTmInput.FK_BACKLOG_ID));
+        carrier.addController(EntityTmInput.INPUT_NAME, cp.hasValue(carrier, EntityTmInput.INPUT_NAME));
+        carrier.addController(EntityTmInput.INPUT_TYPE, cp.hasValue(carrier, EntityTmInput.INPUT_TYPE));
+
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String cellNo = carrier.get("cellNo").length() > 0 ? carrier.get("cellNo") : "6";
+        String orderNo = carrier.get("orderNo").length() > 0
+                ? carrier.get("orderNo")
+                : getInputOrderNo(carrier.get("fkBacklogId"));
+
+        EntityTmInput ent = new EntityTmInput();
+        EntityManager.mapCarrierToEntity(carrier, ent);
+        ent.setOrderNo(orderNo);
+        ent.setCellNo(cellNo);
+        ent.setParam3(Config.getProperty("component.design"));
+        EntityManager.insert(ent);
+
+        Carrier crOut = new Carrier();
+        crOut.set("id", ent.getId());
+
+        return crOut;
+    }
+
     public static Carrier insertNewInput4Select(Carrier carrier) throws QException {
+
         String cellNo = carrier.get("cellNo").length() > 0 ? carrier.get("cellNo") : "6";
         String orderNo = carrier.get("orderNo").length() > 0
                 ? carrier.get("orderNo")
@@ -11528,6 +12317,7 @@ public class TmModel {
         Carrier crComp = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COMPONENT);
         Carrier crCol = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COLUMN);
         Carrier crColName = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COLUMN_NAME);
+        Carrier crInTree = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_IN_TREE);
 
         EntityTmInputTableComp ent = new EntityTmInputTableComp();
         ent.setId(fkInputTableId);
@@ -11544,6 +12334,7 @@ public class TmModel {
             crOut.setValue(tn, i, "showComponent", crComp.get(ent.getId()));
             crOut.setValue(tn, i, "showColumn", crCol.get(ent.getId()));
             crOut.setValue(tn, i, "showColumnName", crColName.get(ent.getId()));
+            crOut.setValue(tn, i, "showInTree", crInTree.get(ent.getId()));
         }
         crOut.renameTableName(tn, "inputTableCompList");
         return crOut;
@@ -11603,6 +12394,7 @@ public class TmModel {
         Carrier crComp = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COMPONENT);
         Carrier crCol = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COLUMN);
         Carrier crColName = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COLUMN_NAME);
+        Carrier crInTree = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_IN_TREE);
 
         String tn = ent.toTableName();
         int rc = crOut.getTableRowCount(tn);
@@ -11613,6 +12405,7 @@ public class TmModel {
             crOut.setValue(tn, i, "showComponent", crComp.get(ent.getId()));
             crOut.setValue(tn, i, "showColumn", crCol.get(ent.getId()));
             crOut.setValue(tn, i, "showColumnName", crColName.get(ent.getId()));
+            crOut.setValue(tn, i, "showInTree", crInTree.get(ent.getId()));
         }
         crOut.renameTableName(tn, "inputTableCompList");
         return crOut;
@@ -11965,18 +12758,14 @@ public class TmModel {
         String status = carrier.get("taskStatus").length() == 0
                 ? "new"
                 : carrier.get("taskStatus");
-        
-      String taskNature = carrier.get("taskNature").length() == 0
+
+        String taskNature = carrier.get("taskNature").length() == 0
                 ? "new"
                 : carrier.get("taskNature");
-        
-      String taskPriority = carrier.get("taskPriority").length() == 0
+
+        String taskPriority = carrier.get("taskPriority").length() == 0
                 ? "1"
                 : carrier.get("taskPriorityv");
-        
-          
-        
-       
 
         EntityTmBacklogTask ent = new EntityTmBacklogTask();
         ent.setFkTaskTypeId(carrier.get("fkTaskTypeId"));

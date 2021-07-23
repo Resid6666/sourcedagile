@@ -1,7 +1,7 @@
- 
 package utility;
 
 import controllerpool.ControllerPool;
+import java.util.Arrays;
 import java.util.Locale;
 import label.CoreLabel;
 import module.io.IoModel;
@@ -55,9 +55,53 @@ public class BEAction {
 
         } else {
             carrier = callContainerAPI(carrier);
+            carrier = mergeContainerOutput(apiId, carrier);
+        }
+        
+        if (carrier.hasError()){
+            Carrier crErr = new Carrier();
+            carrier.copyTable("USER_ERROR_TABLE", crErr);
+            carrier = crErr;
         }
 
         return carrier;
+    }
+
+    public static Carrier mergeContainerOutput(String apiId, Carrier carrier) throws Exception {
+        Carrier crOutput = getOutputList(apiId);
+//        Carrier crOutputIdPair = crOutput.getKVFromTable(CoreLabel.RESULT_SET, "id", "inputName");
+//        Carrier crOutputKV = mapValuesToOutputList(carrier, crOutput);
+
+        Carrier crOut = new Carrier();
+        String tn1 = carrier.getTableIndex(0);
+        carrier.copyTable(tn1, crOut);
+        carrier.copyTable("USER_ERROR_TABLE", crOut);
+
+        String[] outputList = crOutput.getValueLine(CoreLabel.RESULT_SET, "inputName", ",").split(",");
+        for (String k : outputList) {
+            if (k.length() == 0) {
+                continue;
+            }
+            crOut.set(k, carrier.get(k));
+        }
+
+        String tn = crOut.getTableIndex(0);
+        String cols[] = crOut.getTableColumnNames(tn);
+        for (String col : cols) {
+            if (col.length() == 0) {
+                continue;
+            }
+
+            if (col.equals("code") || col.equals("message")) {
+                continue;
+            }
+
+            if (!Arrays.asList(outputList).contains(col)) {
+                crOut.removeColoumn(tn, col);
+            }
+        }
+
+        return crOut;
     }
 
     public static Carrier callInsertAPI(Carrier carrier) throws Exception {
@@ -217,7 +261,7 @@ public class BEAction {
         return crInput;
     }
 
-    public static Carrier getOutpuList(String apiId) throws QException {
+    public static Carrier getOutputList(String apiId) throws QException {
         String sql = "select id,input_name,select_from_db_id,select_from_table_id,select_from_field_id,"
                 + " send_To_Db_Id,send_To_Table_Id,send_To_Field_Id,send_To_Backlog_Id "
                 + " from " + SessionManager.getCurrentDomain() + ".tm_input "
@@ -334,6 +378,7 @@ public class BEAction {
         String fieldIdLines = outputList.getValueLine(CoreLabel.RESULT_SET, "selectFromFieldId");
         Carrier crInputField = new Carrier();
         Carrier crFieldKV = new Carrier();
+        Carrier crFieldKVVerse = new Carrier();
 
         if (fieldIdLines.length() > 2) {
             EntityTmField entDB = new EntityTmField();
@@ -354,6 +399,7 @@ public class BEAction {
                 fieldName = convertTableFieldNameToEntityfieldName(fieldName);
 
                 crFieldKV.set(fieldName, inputName);
+                crFieldKVVerse.set(inputName, fieldName);
 
                 String value = crInputKV.get(fieldName);
 
@@ -366,6 +412,7 @@ public class BEAction {
             crInputField.setSelectedField(updatedField);
             crInputField.set("selectedFieldCore", selectedFieldCore);
             crInputField.set("fieldKV", crFieldKV);
+            crInputField.set("fieldKVVerse", crFieldKVVerse);
         }
 
         return crInputField;
@@ -384,7 +431,7 @@ public class BEAction {
 
     public static Carrier updateObjectsToDB(Carrier carrier) throws QException, Exception {
         String apiId = carrier.get("apiId");
-        Carrier crOutput = getOutpuList(apiId);
+        Carrier crOutput = getOutputList(apiId);
         Carrier crOutputIdPair = crOutput.getKVFromTable(CoreLabel.RESULT_SET, "id", "inputName");
         Carrier crOutputKV = mapValuesToOutputList(carrier, crOutput);
 
@@ -409,7 +456,7 @@ public class BEAction {
 
     public static Carrier deleteObjectsToDB(Carrier carrier) throws QException, Exception {
         String apiId = carrier.get("apiId");
-        Carrier crOutput = getOutpuList(apiId);
+        Carrier crOutput = getOutputList(apiId);
         Carrier crOutputIdPair = crOutput.getKVFromTable(CoreLabel.RESULT_SET, "id", "inputName");
         Carrier crOutputKV = mapValuesToOutputList(carrier, crOutput);
 
@@ -434,29 +481,26 @@ public class BEAction {
 
     public static Carrier containerObjectAction(Carrier carrier) throws QException, Exception {
         String apiId = carrier.get("apiId");
-        Carrier crOutput = getOutpuList(apiId);
+        Carrier crOutput = getOutputList(apiId);
         Carrier crOutputIdPair = crOutput.getKVFromTable(CoreLabel.RESULT_SET, "id", "inputName");
         Carrier crOutputKV = mapValuesToOutputList(carrier, crOutput);
-
 
         String sendToBacklogId = crOutput.getValueLine(CoreLabel.RESULT_SET, "sendToBacklogId");
         Carrier cr1 = sendToRelatedApi(crOutputKV, sendToBacklogId);
         cr1.copyTo(crOutputKV);
-        
+
         String tableName = carrier.getTableIndex(0);
         carrier.copyTable(tableName, crOutputKV);
 
         return crOutputKV;
     }
-    
-    
 
     public static Carrier selectObjectsToDB(Carrier carrier) throws QException, Exception {
-        Carrier crInputField= new Carrier();
+        Carrier crInputField = new Carrier();
         carrier.copyKeys(crInputField);
-        
+
         String apiId = carrier.get("apiId");
-        Carrier crOutput = getOutpuList(apiId);
+        Carrier crOutput = getOutputList(apiId);
         Carrier crOutputIdPair = crOutput.getKVFromTable(CoreLabel.RESULT_SET, "id", "inputName");
         Carrier crOutputKV = mapValuesToOutputList(carrier, crOutput);
 
@@ -464,12 +508,13 @@ public class BEAction {
 
         String dbName = getDBNameByOutput4Select(crOutput);
         String tableName = getTableNameByOutput4Select(crOutput);
-        
+
         convertOutputListToFieldKV4Select(crOutput, crInputField, crOutputIdPair).copyTo(crInputField);
+
+        crInputField = addDbDescriptionField4Select(crInputField, crOutputIdPair, outputIdLn);
         Carrier crFieldKV = (Carrier) crInputField.getValue("fieldKV");
         String selectedFieldCore = crInputField.get("selectedFieldCore");
 
-        crInputField = addDbDescriptionField(crInputField, crOutputIdPair, outputIdLn);
         crInputField.setEntityName(tableName);
         crInputField.setEntityDbName(dbName);
         crInputField = EntityManager.select(crInputField);
@@ -488,9 +533,10 @@ public class BEAction {
 
         String[] fieldKeys = crFieldKV.getKeys();
         for (String kk : fieldKeys) {
-            if (kk.length() > 2) {
+            if (kk.trim().length() > 0) {
                 String coln = crFieldKV.get(kk);
                 if (!coln.equals(kk)) {
+                    carrier.renameKey(kk, coln);
                     carrier.renameTableColumn(dbName + "_" + tableName, kk, coln);
                 }
             }
@@ -500,7 +546,7 @@ public class BEAction {
 
     public static Carrier insertObjectsToDB(Carrier carrier) throws QException, Exception {
         String apiId = carrier.get("apiId");
-        Carrier crOutput = getOutpuList(apiId);
+        Carrier crOutput = getOutputList(apiId);
         Carrier crOutputIdPair = crOutput.getKVFromTable(CoreLabel.RESULT_SET, "id", "inputName");
         Carrier crOutputKV = mapValuesToOutputList(carrier, crOutput);
 
@@ -513,13 +559,17 @@ public class BEAction {
         crInputField = addDbDescriptionField(crInputField, crOutputIdPair, outputIdLn);
         crInputField.setEntityName(tableName);
         crInputField.setEntityDbName(dbName);
-        crInputField = EntityManager.insert(crInputField);
+        Carrier crInputFieldNew = EntityManager.insert(crInputField);
+
+        carrier.set("id", crInputFieldNew.get("id"));
 
         String sendToBacklogId = crOutput.getValueLine(CoreLabel.RESULT_SET, "sendToBacklogId");
-        Carrier cr1 = sendToRelatedApi(crInputField, sendToBacklogId);
-        cr1.copyTo(crInputField);
+        Carrier cr1 = sendToRelatedApi(carrier, sendToBacklogId);
+        cr1.copyTo(carrier);
 
-        return crInputField;
+        Carrier crOutNew = new Carrier();
+        crOutNew.set("id", crInputFieldNew.get("id"));
+        return crOutNew;
     }
 
     private static Carrier sendToRelatedApi(Carrier carrier, String apiId) throws QException, Exception {
@@ -561,7 +611,7 @@ public class BEAction {
         int rc = cr.getTableRowCount(tn);
         for (int i = 0; i < rc; i++) {
             EntityManager.mapCarrierToEntity(cr, tn, i, ent);
-            String fnName = ent.getDescription(); 
+            String fnName = ent.getDescription();
             if (SAFunction.IsDeleteCommand(fnName)) {
                 carrier.set("fnName", fnName);
 
@@ -698,6 +748,110 @@ public class BEAction {
         return res;
     }
 
+    public static Carrier addDbDescriptionField4Select(Carrier crOutput, Carrier crOutputKV, String outputIdLines) throws QException {
+        if (outputIdLines.length() < 3) {
+            return crOutput;
+        }
+
+        Carrier crFieldKV = new Carrier();
+
+        Carrier crFieldKVVerse = new Carrier();
+
+        try {
+            crFieldKV = (Carrier) crOutput.getValue("fieldKV");
+        } catch (Exception err) {
+        }
+
+        try {
+            crFieldKVVerse = (Carrier) crOutput.getValue("fieldKVVerse");
+        } catch (Exception err) {
+        }
+
+        EntityTmInputDescription ent = new EntityTmInputDescription();
+        ent.setFkInputId(outputIdLines);
+        Carrier cr = EntityManager.select(ent);
+
+        String tn = ent.toTableName();
+        int rc = cr.getTableRowCount(tn);
+        for (int i = 0; i < rc; i++) {
+            EntityManager.mapCarrierToEntity(cr, tn, i, ent);
+            String descBody = ent.getDescription();
+            String inputName = crOutputKV.get(ent.getFkInputId());
+            String groupByField = getGroupByNameString(descBody);
+
+            String inputNameVerse = crFieldKVVerse.get(inputName);
+
+            if (groupByField.length() > 0) {
+                String arg = (crOutput.isKeyExist(groupByField))
+                        ? crOutput.get(groupByField) + "," + inputNameVerse
+                        : inputNameVerse;
+
+                crOutput.set(groupByField, arg);
+                crOutput.removeFromSelectedField(arg);
+
+                String newField = getGroupByNameStringDomain(descBody)
+                        + fcLetter(inputNameVerse);
+                crFieldKV.set(newField, inputName);
+            }
+
+        }
+
+        crOutput.setValue("fieldKV", crFieldKV);
+        return crOutput;
+    }
+
+    public static String fcLetter(String arg) {
+        String res = "";
+        try {
+                res = arg.substring(0, 1).toUpperCase(Locale.ENGLISH) + arg.substring(1, arg.length());
+        } catch (Exception ex) {
+           
+        }
+        return res;
+    }
+
+    private static String getGroupByNameString(String descBody) {
+        String field = "";
+        if (descBody.contains("fn_(iscurrentuser)")) {
+            field = "currentUserField";
+
+        } else if (descBody.contains("fn_(iscurrentdate)")) {
+            field = "currentDateField";
+
+        } else if (descBody.contains("fn_(iscurrenttime)")) {
+            field = "currentTimeField";
+        } else if (descBody.contains("fn_(ismaximumvalue)")) {
+            field = "isMaximumField";
+        } else if (descBody.contains("fn_(isminimumvalue)")) {
+            field = "isMinimumField";
+        } else if (descBody.contains("fn_(isrowcount)")) {
+            field = "isCountField";
+        } else if (descBody.contains("fn_(isaveragevalue)")) {
+            field = "isAverageField";
+        } else if (descBody.contains("fn_(issummary)")) {
+            field = "isSumField";
+
+        }
+        return field;
+    }
+
+    private static String getGroupByNameStringDomain(String descBody) {
+        String field = "";
+        if (descBody.contains("fn_(ismaximumvalue)")) {
+            field = "maximum";
+        } else if (descBody.contains("fn_(isminimumvalue)")) {
+            field = "minimum";
+        } else if (descBody.contains("fn_(isrowcount)")) {
+            field = "count";
+        } else if (descBody.contains("fn_(isaveragevalue)")) {
+            field = "average";
+        } else if (descBody.contains("fn_(issummary)")) {
+            field = "sum";
+
+        }
+        return field;
+    }
+
     public static Carrier addDbDescriptionField(Carrier crOutput, Carrier crOutputKV, String outputIdLines) throws QException {
         if (outputIdLines.length() < 3) {
             return crOutput;
@@ -713,64 +867,13 @@ public class BEAction {
             EntityManager.mapCarrierToEntity(cr, tn, i, ent);
             String descBody = ent.getDescription();
             String inputName = crOutputKV.get(ent.getFkInputId());
+            String field = getGroupByNameString(descBody);;
 
-            if (descBody.contains("fn_(iscurrentuser)")) {
-                String field = "currentUserField";
-                String arg = (crOutput.isKeyExist(field))
-                        ? crOutput.get(field) + "," + inputName
-                        : inputName;
+            String arg = (crOutput.isKeyExist(field))
+                    ? crOutput.get(field) + "," + inputName
+                    : inputName;
 
-                crOutput.set(field, arg);
-            } else if (descBody.contains("fn_(iscurrentdate)")) {
-                String field = "currentDateField";
-                String arg = (crOutput.isKeyExist(field))
-                        ? crOutput.get(field) + "," + inputName
-                        : inputName;
-
-                crOutput.set(field, arg);
-            } else if (descBody.contains("fn_(iscurrenttime)")) {
-                String field = "currentTimeField";
-                String arg = (crOutput.isKeyExist(field))
-                        ? crOutput.get(field) + "," + inputName
-                        : inputName;
-
-                crOutput.set(field, arg);
-            } else if (descBody.contains("fn_(ismaximumvalue)")) {
-                String field = "isMaximumField";
-                String arg = (crOutput.isKeyExist(field))
-                        ? crOutput.get(field) + "," + inputName
-                        : inputName;
-
-                crOutput.set(field, arg);
-            } else if (descBody.contains("fn_(isminimumvalue)")) {
-                String field = "isMinimumField";
-                String arg = (crOutput.isKeyExist(field))
-                        ? crOutput.get(field) + "," + inputName
-                        : inputName;
-
-                crOutput.set(field, arg);
-            } else if (descBody.contains("fn_(isrowcount)")) {
-                String field = "isCountField";
-                String arg = (crOutput.isKeyExist(field))
-                        ? crOutput.get(field) + "," + inputName
-                        : inputName;
-
-                crOutput.set(field, arg);
-            } else if (descBody.contains("fn_(isaveragevalue)")) {
-                String field = "isAverageField";
-                String arg = (crOutput.isKeyExist(field))
-                        ? crOutput.get(field) + "," + inputName
-                        : inputName;
-
-                crOutput.set(field, arg);
-            } else if (descBody.contains("fn_(issummary)")) {
-                String field = "isSumField";
-                String arg = (crOutput.isKeyExist(field))
-                        ? crOutput.get(field) + "," + inputName
-                        : inputName;
-
-                crOutput.set(field, arg);
-            }
+            crOutput.set(field, arg);
 
         }
 

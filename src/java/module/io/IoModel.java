@@ -5,14 +5,11 @@
  */
 package module.io;
 
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
 import controllerpool.ControllerPool;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -20,36 +17,23 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.time.Instant;
 import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
 import javax.xml.bind.DatatypeConverter;
-import module.cr.entity.EntityCrUser;
 import module.tm.entity.EntityTmBacklog;
 import module.tm.entity.EntityTmDatabase;
 import module.tm.entity.EntityTmInput;
 import module.tm.entity.EntityTmJsCode;
 import module.tm.entity.EntityTmTable;
-import org.apache.commons.codec.binary.Base64;
 import resources.config.Config;
 import utility.BEAction;
 import utility.Carrier;
 import utility.GeneralProperties;
-import utility.MailSender;
-import static utility.MailSender.sendMail;
 import utility.QException;
 import utility.SessionManager;
 import utility.sqlgenerator.DBConnection;
 import utility.sqlgenerator.EntityManager;
-import utility.sqlgenerator.QLogger;
-import static utility.sqlgenerator.SQLConnection.convertResultSetToCarrier;
 
 /**
  *
