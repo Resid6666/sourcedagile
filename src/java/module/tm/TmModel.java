@@ -281,11 +281,26 @@ public class TmModel {
 
     }
 
-    //////////////////////////////////////////////////////
+    public Carrier getEmptyApiZad(Carrier carrier) throws QException {
+
+        return carrier;
+    }
+
+//////////////////////////////////////////////////////
     /////////////////////////////////////////
     //// type code here
     ///////////////////////////////////////////////
-    public Carrier getEmptyApiZad(Carrier carrier) throws QException {
+    public Carrier addTestByResid(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("name", cp.hasValue(carrier, "name"));
+
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmJsCode ent = new EntityTmJsCode();
+        ent.setFnCoreName(carrier.get("name"));
+        EntityManager.insert(ent);
 
         return carrier;
     }
@@ -5040,6 +5055,14 @@ public class TmModel {
         EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
         ent.setId(carrier.get("id"));
         EntityManager.select(ent);
+
+        carrier.set("fkBacklogId", ent.getFkBacklogId());
+
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
         ent.setFkRelatedApiId(carrier.get("apiId"));
         ent.setShortDescForApi(carrier.get("shortDesc"));
         EntityManager.update(ent);
@@ -5057,6 +5080,14 @@ public class TmModel {
         EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
         ent.setId(carrier.get("id"));
         EntityManager.select(ent);
+        
+        carrier.set("fkBacklogId", ent.getFkBacklogId());
+
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+        
         ent.setFkRelatedScId(carrier.get("fkFunctionId"));
         EntityManager.update(ent);
         return carrier;
@@ -5072,6 +5103,16 @@ public class TmModel {
         EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
         ent.setId(carrier.get("id"));
         EntityManager.select(ent);
+        
+        
+        carrier.set("fkBacklogId", ent.getFkBacklogId());
+
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+        
+        
         ent.setFkRelatedApiId("");
         ent.setShortDescForApi("");
         EntityManager.update(ent);
@@ -5088,6 +5129,15 @@ public class TmModel {
         EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
         ent.setId(carrier.get("id"));
         EntityManager.select(ent);
+        
+        carrier.set("fkBacklogId", ent.getFkBacklogId());
+
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+        
+        
         ent.setFkRelatedScId("");
         EntityManager.update(ent);
         return carrier;
@@ -7292,6 +7342,11 @@ public class TmModel {
 
     public static Carrier insertNewBacklogDescription(Carrier carrier) throws QException {
 
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
         String orderNo = carrier.get("relatedDescId").trim().length() == 0
                 ? getNextBacklogDescriptionOrderNo(carrier.get("fkProjectId"))
                 : getPreviousBacklogDescriptionOrderNo(carrier.get("relatedDescId"));
@@ -7351,9 +7406,17 @@ public class TmModel {
     }
 
     public static Carrier updatetBacklogDescription(Carrier carrier) throws QException {
+
         EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
         ent.setId(carrier.get("id"));
         EntityManager.select(ent);
+
+        carrier.set("fkBacklogId", ent.getFkBacklogId());
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
         ent.setDescription(carrier.get("description"));
         EntityManager.update(ent);
         return carrier;
@@ -7361,6 +7424,15 @@ public class TmModel {
 
     public static Carrier deleteBacklogDescription(Carrier carrier) throws QException {
         EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
+        ent.setId(carrier.get("id"));
+        EntityManager.select(ent);
+
+        carrier.set("fkBacklogId", ent.getFkBacklogId());
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
         ent.setId(carrier.get("id"));
         EntityManager.delete(ent);
 
@@ -7626,10 +7698,10 @@ public class TmModel {
         carrier = EntityManager.select(ent);
 
         carrier.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
-        carrier.addTableRowCount(CoreLabel.RESULT_SET,
-                EntityManager.getRowCount(ent));
-        carrier.addTableSequence(CoreLabel.RESULT_SET,
-                EntityManager.getListSequenceByKey("getProjectList"));
+//        carrier.addTableRowCount(CoreLabel.RESULT_SET,
+//                EntityManager.getRowCount(ent));
+//        carrier.addTableSequence(CoreLabel.RESULT_SET,
+//                EntityManager.getListSequenceByKey("getProjectList"));
         return carrier;
     }
 
@@ -8569,6 +8641,12 @@ public class TmModel {
     }
 
     public static Carrier updateUserStsory4ShortChange(Carrier carrier) throws QException {
+
+        carrier.set("fkBacklogId", carrier.get("id"));
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
 
         EntityTmBacklog ent = new EntityTmBacklog();
         ent.setId(carrier.get("id"));
@@ -10659,6 +10737,7 @@ public class TmModel {
     }
 
     public static Carrier insertNewInput4Fast(Carrier carrier) throws QException {
+
         String cellNo = carrier.get("cellNo").length() > 0 ? carrier.get("cellNo") : "6";
         String orderNo = carrier.get("orderNo").length() > 0
                 ? carrier.get("orderNo")
@@ -10708,7 +10787,61 @@ public class TmModel {
         return crOut;
     }
 
+    public static Carrier hasPermissionToModifyBacklogAsApi(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController(EntityTmInput.FK_BACKLOG_ID, cp.hasValue(carrier, EntityTmInput.FK_BACKLOG_ID));
+
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        boolean res = hasPermissionToModifyBacklogAsApi(carrier.get("fkBacklogId"));
+        carrier.set("permRes", res);
+
+        if (!res) {
+            carrier.addError("You don't have a permission to modify the Story Card");
+        }
+
+        return carrier;
+    }
+
+    private static boolean hasPermissionToModifyBacklogAsApi(String fkBacklogId) throws QException {
+        boolean f = false;
+
+        if (fkBacklogId.length() == 0) {
+            return f;
+        }
+
+        if (SessionManager.isCurrentUserAdmin()) {
+            return true;
+        }
+
+        EntityTmBacklog ent = new EntityTmBacklog();
+        ent.setId(fkBacklogId);
+        ent.setEndLimit(0);
+        EntityManager.select(ent);
+
+        if (ent.getId().trim().length() > 0) {
+            if (ent.getIsApi().equals("1")) {
+                if (ent.getFkOwnerId().equals(SessionManager.getCurrentUserId())) {
+                    f = true;
+                } else if (ent.getCreatedBy().equals(SessionManager.getCurrentUserId())) {
+                    f = true;
+                }
+            }else{
+                f = true;
+            }
+        }
+
+        return f;
+    }
+
     public static Carrier insertNewInput4Select(Carrier carrier) throws QException {
+
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
 
         String cellNo = carrier.get("cellNo").length() > 0 ? carrier.get("cellNo") : "6";
         String orderNo = carrier.get("orderNo").length() > 0
@@ -11008,6 +11141,14 @@ public class TmModel {
         EntityTmInput entity = new EntityTmInput();
         entity.setId(carrier.getValue(EntityTmInput.ID).toString());
         EntityManager.select(entity);
+
+        carrier.set("fkBacklogId", entity.getFkBacklogId());
+
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
         String oldName = entity.getInputName();
         entity.setInputName(carrier.getValue(EntityTmInput.INPUT_NAME).toString());
         EntityManager.update(entity);
@@ -11609,9 +11750,18 @@ public class TmModel {
     }
 
     public static Carrier deleteInput(Carrier carrier) throws QException {
+
         EntityTmInput entity = new EntityTmInput();
         entity.setId(carrier.getValue(EntityTmInput.ID).toString());
         EntityManager.select(entity);
+
+        carrier.set("fkBacklogId", entity.getFkBacklogId());
+
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
         EntityManager.delete(entity);
 
         Gson gson = new Gson();
@@ -12317,7 +12467,7 @@ public class TmModel {
         Carrier crComp = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COMPONENT);
         Carrier crCol = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COLUMN);
         Carrier crColName = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COLUMN_NAME);
-        Carrier crInTree = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_IN_TREE);
+        Carrier crInTree = new Carrier(); //crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_IN_TREE);
 
         EntityTmInputTableComp ent = new EntityTmInputTableComp();
         ent.setId(fkInputTableId);
@@ -12394,7 +12544,7 @@ public class TmModel {
         Carrier crComp = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COMPONENT);
         Carrier crCol = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COLUMN);
         Carrier crColName = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_COLUMN_NAME);
-        Carrier crInTree = crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_IN_TREE);
+        Carrier crInTree = new Carrier(); //crTemp.getKVPairListFromTable(entIn.toTableName(), "fkTableId", EntityTmRelTableInput.SHOW_IN_TREE);
 
         String tn = ent.toTableName();
         int rc = crOut.getTableRowCount(tn);
@@ -12437,13 +12587,20 @@ public class TmModel {
 
     public static Carrier insertNewInputDescription(Carrier carrier) throws QException {
 
+        EntityTmInput entInput = new EntityTmInput();
+        entInput.setId(carrier.get("fkInputId"));
+        EntityManager.select(entInput);
+
+        carrier.set("fkBacklogId", entInput.getFkBacklogId());
+
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
         EntityTmInputDescription ent = new EntityTmInputDescription();
         EntityManager.mapCarrierToEntity(carrier, ent);
         EntityManager.insert(ent);
-
-        EntityTmInput entInput = new EntityTmInput();
-        entInput.setId(ent.getFkInputId());
-        EntityManager.select(entInput);
 
         setNewBacklogHistory4InputDescriptionNew(ent, entInput);
 
@@ -12458,7 +12615,20 @@ public class TmModel {
 
         EntityTmInputDescription entity = new EntityTmInputDescription();
         entity.setId(carrier.getValue(EntityTmInputDescription.ID).toString());
+        entity.setEndLimit(0);
         EntityManager.select(entity);
+
+        EntityTmInput entInput1 = new EntityTmInput();
+        entInput1.setId(entity.getFkInputId());
+        entInput1.setEndLimit(0);
+        EntityManager.select(entInput1);
+
+        carrier.set("fkBacklogId", entInput1.getFkBacklogId());
+
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
 
         String oldDesc = entity.getDescription();
 
@@ -12478,9 +12648,23 @@ public class TmModel {
     }
 
     public static Carrier deleteInputDescription(Carrier carrier) throws QException {
+
         EntityTmInputDescription entity = new EntityTmInputDescription();
         entity.setId(carrier.getValue(EntityTmInputDescription.ID).toString());
         EntityManager.select(entity);
+
+        EntityTmInput entInput1 = new EntityTmInput();
+        entInput1.setId(entity.getFkInputId());
+        entInput1.setEndLimit(0);
+        EntityManager.select(entInput1);
+
+        carrier.set("fkBacklogId", entInput1.getFkBacklogId());
+
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
         EntityManager.delete(entity);
 
         if (entity.getFkInputId().length() == 0) {

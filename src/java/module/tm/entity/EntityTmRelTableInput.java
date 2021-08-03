@@ -25,16 +25,16 @@ public class EntityTmRelTableInput extends CoreEntity {
     private String showColumn = "";
     public static String SHOW_COLUMN_NAME = "showColumnName";
     private String showColumnName = "";
-    public static String SHOW_IN_TREE = "showInTree";
-    private String showInTree = "";
+//    public static String SHOW_IN_TREE = "showInTree";
+//    private String showInTree = "";
 
-    public String getShowInTree() {
-        return showInTree;
-    }
-
-    public void setShowInTree(String showInTree) {
-        this.showInTree = showInTree;
-    }
+//    public String getShowInTree() {
+//        return showInTree;
+//    }
+//
+//    public void setShowInTree(String showInTree) {
+//        this.showInTree = showInTree;
+//    }
     
     
 

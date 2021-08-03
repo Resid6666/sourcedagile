@@ -516,6 +516,10 @@ public class Carrier implements Serializable {
         this.setValue(this.USER_ERROR_TABLE, row, this.USER_ERROR_KEY, errCode);
         this.setValue(this.USER_ERROR_TABLE, row, this.USER_ERROR_MESSAGE, errMsg);
     }
+    
+    public void addError(String errMsg) throws QException {
+        this.addError("general",errMsg);
+    }
 
     public void addSequence(String fieldName) {
         try {
