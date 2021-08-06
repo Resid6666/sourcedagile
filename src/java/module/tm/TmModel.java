@@ -10868,6 +10868,10 @@ public class TmModel {
 
         getInputList4Select(ent.getId()).copyTo(cout);
         getBacklogList4Select(ent.getFkBacklogId()).copyTo(cout);
+        
+        //setNewBacklogHistory4InputNew(ent);
+        setNewBacklogHistory4InputNew2(ent);
+        
         return cout;
     }
 
@@ -10907,6 +10911,19 @@ public class TmModel {
         setNewBacklogHistory(entNew.getFkProjectId(), ent.getFkBacklogId(), body,
                 BACKLOG_HISTORY_TYPE_INPUT_NEW, ent.getId(),
                 ent.getInputName(), ent.getInputType(), ent.getTableName());
+    }
+    
+    //resid2
+    private static void setNewBacklogHistory4InputNew2(EntityTmInput ent) throws QException {
+        EntityTmBacklog entBacklog = new EntityTmBacklog();
+        entBacklog.setId(ent.getFkBacklogId());
+        EntityManager.select(entBacklog);
+
+        String body = "<b>Input Name</b>:  " + ent.getInputName() + "; and  <b>Table Name</b>: " + ent.getTableName() + ";";
+        setNewBacklogHistory2(entBacklog.getFkProjectId(), ent.getFkBacklogId(), body,
+                BACKLOG_HISTORY_TYPE_INPUT_NEW, ent.getId(),
+                ent.getInputName(), ent.getInputType(), ent.getTableName(),
+                ent.getId(), "backlogDescriptionId", ent.getInputName(), ent.getInputName(), ent.getInputName(), "description");
     }
 
     private static void setNewBacklogHistory4InputDescriptionNew(EntityTmInputDescription ent,
@@ -10982,6 +10999,44 @@ public class TmModel {
         EntityManager.insert(ent);
 
         setNotification(ent.getFkBacklogId(), ent.getId(), "");
+    }
+    
+    //resid3
+    private static void setNewBacklogHistory2(String projectId, String backlogId,
+            String body, String htype, String relationId,
+            String param1, String param2, String param3, String inputId,
+            String fkBacklogDescriptionId, String inputName, String oldValue,
+            String newValue, String descriptionName) throws QException {
+        
+        if (projectId.length() == 0 || backlogId.length() == 0 || body.length() == 0 || htype.length() == 0) {
+            return;
+        }
+
+        EntityTmBacklogHistory ent = new EntityTmBacklogHistory();
+        ent.setHistoryDate(QDate.getCurrentDate());
+        ent.setHistoryTime(QDate.getCurrentTime());
+        ent.setFkBacklogId(backlogId);
+        ent.setFkProjectId(projectId);
+        ent.setRelationId(relationId);
+        ent.setHistoryType(htype);
+        ent.setHistoryBody(body);
+        ent.setParam1(param1);
+        ent.setParam2(param2);
+        ent.setParam3(param3);
+        
+        ent.setFkInputId(inputId);
+        ent.setFkBacklogDescriptionId(fkBacklogDescriptionId);
+        ent.setInputName(inputName);
+        ent.setOldValue(oldValue);
+        ent.setNewValue(newValue);
+        
+        //???
+        ent.setDescriptionName(descriptionName);
+        
+        ent.setHistoryTellerId(SessionManager.getCurrentUserId());
+        EntityManager.insert(ent);
+
+        //setNotification(ent.getFkBacklogId(), ent.getId(), "");
     }
 
     private static void setNewBacklogHistory(String projectId, String backlogId, String body, String htype, String relationId) throws QException {
