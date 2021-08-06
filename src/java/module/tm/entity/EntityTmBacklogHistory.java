@@ -31,6 +31,76 @@ public class EntityTmBacklogHistory extends CoreEntity {
     private String param3 = "";
     public static String FK_PROJECT_ID = "fkProjectId";
     private String fkProjectId = "";
+    
+    
+    //    //resid history
+    public static String FK_INPUT_ID = "fkInputId";
+    private String fkInputId = "";
+    
+    public static String FK_BACKLOG_DESCRIPTION_ID = "fkBacklogDescriptionId";
+    private String fkBacklogDescriptionId = "";
+    
+    public static String INPUT_NAME = "inputName";
+    private String inputName = "";
+    
+    public static String OLD_VALUE = "oldValue";
+    private String oldValue = "";
+    
+    public static String NEW_VALUE = "newValue";
+    private String newValue = "";
+    
+    public static String DESCRIPTION_NAME = "descriptionName";
+    private String descriptionName = "";
+//    //resid history
+
+    public String getFkInputId() {
+        return fkInputId;
+    }
+
+    public void setFkInputId(String fkInputId) {
+        this.fkInputId = fkInputId;
+    }
+
+    public String getFkBacklogDescriptionId() {
+        return fkBacklogDescriptionId;
+    }
+
+    public void setFkBacklogDescriptionId(String fkBacklogDescriptionId) {
+        this.fkBacklogDescriptionId = fkBacklogDescriptionId;
+    }
+
+    public String getInputName() {
+        return inputName;
+    }
+
+    public void setInputName(String inputName) {
+        this.inputName = inputName;
+    }
+
+    public String getOldValue() {
+        return oldValue;
+    }
+
+    public void setOldValue(String oldValue) {
+        this.oldValue = oldValue;
+    }
+
+    public String getNewValue() {
+        return newValue;
+    }
+
+    public void setNewValue(String newValue) {
+        this.newValue = newValue;
+    }
+
+    public String getDescriptionName() {
+        return descriptionName;
+    }
+
+    public void setDescriptionName(String descriptionName) {
+        this.descriptionName = descriptionName;
+    }
+    
 
     public String getFkProjectId() {
         return fkProjectId;
