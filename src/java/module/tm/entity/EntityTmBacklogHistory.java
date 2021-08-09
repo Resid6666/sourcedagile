@@ -31,9 +31,9 @@ public class EntityTmBacklogHistory extends CoreEntity {
     private String param3 = "";
     public static String FK_PROJECT_ID = "fkProjectId";
     private String fkProjectId = "";
-    
-    
-    //    //resid history
+
+
+    //resid history
     public static String FK_INPUT_ID = "fkInputId";
     private String fkInputId = "";
     
@@ -51,7 +51,20 @@ public class EntityTmBacklogHistory extends CoreEntity {
     
     public static String DESCRIPTION_NAME = "descriptionName";
     private String descriptionName = "";
-//    //resid history
+
+    public static String ACTION_TYPE = "actionType";
+    private String actionType = "";
+
+   //resid history
+
+
+    public void setActionType(String actionType) {
+        ACTION_TYPE = actionType;
+    }
+
+    public String getActionType() {
+        return ACTION_TYPE;
+    }
 
     public String getFkInputId() {
         return fkInputId;
