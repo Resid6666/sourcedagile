@@ -7,6 +7,7 @@ package module.tm;
 
 import com.google.gson.Gson;
 import controllerpool.ControllerPool;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -131,6 +132,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Locale;
 import java.util.Properties;
+
 import module.tm.entity.EntityTmBacklogMvp;
 import module.tm.entity.EntityTmGuiClass;
 import module.tm.entity.EntityTmInputActionRel;
@@ -143,7 +145,6 @@ import module.tm.entity.EntityTmUserPermission;
 import utility.ApiIntegration;
 
 /**
- *
  * @author user
  */
 public class TmModel {
@@ -180,31 +181,40 @@ public class TmModel {
     private static String BACKLOG_HISTORY_TYPE_INPUT_CSS_UPDATE = "input_css_update";
     private static String BACKLOG_HISTORY_TYPE_INPUT_CONTAINER_CSS_UPDATE = "input_container_css_update";
     private static String BACKLOG_HISTORY_TYPE_INPUT_CONTENT_UPDATE = "input_content_update";
-
-
     private static String BACKLOG_HISTORY_TYPE_INPUT_RELATION_ADDED = "input_relation_added";
-
-
     private static String BACKLOG_HISTORY_TYPE_SEND_DB_INPUT_RELATION_ADDED = "send_db_input_relation_added";
     private static String BACKLOG_HISTORY_TYPE_SEND_DB_INPUT_RELATION_UPDATED = "send_db_input_relation_updated";
     private static String BACKLOG_HISTORY_TYPE_SEND_DB_INPUT_RELATION_DELETED = "send_db_input_relation_deleted";
-
-
     private static String BACKLOG_HISTORY_TYPE_SELECT_DB_INPUT_RELATION_ADDED = "select_db_input_relation_added";
     private static String BACKLOG_HISTORY_TYPE_SELECT_DB_INPUT_RELATION_UPDATED = "select_db_input_relation_updated";
     private static String BACKLOG_HISTORY_TYPE_SELECT_DB_INPUT_RELATION_DELETED = "select_db_input_relation_deleted";
-
     private static String BACKLOG_HISTORY_TYPE_INPUT_RELATION_DELETED = "input_relation_deleted";
-
     private static String BACKLOG_HISTORY_TYPE_SEND_API_INPUT_RELATION_ADDED = "send_api_input_relation_added";
     private static String BACKLOG_HISTORY_TYPE_SEND_API_INPUT_RELATION_UPDATED = "send_api_input_relation_updated";
     private static String BACKLOG_HISTORY_TYPE_SEND_API_INPUT_RELATION_DELETED = "send_api_input_relation_deleted";
-
     private static String BACKLOG_HISTORY_TYPE_SELECT_API_INPUT_RELATION_ADDED = "select_api_input_relation_added";
     private static String BACKLOG_HISTORY_TYPE_SELECT_API_INPUT_RELATION_UPDATED = "select_api_input_relation_updated";
     private static String BACKLOG_HISTORY_TYPE_SELECT_API_INPUT_RELATION_DELETED = "select_api_input_relation_deleted";
-
     private static String BACKLOG_SYSTEM_MVP_DB = "system_mvp_db";
+
+    //<process>
+
+    private static String BACKLOG_HISTORY_TYPE_PROCESS_FIELD_ADDED = "process_field_added";
+    private static String BACKLOG_HISTORY_TYPE_PROCESS_FIELD_UPDATED = "process_field_updated";
+    private static String BACKLOG_HISTORY_TYPE_PROCESS_FIELD_DELETED = "process_field_deleted";
+
+    private static String BACKLOG_HISTORY_TYPE_PROCESS_ADD_RELATED_API = "process_add_related_api";
+    private static String BACKLOG_HISTORY_TYPE_PROCESS_UPDATE_RELATED_API = "process_update_related_api";
+    private static String BACKLOG_HISTORY_TYPE_PROCESS_DELETE_RELATED_API = "process_delete_related_api";
+
+    private static String BACKLOG_HISTORY_TYPE_PROCESS_ADD_RELATED_FUNCTION = "process_add_related_function";
+    private static String BACKLOG_HISTORY_TYPE_PROCESS_UPDATE_RELATED_FUNCTION = "process_update_related_function";
+    private static String BACKLOG_HISTORY_TYPE_PROCESS_DELETE_RELATED_FUNCTION = "process_delete_related_function";
+
+    private static String BACKLOG_HISTORY_TYPE_PROCESS_ORDER_UPDATED = "process_order_updated";
+
+
+    //</process>
 
     private static String ENGLIS_ABC = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm012345678";
 
@@ -296,7 +306,7 @@ public class TmModel {
         return carrier;
     }
 
-//////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
     /////////////////////////////////////////
     //// type code here
     ///////////////////////////////////////////////
@@ -333,8 +343,8 @@ public class TmModel {
     }
 
     private static void createDeleteAPI4MVP(String fkProjectId,
-            String fkBacklogId, String backlogName,
-            String dbId, String dbName, String tableId, String tableName) throws QException {
+                                            String fkBacklogId, String backlogName,
+                                            String dbId, String dbName, String tableId, String tableName) throws QException {
 
         String apiId = "";
 
@@ -368,8 +378,8 @@ public class TmModel {
     }
 
     private static void createSelectedFieldsRelation4MVP(String fkProjectId,
-            String fkBacklogId, String backlogName,
-            String dbId, String dbName, String tableId, String tableName) throws QException {
+                                                         String fkBacklogId, String backlogName,
+                                                         String dbId, String dbName, String tableId, String tableName) throws QException {
 
         String apiId = "";
 
@@ -384,8 +394,8 @@ public class TmModel {
     }
 
     private static void createReadInfoAPI4MVP(String fkProjectId,
-            String fkBacklogId, String backlogName,
-            String dbId, String dbName, String tableId, String tableName) throws QException {
+                                              String fkBacklogId, String backlogName,
+                                              String dbId, String dbName, String tableId, String tableName) throws QException {
 
         String apiId = "";
 
@@ -419,8 +429,8 @@ public class TmModel {
     }
 
     private static void createReadAPI4MVP(String fkProjectId,
-            String fkBacklogId, String backlogName,
-            String dbId, String dbName, String tableId, String tableName) throws QException {
+                                          String fkBacklogId, String backlogName,
+                                          String dbId, String dbName, String tableId, String tableName) throws QException {
 
         String apiId = "";
 
@@ -454,8 +464,8 @@ public class TmModel {
     }
 
     private static void createUpdateAPI4MVP(String fkProjectId,
-            String fkBacklogId, String backlogName,
-            String dbId, String dbName, String tableId, String tableName) throws QException {
+                                            String fkBacklogId, String backlogName,
+                                            String dbId, String dbName, String tableId, String tableName) throws QException {
 
         String apiId = "";
 
@@ -489,8 +499,8 @@ public class TmModel {
     }
 
     private static void createCreateAPI4MVP(String fkProjectId,
-            String fkBacklogId, String backlogName,
-            String dbId, String dbName, String tableId, String tableName) throws QException {
+                                            String fkBacklogId, String backlogName,
+                                            String dbId, String dbName, String tableId, String tableName) throws QException {
 
         String apiId = "";
 
@@ -539,7 +549,7 @@ public class TmModel {
     }
 
     private static void createDeleteAPI4MVPFields(String fkBacklogId, String dbId,
-            String tableId) throws QException {
+                                                  String tableId) throws QException {
         if (tableId.trim().length() == 0) {
             return;
         }
@@ -577,7 +587,7 @@ public class TmModel {
     }
 
     private static void createUpdateAPI4MVPFields(String fkBacklogId, String dbId,
-            String tableId) throws QException {
+                                                  String tableId) throws QException {
         if (tableId.trim().length() == 0) {
             return;
         }
@@ -617,7 +627,7 @@ public class TmModel {
     }
 
     private static void createReadAPI4MVPFields(String fkBacklogId, String dbId,
-            String tableId) throws QException {
+                                                String tableId) throws QException {
         if (tableId.trim().length() == 0) {
             return;
         }
@@ -657,7 +667,7 @@ public class TmModel {
     }
 
     private static void createReadInfoAPI4MVPFields(String fkBacklogId, String dbId,
-            String tableId) throws QException {
+                                                    String tableId) throws QException {
         if (tableId.trim().length() == 0) {
             return;
         }
@@ -698,7 +708,7 @@ public class TmModel {
     }
 
     private static void createCreateAPI4MVPFields(String fkBacklogId, String dbId,
-            String tableId) throws QException {
+                                                  String tableId) throws QException {
         if (tableId.trim().length() == 0) {
             return;
         }
@@ -739,7 +749,7 @@ public class TmModel {
     }
 
     private static void createMvpDBIssues(String fkProjectId, String fkBacklogId,
-            String tableName1) throws Exception {
+                                          String tableName1) throws Exception {
         String tableName = mapStringToMvpStyle(tableName1);
         tableName = tableName.replaceAll(" ", "_");
         tableName = tableName.toLowerCase(Locale.ENGLISH);
@@ -781,7 +791,7 @@ public class TmModel {
     }
 
     private static void addBacklogMVCDBRelation(String fkBacklogId, String dbId,
-            String dbName, String tableId, String tableName) throws QException {
+                                                String dbName, String tableId, String tableName) throws QException {
         EntityTmBacklogMvp ent = new EntityTmBacklogMvp();
         ent.setFkBacklogId(fkBacklogId);
         ent.setDbName(dbName);
@@ -1545,7 +1555,7 @@ public class TmModel {
     }
 
     public static String getBacklogLastModificationDateAndTime(String fkProjectId,
-            String fkBacklogId, String isShared, String sourceProjectId)
+                                                               String fkBacklogId, String isShared, String sourceProjectId)
             throws QException, UnsupportedEncodingException, FileNotFoundException, IOException {
 
         String lastModification = "";
@@ -2654,31 +2664,6 @@ public class TmModel {
         ent.setSortByAsc(true);
         ent.setFkProjectId(carrier.get("fkProjectId"));
         carrier = EntityManager.select(ent);
-
-        return carrier;
-    }
-
-    public static Carrier updateOrderNoBacklogDesc(Carrier carrier) throws QException {
-        ControllerPool cp = new ControllerPool();
-        carrier.addController("sourcedId", cp.isKeyExist(carrier, "sourcedId"));
-        carrier.addController("targetId", cp.isKeyExist(carrier, "targetId"));
-        carrier.addController("oldOrderNo", cp.isKeyExist(carrier, "oldOrderNo"));
-        carrier.addController("newOrderNo", cp.isKeyExist(carrier, "newOrderNo"));
-        if (carrier.hasError()) {
-            return carrier;
-        }
-
-        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
-        ent.setId(carrier.get("sourcedId"));
-        EntityManager.select(ent);
-        ent.setOrderNo(carrier.get("newOrderNo"));
-        EntityManager.update(ent);
-
-        EntityTmBacklogDescription ent1 = new EntityTmBacklogDescription();
-        ent1.setId(carrier.get("targetId"));
-        EntityManager.select(ent1);
-        ent1.setOrderNo(carrier.get("oldOrderNo"));
-        EntityManager.update(ent1);
 
         return carrier;
     }
@@ -5053,104 +5038,6 @@ public class TmModel {
         return carrier;
     }
 
-    public static Carrier addRelatedApiToBacklogDesc(Carrier carrier) throws QException {
-        ControllerPool cp = new ControllerPool();
-        carrier.addController("id", cp.hasValue(carrier, "id"));
-        carrier.addController("apiId", cp.hasValue(carrier, "apiId"));
-        if (carrier.hasError()) {
-            return carrier;
-        }
-
-        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
-        ent.setId(carrier.get("id"));
-        EntityManager.select(ent);
-
-        carrier.set("fkBacklogId", ent.getFkBacklogId());
-
-        carrier = hasPermissionToModifyBacklogAsApi(carrier);
-        if (carrier.hasError()) {
-            return carrier;
-        }
-
-        ent.setFkRelatedApiId(carrier.get("apiId"));
-        ent.setShortDescForApi(carrier.get("shortDesc"));
-        EntityManager.update(ent);
-        return carrier;
-    }
-
-    public static Carrier addRelatedFunctionToBacklogDesc(Carrier carrier) throws QException {
-        ControllerPool cp = new ControllerPool();
-        carrier.addController("id", cp.hasValue(carrier, "id"));
-        carrier.addController("fkFunctionId", cp.hasValue(carrier, "fkFunctionId"));
-        if (carrier.hasError()) {
-            return carrier;
-        }
-
-        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
-        ent.setId(carrier.get("id"));
-        EntityManager.select(ent);
-        
-        carrier.set("fkBacklogId", ent.getFkBacklogId());
-
-        carrier = hasPermissionToModifyBacklogAsApi(carrier);
-        if (carrier.hasError()) {
-            return carrier;
-        }
-        
-        ent.setFkRelatedScId(carrier.get("fkFunctionId"));
-        EntityManager.update(ent);
-        return carrier;
-    }
-
-    public static Carrier removeRelatedApiToBacklogDesc(Carrier carrier) throws QException {
-        ControllerPool cp = new ControllerPool();
-        carrier.addController("id", cp.hasValue(carrier, "id"));
-        if (carrier.hasError()) {
-            return carrier;
-        }
-
-        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
-        ent.setId(carrier.get("id"));
-        EntityManager.select(ent);
-        
-        
-        carrier.set("fkBacklogId", ent.getFkBacklogId());
-
-        carrier = hasPermissionToModifyBacklogAsApi(carrier);
-        if (carrier.hasError()) {
-            return carrier;
-        }
-        
-        
-        ent.setFkRelatedApiId("");
-        ent.setShortDescForApi("");
-        EntityManager.update(ent);
-        return carrier;
-    }
-
-    public static Carrier removeRelatedFunctionToBacklogDesc(Carrier carrier) throws QException {
-        ControllerPool cp = new ControllerPool();
-        carrier.addController("id", cp.hasValue(carrier, "id"));
-        if (carrier.hasError()) {
-            return carrier;
-        }
-
-        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
-        ent.setId(carrier.get("id"));
-        EntityManager.select(ent);
-        
-        carrier.set("fkBacklogId", ent.getFkBacklogId());
-
-        carrier = hasPermissionToModifyBacklogAsApi(carrier);
-        if (carrier.hasError()) {
-            return carrier;
-        }
-        
-        
-        ent.setFkRelatedScId("");
-        EntityManager.update(ent);
-        return carrier;
-    }
 
     public static Carrier insertNewTestCaseTrial(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
@@ -6792,6 +6679,363 @@ public class TmModel {
         return carrier;
     }
 
+
+    // 1. INPUT CREATED
+    public static Carrier insertNewInput4Select(Carrier carrier) throws QException {
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String cellNo = carrier.get("cellNo").length() > 0 ? carrier.get("cellNo") : "6";
+        String orderNo = carrier.get("orderNo")
+                .length() > 0 ? carrier.get("orderNo") : getInputOrderNo(carrier.get("fkBacklogId"));
+
+        EntityTmInput ent = new EntityTmInput();
+
+        EntityManager.mapCarrierToEntity(carrier, ent);
+        ent.setOrderNo(orderNo);
+        ent.setCellNo(cellNo);
+        ent.setParam3(Config.getProperty("component.design"));
+        EntityManager.insert(ent);
+
+        try {
+            Gson gson = new Gson();
+            String json = gson.toJson(ent);
+            setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
+        } catch (Exception err) {
+        }
+
+        Carrier cout = new Carrier();
+        EntityManager.mapEntityToCarrier(ent, cout, true);
+        EntityManager.mapEntityToCarrier(ent, cout, "inputTable", true);
+
+        getInputList4Select(ent.getId()).copyTo(cout);
+        getBacklogList4Select(ent.getFkBacklogId()).copyTo(cout);
+
+        //setNewBacklogHistory4InputNew(ent);
+        setNewBacklogHistory4InputNew2(ent);
+
+        return cout;
+    }
+
+    // 1. INPUT CREATED history
+    private static void setNewBacklogHistory4InputNew2(EntityTmInput ent) throws QException {
+        EntityTmBacklog entBacklog = new EntityTmBacklog();
+        entBacklog.setId(ent.getFkBacklogId());
+        EntityManager.select(entBacklog);
+
+
+        setNewBacklogHistory2(entBacklog.getFkProjectId(), ent.getFkBacklogId(),
+                BACKLOG_HISTORY_TYPE_INPUT_NEW, ent.getId(),
+                ent.getId(), "", ent.getInputName(),
+                "", ent.getInputName(), "", ent.getInputType());
+    }
+
+    // 2. INPUT RENAMED
+    public static Carrier updateInputByInputName(Carrier carrier) throws QException, FileNotFoundException, IOException {
+        EntityTmInput entity = new EntityTmInput();
+        entity.setId(carrier.getValue(EntityTmInput.ID).toString());
+        EntityManager.select(entity);
+
+        carrier.set("fkBacklogId", entity.getFkBacklogId());
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String oldName = entity.getInputName();
+        entity.setInputName(carrier.getValue(EntityTmInput.INPUT_NAME).toString());
+        EntityManager.update(entity);
+        carrier = EntityManager.select(entity);
+        carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
+
+        setNewBacklogHistory4InputUpdateName(entity, oldName);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
+
+        getInputList4Select(entity.getId()).copyTo(carrier);
+        return carrier;
+    }
+
+    // 2. INPUT RENAMED history
+    private static void setNewBacklogHistory4InputUpdateName(EntityTmInput ent, String oldName) throws QException {
+        EntityTmBacklog entNew = new EntityTmBacklog();
+        entNew.setId(ent.getFkBacklogId());
+        EntityManager.select(entNew);
+
+        setNewBacklogHistory2(entNew.getFkProjectId(), ent.getFkBacklogId(),
+                BACKLOG_HISTORY_TYPE_INPUT_UPDATE, ent.getId(),
+                ent.getId(), "", ent.getInputName(),
+                oldName, ent.getInputName(), "", ent.getInputType());
+    }
+
+    // 3. INPUT DELETE
+    public static Carrier deleteInput(Carrier carrier) throws QException {
+        EntityTmInput entity = new EntityTmInput();
+        entity.setId(carrier.getValue(EntityTmInput.ID).toString());
+        EntityManager.select(entity);
+
+        carrier.set("fkBacklogId", entity.getFkBacklogId());
+
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityManager.delete(entity);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entity);
+        setProjectInputList(entity.getFkProjectId(), entity.getId(), "deleted");
+
+        EntityTmRelTableInput entTbl = new EntityTmRelTableInput();
+        entTbl.setFkInputId(carrier.get("id"));
+        String inputIds = EntityManager.select(entTbl).getValueLine(entTbl.toTableName());
+        if (inputIds.length() > 1) {
+            entTbl.setId(inputIds);
+            EntityManager.delete(entTbl);
+        }
+
+//        decreaseBacklogInputCount(entity.getFkBacklogId(), 1);
+//        carrier.setValue("isSourced", isBacklogSourced(entity.getFkBacklogId()));
+        setNewBacklogHistory4InputDelete(entity);
+
+        if (entity.getFkBacklogId().length() == 0) {
+            return carrier;
+        }
+
+        Carrier cout = new Carrier();
+        cout.set("fkBacklogId", entity.getFkBacklogId());
+        cout.set("asc", "orderNo");
+        cout = getInputList(cout);
+        cout.renameTableName(CoreLabel.RESULT_SET, "inputListTable");
+        cout.copyTo(carrier);
+
+        EntityTmInput ent1 = new EntityTmInput();
+        ent1.setFkBacklogId(entity.getFkBacklogId());
+        ent1.setInputType("OUT");
+        Carrier cout1 = EntityManager.select(ent1);
+        cout1.renameTableName(ent1.toTableName(), "inputOutputList");
+        cout1.copyTo(carrier);
+
+        getBacklogList4Select(entity.getFkBacklogId()).copyTo(carrier);
+        getTableListOfInput(entity.getFkBacklogId(), entity.getFkProjectId()).copyTo(carrier);
+        getTabListOfInput(entity.getFkBacklogId(), entity.getFkProjectId()).copyTo(carrier);
+        return carrier;
+    }
+
+
+    // 3. INPUT DELETE history
+    private static void setNewBacklogHistory4InputDelete(EntityTmInput ent) throws QException {
+        EntityTmBacklog entNew = new EntityTmBacklog();
+        entNew.setId(ent.getFkBacklogId());
+        EntityManager.select(entNew);
+
+        setNewBacklogHistory2(entNew.getFkProjectId(), ent.getFkBacklogId(),
+                BACKLOG_HISTORY_TYPE_INPUT_DELETE, ent.getId(),
+                ent.getId(), "", ent.getInputName(),
+                ent.getInputName(), "", "", ent.getInputType());
+    }
+
+    // 4. INPUT Select Data from Database
+    // 6. INPUT Sent Data to Database
+    public static Carrier addDatabaseRelation(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController(EntityTmDocument.ID, cp.hasValue(carrier, EntityTmDocument.ID));
+        carrier.addController("dbId", cp.hasValue(carrier, "dbId"));
+        carrier.addController("action", cp.hasValue(carrier, "action"));
+        carrier.addController("tableId", cp.hasValue(carrier, "tableId"));
+        carrier.addController("fieldId", cp.hasValue(carrier, "fieldId"));
+
+        String newDbName = "";
+        EntityTmDatabase entDB = new EntityTmDatabase();
+        entDB.setId(carrier.get("dbId"));
+        EntityManager.select(entDB);
+        newDbName = entDB.getDbName();
+
+        String newTableName = "";
+        EntityTmTable entTable = new EntityTmTable();
+        entTable.setId(carrier.get("tableId"));
+        EntityManager.select(entTable);
+        newTableName = entTable.getTableName();
+
+        String newFieldName = "";
+        EntityTmField entField = new EntityTmField();
+        entField.setId(carrier.get("fieldId"));
+        EntityManager.select(entField);
+        newFieldName = entField.getFieldName();
+
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmInput entInput = new EntityTmInput();
+        entInput.setId(carrier.get("id"));
+        EntityManager.select(entInput);
+
+        String oldDbName = "";
+        String oldTableName = "";
+        String oldFieldName = "";
+        String oldValue = "";
+
+
+        String htype = "";
+        if (carrier.get("action").equals("select")) {
+            htype = BACKLOG_HISTORY_TYPE_SELECT_DB_INPUT_RELATION_ADDED;
+            if (entInput.getSelectFromDbId().trim().length() > 0) {
+                EntityTmDatabase entOldDB = new EntityTmDatabase();
+                entOldDB.setId(entInput.getSelectFromDbId());
+                EntityManager.select(entOldDB);
+                oldDbName = entOldDB.getDbName();
+
+                EntityTmTable entOldTable = new EntityTmTable();
+                entOldTable.setId(entInput.getSelectFromTableId());
+                EntityManager.select(entOldTable);
+                oldTableName = entOldTable.getTableName();
+
+                EntityTmField entOldField = new EntityTmField();
+                entOldField.setId(entInput.getSelectFromFieldId());
+                EntityManager.select(entOldField);
+                oldFieldName = entOldField.getFieldName();
+
+                oldValue = oldDbName.concat(".").concat(oldTableName).concat(".").concat(oldFieldName);
+
+                htype = BACKLOG_HISTORY_TYPE_SELECT_DB_INPUT_RELATION_UPDATED;
+            }
+
+            entInput.setSelectFromDbId(carrier.get("dbId"));
+            entInput.setSelectFromTableId(carrier.get("tableId"));
+            entInput.setSelectFromFieldId(carrier.get("fieldId"));
+
+        } else if (carrier.get("action").equals("send")) {
+            htype = BACKLOG_HISTORY_TYPE_SEND_DB_INPUT_RELATION_ADDED;
+
+            if (entInput.getSendToDbId().trim().length() > 0) {
+                EntityTmDatabase entOldDB = new EntityTmDatabase();
+                entOldDB.setId(entInput.getSendToDbId());
+                EntityManager.select(entOldDB);
+                oldDbName = entOldDB.getDbName();
+
+                EntityTmTable entOldTable = new EntityTmTable();
+                entOldTable.setId(entInput.getSendToTableId());
+                EntityManager.select(entOldTable);
+                oldTableName = entOldTable.getTableName();
+
+                EntityTmField entOldField = new EntityTmField();
+                entOldField.setId(entInput.getSendToFieldId());
+                EntityManager.select(entOldField);
+                oldFieldName = entOldField.getFieldName();
+
+                oldValue = oldDbName.concat(".").concat(oldTableName).concat(".").concat(oldFieldName);
+
+                htype = BACKLOG_HISTORY_TYPE_SEND_DB_INPUT_RELATION_UPDATED;
+            }
+
+            entInput.setSendToDbId(carrier.get("dbId"));
+            entInput.setSendToTableId(carrier.get("tableId"));
+            entInput.setSendToFieldId(carrier.get("fieldId"));
+        }
+
+        Carrier inputAtt = new Carrier();
+        inputAtt.set("fkInputId", entInput.getId());
+        inputAtt.set("attrName", "sa-selectedfield");
+        inputAtt.set("attrValue", entField.getFieldName());
+        inputAtt.set("attrType", "comp");
+        inputAtt.set("fkProjectId", entInput.getFkProjectId());
+        inputAtt.set("fkBacklogId", entInput.getFkBacklogId());
+        insertNewInputAttribute(inputAtt);
+
+        EntityManager.update(entInput);
+
+        getInputList4Select(entInput.getId()).copyTo(carrier);
+
+        String newValue = newDbName.concat(".").concat(newTableName).concat(".").concat(newFieldName);
+        setNewBacklogHistory4AddDatabaseRelation(htype, entInput, oldValue, newValue);
+
+        return carrier;
+    }
+
+
+    // 4. INPUT Select Data from Database history
+    // 6. INPUT Sent Data to Database history
+    private static void setNewBacklogHistory4AddDatabaseRelation(String htype, EntityTmInput ent, String oldValue, String newValue) throws QException {
+        EntityTmBacklog entBacklog = new EntityTmBacklog();
+        entBacklog.setId(ent.getFkBacklogId());
+        EntityManager.select(entBacklog);
+
+        setNewBacklogHistory2(entBacklog.getFkProjectId(), ent.getFkBacklogId(),
+                htype, ent.getId(),
+                ent.getId(), "", ent.getInputName(), oldValue, newValue, "", ent.getInputType());
+    }
+
+    // 5. INPUT Remove Select Data from Database
+    public static Carrier removeDBRelation(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController(EntityTmDocument.ID, cp.hasValue(carrier, EntityTmDocument.ID));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmInput entInput = new EntityTmInput();
+        entInput.setId(carrier.get("id"));
+        EntityManager.select(entInput);
+
+        String htype = BACKLOG_HISTORY_TYPE_SELECT_DB_INPUT_RELATION_DELETED;
+
+        String dbName = "";
+        EntityTmDatabase entDB = new EntityTmDatabase();
+        entDB.setId(entInput.getSelectFromDbId());
+        EntityManager.select(entDB);
+        dbName = entDB.getDbName();
+
+        String tableName = "";
+        EntityTmTable entTable = new EntityTmTable();
+        entTable.setId(entInput.getSelectFromTableId());
+        EntityManager.select(entTable);
+        tableName = entTable.getTableName();
+
+        String fieldName = "";
+        EntityTmField entField = new EntityTmField();
+        entField.setId(entInput.getSelectFromFieldId());
+        EntityManager.select(entField);
+        fieldName = entField.getFieldName();
+
+        String value = dbName.concat(".").concat(tableName).concat(".").concat(fieldName);
+
+        entInput.setSelectFromDbId("");
+        entInput.setSelectFromTableId("");
+        entInput.setSelectFromFieldId("");
+        EntityManager.update(entInput);
+
+        Gson gson = new Gson();
+        String json = gson.toJson(entInput);
+        setProjectInputList(entInput.getFkProjectId(), entInput.getId(), json);
+        getInputList4Select(entInput.getId()).copyTo(carrier);
+
+        setNewBacklogHistory4RemoveDBRelation(htype, entInput, value);
+
+        return carrier;
+    }
+
+
+    // 5. INPUT Remove Select Data from Database history
+    private static void setNewBacklogHistory4RemoveDBRelation(String htype, EntityTmInput ent, String value) throws QException {
+        EntityTmBacklog entBacklog = new EntityTmBacklog();
+        entBacklog.setId(ent.getFkBacklogId());
+        EntityManager.select(entBacklog);
+
+        setNewBacklogHistory2(entBacklog.getFkProjectId(), ent.getFkBacklogId(),
+                htype, ent.getId(),
+                ent.getId(), "", ent.getInputName(), value,
+                "", "", ent.getInputType());
+    }
+
+
     // 7. INPUT Remove Send Data to Database
     public static Carrier removeSendDBRelation(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
@@ -7042,6 +7286,61 @@ public class TmModel {
         return carrier;
     }
 
+    // 12. Description BULK add
+    public Carrier addInputDescCriterias(Carrier carrier) throws QException {
+        String currentInputId = carrier.get("fkInputId");
+        String projectId = carrier.get("fkProjectId");
+        String backlogId = carrier.get("fkBacklogId");
+        String checkedInputIds[] = (currentInputId + "," + carrier.get("checkedInputIds")).split(",");
+        String tn = "inputDescTable";
+        String col = "criteriaLine";
+
+//        if (currentInputId.trim().length() == 0) {
+//            return carrier;
+//        }
+//        EntityTmInput entInput = new EntityTmInput();
+//        entInput.setId(currentInputId);
+//        EntityManager.select(entInput);
+        String inputIds4Frontend = "";
+        String inputDescIds4Frontend = "";
+
+        int rc = carrier.getTableRowCount(tn);
+        for (int i = 0; i < rc; i++) {
+            String v = carrier.getValue(tn, i, col).toString();
+            if (v.length() == 0) {
+                continue;
+            }
+            for (String id : checkedInputIds) {
+                if (id.trim().length() == 0) {
+                    continue;
+                }
+                EntityTmInputDescription entInpDes = new EntityTmInputDescription();
+                entInpDes.setFkInputId(id);
+                entInpDes.setFkProjectId(projectId);
+                entInpDes.setDescription(v);
+                Carrier cr = EntityManager.select(entInpDes);
+                if (cr.getTableRowCount(entInpDes.toTableName()) > 0) {
+                    continue;
+                }
+                EntityManager.insert(entInpDes);
+
+                inputIds4Frontend += id + CoreLabel.IN;
+                inputDescIds4Frontend += entInpDes.getId() + CoreLabel.IN;
+
+                EntityTmInput entInput = new EntityTmInput();
+                entInput.setId(id);
+                entInput.setFkBacklogId(backlogId);
+                entInput.setInputName(v);
+
+                setNewBacklogHistory4InputDescriptionNew(entInpDes, entInput);
+            }
+        }
+
+        getInputDescriptionList4Select(inputDescIds4Frontend).copyTo(carrier);
+        getInputList4Select(inputIds4Frontend).copyTo(carrier);
+        getBacklogDependencyList4Select(carrier).copyTo(carrier);
+        return carrier;
+    }
 
     // 12. INPUT Description Added history
     private static void setNewBacklogHistory4InputDescriptionNew(EntityTmInputDescription entDesc,
@@ -7153,8 +7452,312 @@ public class TmModel {
         setNewBacklogHistory2(entNew.getFkProjectId(), entNew.getId(),
                 BACKLOG_HISTORY_TYPE_INPUT_DESCRIPTION_DELETE, entInput.getId(),
                 entInput.getId(), entDesc.getId(), entInput.getInputName(),
-                "", "", entDesc.getDescription(), entInput.getInputType());
+                entDesc.getDescription(), "", entDesc.getDescription(), entInput.getInputType());
     }
+
+
+    /**
+     * P ~ R ~ O ~ C ~ E ~ S ~ S
+     */
+
+    // 1. Process input added ("input" as "description")
+    public static Carrier insertNewBacklogDescription(Carrier carrier) throws QException {
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String orderNo = carrier.get("relatedDescId").trim().length() == 0
+                ? getNextBacklogDescriptionOrderNo(carrier.get("fkProjectId"))
+                : getPreviousBacklogDescriptionOrderNo(carrier.get("relatedDescId"));
+
+        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        ent.setFkBacklogId(carrier.get("fkBacklogId"));
+        ent.setDescription(carrier.get("description"));
+        ent.setOrderNo(orderNo);
+        EntityManager.insert(ent);
+
+        setNewBacklogHistory4ProcessInputAdded(ent);
+
+        return carrier;
+    }
+
+    // 1. Process input added history
+    private static void setNewBacklogHistory4ProcessInputAdded(EntityTmBacklogDescription ent) throws QException {
+        setNewBacklogHistory2(ent.getFkProjectId(), ent.getFkBacklogId(),
+                BACKLOG_HISTORY_TYPE_PROCESS_FIELD_ADDED, ent.getId(),
+                "", "", ent.getDescription(),
+                "", ent.getDescription(), "", "process");
+
+    }
+
+    // 2. PROCESS input updated
+    public static Carrier updatetBacklogDescription(Carrier carrier) throws QException {
+        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
+        ent.setId(carrier.get("id"));
+        EntityManager.select(ent);
+
+        carrier.set("fkBacklogId", ent.getFkBacklogId());
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String oldValue = ent.getDescription();
+
+        ent.setDescription(carrier.get("description"));
+        EntityManager.update(ent);
+
+        setNewBacklogHistory4ProcessInputUpdated(oldValue, ent);
+
+        return carrier;
+    }
+
+    // 2. PROCESS input updated history
+    private static void setNewBacklogHistory4ProcessInputUpdated(String oldValue, EntityTmBacklogDescription ent) throws QException {
+        setNewBacklogHistory2(ent.getFkProjectId(), ent.getFkBacklogId(),
+                BACKLOG_HISTORY_TYPE_PROCESS_FIELD_UPDATED, ent.getId(),
+                "", "", ent.getDescription(),
+                oldValue, ent.getDescription(), "", "process");
+
+    }
+
+    // 3. PROCESS input deleted
+    public static Carrier deleteBacklogDescription(Carrier carrier) throws QException {
+        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
+        ent.setId(carrier.get("id"));
+        EntityManager.select(ent);
+
+        carrier.set("fkBacklogId", ent.getFkBacklogId());
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        ent.setId(carrier.get("id"));
+        EntityManager.delete(ent);
+
+        setNewBacklogHistory4ProcessInputDeleted(ent);
+
+        return carrier;
+    }
+
+    // 3. PROCESS input delete history
+    private static void setNewBacklogHistory4ProcessInputDeleted(EntityTmBacklogDescription ent) throws QException {
+        setNewBacklogHistory2(ent.getFkProjectId(), ent.getFkBacklogId(),
+                BACKLOG_HISTORY_TYPE_PROCESS_FIELD_DELETED, ent.getId(),
+                "", "", ent.getDescription(),
+                ent.getDescription(), "", "", "process");
+
+    }
+
+
+    // 4. PROCESS - Add Related API
+    public static Carrier addRelatedApiToBacklogDesc(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("id", cp.hasValue(carrier, "id"));
+        carrier.addController("apiId", cp.hasValue(carrier, "apiId"));
+
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
+        ent.setId(carrier.get("id"));
+        EntityManager.select(ent);
+
+        carrier.set("fkBacklogId", ent.getFkBacklogId());
+
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String htype = BACKLOG_HISTORY_TYPE_PROCESS_ADD_RELATED_API;
+        String oldRelatedApiId = "";
+        if (ent.getFkRelatedApiId().trim().length() > 0) {
+            oldRelatedApiId = ent.getFkRelatedApiId();
+            htype = BACKLOG_HISTORY_TYPE_PROCESS_UPDATE_RELATED_API;
+        }
+
+        ent.setFkRelatedApiId(carrier.get("apiId"));
+        ent.setShortDescForApi(carrier.get("shortDesc"));
+        EntityManager.update(ent);
+
+        setNewBacklogHistory4AddRelatedApiToBacklogDesc(htype, ent, oldRelatedApiId);
+
+        return carrier;
+    }
+
+    // 4. PROCESS - Add Related API history
+    private static void setNewBacklogHistory4AddRelatedApiToBacklogDesc(String htype, EntityTmBacklogDescription ent, String oldApiId) throws QException {
+        setNewBacklogHistory2(ent.getFkProjectId(), ent.getFkBacklogId(),
+                htype, ent.getId(),
+                "", "", ent.getDescription(),
+                oldApiId, ent.getFkRelatedApiId(), ent.getShortDescForApi(), "process");
+    }
+
+    // 5. PROCESS Remove Related API
+    public static Carrier removeRelatedApiToBacklogDesc(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("id", cp.hasValue(carrier, "id"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
+        ent.setId(carrier.get("id"));
+        EntityManager.select(ent);
+
+        carrier.set("fkBacklogId", ent.getFkBacklogId());
+
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String oldRelatedApiId = ent.getFkRelatedApiId();
+
+        ent.setFkRelatedApiId("");
+        ent.setShortDescForApi("");
+        EntityManager.update(ent);
+
+        setNewBacklogHistory4RemoveRelatedApiToBacklogDesc(ent, oldRelatedApiId);
+
+        return carrier;
+    }
+
+    // 5. PROCESS Remove Related API history
+    private static void setNewBacklogHistory4RemoveRelatedApiToBacklogDesc(EntityTmBacklogDescription ent, String oldApiId) throws QException {
+        setNewBacklogHistory2(ent.getFkProjectId(), ent.getFkBacklogId(),
+                BACKLOG_HISTORY_TYPE_PROCESS_DELETE_RELATED_API, ent.getId(),
+                "", "", ent.getDescription(),
+                oldApiId, "", ent.getShortDescForApi(), "process");
+    }
+
+    // 6. PROCESS Add Relation Function
+    public static Carrier addRelatedFunctionToBacklogDesc(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("id", cp.hasValue(carrier, "id"));
+        carrier.addController("fkFunctionId", cp.hasValue(carrier, "fkFunctionId"));
+
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
+        ent.setId(carrier.get("id"));
+        EntityManager.select(ent);
+
+        carrier.set("fkBacklogId", ent.getFkBacklogId());
+
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String oldFuncId = ent.getFkRelatedScId();
+        String htype = BACKLOG_HISTORY_TYPE_PROCESS_ADD_RELATED_FUNCTION;
+
+        if (oldFuncId.trim().length() > 0) {
+            htype = BACKLOG_HISTORY_TYPE_PROCESS_UPDATE_RELATED_FUNCTION;
+        }
+
+        ent.setFkRelatedScId(carrier.get("fkFunctionId"));
+        EntityManager.update(ent);
+
+        setNewBacklogHistory4AddRelatedFunctionToBacklogDesc(htype, ent, oldFuncId);
+
+        return carrier;
+    }
+
+    // 6. PROCESS Add Relation Function history
+    private static void setNewBacklogHistory4AddRelatedFunctionToBacklogDesc(String htype, EntityTmBacklogDescription ent, String oldFuncId) throws QException {
+        setNewBacklogHistory2(ent.getFkProjectId(), ent.getFkBacklogId(),
+                htype, ent.getId(),
+                "", "", ent.getDescription(),
+                oldFuncId, ent.getFkRelatedScId(), ent.getShortDescForApi(), "process");
+    }
+
+
+    // 7. PROCESS Removed Relation Function
+    public static Carrier removeRelatedFunctionToBacklogDesc(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("id", cp.hasValue(carrier, "id"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
+        ent.setId(carrier.get("id"));
+        EntityManager.select(ent);
+
+        carrier.set("fkBacklogId", ent.getFkBacklogId());
+
+        carrier = hasPermissionToModifyBacklogAsApi(carrier);
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        String oldRelatedFunctionId = ent.getFkRelatedScId();
+
+        ent.setFkRelatedScId("");
+        EntityManager.update(ent);
+
+        setNewBacklogHistory4RemoveRelatedFunctionToBacklogDesc(ent, oldRelatedFunctionId);
+
+        return carrier;
+    }
+
+    // 7. PROCESS Removed Relation Function history
+    private static void setNewBacklogHistory4RemoveRelatedFunctionToBacklogDesc(EntityTmBacklogDescription ent, String oldApiId) throws QException {
+        setNewBacklogHistory2(ent.getFkProjectId(), ent.getFkBacklogId(),
+                BACKLOG_HISTORY_TYPE_PROCESS_DELETE_RELATED_FUNCTION, ent.getId(),
+                "", "", ent.getDescription(),
+                oldApiId, "", ent.getShortDescForApi(), "process");
+    }
+
+
+    // 8. PROCESS Update Order No
+    public static Carrier updateOrderNoBacklogDesc(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("sourcedId", cp.isKeyExist(carrier, "sourcedId"));
+        carrier.addController("targetId", cp.isKeyExist(carrier, "targetId"));
+        carrier.addController("oldOrderNo", cp.isKeyExist(carrier, "oldOrderNo"));
+        carrier.addController("newOrderNo", cp.isKeyExist(carrier, "newOrderNo"));
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmBacklogDescription entSource = new EntityTmBacklogDescription();
+        entSource.setId(carrier.get("sourcedId"));
+        EntityManager.select(entSource);
+        entSource.setOrderNo(carrier.get("newOrderNo"));
+        EntityManager.update(entSource);
+
+        EntityTmBacklogDescription entTarget = new EntityTmBacklogDescription();
+        entTarget.setId(carrier.get("targetId"));
+        EntityManager.select(entTarget);
+        entTarget.setOrderNo(carrier.get("oldOrderNo"));
+        EntityManager.update(entTarget);
+
+        String oldOrderNo = entTarget.getOrderNo();
+        String newOrderNo = entSource.getOrderNo();
+
+        setNewBacklogHistory4UpdateOrderNoBacklogDesc(entSource, oldOrderNo, newOrderNo);
+
+        return carrier;
+    }
+
+    // 8. PROCESS Update Order No history
+    private static void setNewBacklogHistory4UpdateOrderNoBacklogDesc(EntityTmBacklogDescription ent, String oldOrderNo, String newOrderNo) throws QException {
+        setNewBacklogHistory2(ent.getFkProjectId(), ent.getFkBacklogId(),
+                BACKLOG_HISTORY_TYPE_PROCESS_ORDER_UPDATED, ent.getId(),
+                "", "", ent.getDescription(),
+                oldOrderNo, newOrderNo, ent.getShortDescForApi(), "process");
+    }
+
 
     public static Carrier updateInputSendDataTo(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
@@ -7497,27 +8100,6 @@ public class TmModel {
 
     }
 
-    public static Carrier insertNewBacklogDescription(Carrier carrier) throws QException {
-
-        carrier = hasPermissionToModifyBacklogAsApi(carrier);
-        if (carrier.hasError()) {
-            return carrier;
-        }
-
-        String orderNo = carrier.get("relatedDescId").trim().length() == 0
-                ? getNextBacklogDescriptionOrderNo(carrier.get("fkProjectId"))
-                : getPreviousBacklogDescriptionOrderNo(carrier.get("relatedDescId"));
-
-        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
-        ent.setFkProjectId(carrier.get("fkProjectId"));
-        ent.setFkBacklogId(carrier.get("fkBacklogId"));
-        ent.setDescription(carrier.get("description"));
-        ent.setOrderNo(orderNo);
-        EntityManager.insert(ent);
-
-        return carrier;
-    }
-
     private static String getNextBacklogDescriptionOrderNo(String fkProjectId) throws QException {
         String res = "11";
 
@@ -7562,39 +8144,6 @@ public class TmModel {
         return res;
     }
 
-    public static Carrier updatetBacklogDescription(Carrier carrier) throws QException {
-
-        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
-        ent.setId(carrier.get("id"));
-        EntityManager.select(ent);
-
-        carrier.set("fkBacklogId", ent.getFkBacklogId());
-        carrier = hasPermissionToModifyBacklogAsApi(carrier);
-        if (carrier.hasError()) {
-            return carrier;
-        }
-
-        ent.setDescription(carrier.get("description"));
-        EntityManager.update(ent);
-        return carrier;
-    }
-
-    public static Carrier deleteBacklogDescription(Carrier carrier) throws QException {
-        EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
-        ent.setId(carrier.get("id"));
-        EntityManager.select(ent);
-
-        carrier.set("fkBacklogId", ent.getFkBacklogId());
-        carrier = hasPermissionToModifyBacklogAsApi(carrier);
-        if (carrier.hasError()) {
-            return carrier;
-        }
-
-        ent.setId(carrier.get("id"));
-        EntityManager.delete(ent);
-
-        return carrier;
-    }
 
     public Carrier colorBacklogDescription(Carrier carrier) throws QException {
         EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
@@ -8549,7 +9098,8 @@ public class TmModel {
             st += " ";
             st += c.getValue(tn, i, EntityCrUserList.USER_PERSON_MIDDLENAME);
             st += i < row - 1 ? ", " : "";
-        };
+        }
+        ;
 
         carrier.setValue(table, 0, "reporterName", st);
         return carrier;
@@ -9674,7 +10224,7 @@ public class TmModel {
         return carrier;
     }
 
-//    ,String backlogId,String backlogName
+    //    ,String backlogId,String backlogName
     public static void getInputList4AllGui(Carrier carrier) throws QException {
         int rc = carrier.getTableRowCount(CoreLabel.RESULT_SET);
         for (int i = 0; i < rc; i++) {
@@ -10808,7 +11358,8 @@ public class TmModel {
 
     public Carrier removeInputTable(Carrier carrier) throws QException {
         String inputTableId = carrier.get("fkInputTableId");
-        String inputId = carrier.get("fkInputId");;
+        String inputId = carrier.get("fkInputId");
+        ;
 
         EntityTmInputTableComp entTable = new EntityTmInputTableComp();
         entTable.setId(inputTableId);
@@ -10985,370 +11536,12 @@ public class TmModel {
                 } else if (ent.getCreatedBy().equals(SessionManager.getCurrentUserId())) {
                     f = true;
                 }
-            }else{
+            } else {
                 f = true;
             }
         }
 
         return f;
-    }
-
-    
-    // 1. INPUT CREATED
-    public static Carrier insertNewInput4Select(Carrier carrier) throws QException {
-        carrier = hasPermissionToModifyBacklogAsApi(carrier);
-        
-        if (carrier.hasError()) {
-            return carrier;
-        }
-
-        String cellNo = carrier.get("cellNo").length() > 0 ? carrier.get("cellNo") : "6";
-        String orderNo = carrier.get("orderNo")
-                .length() > 0 ? carrier.get("orderNo") : getInputOrderNo(carrier.get("fkBacklogId"));
-
-        EntityTmInput ent = new EntityTmInput();
-
-        EntityManager.mapCarrierToEntity(carrier, ent);
-        ent.setOrderNo(orderNo);
-        ent.setCellNo(cellNo);
-        ent.setParam3(Config.getProperty("component.design"));
-        EntityManager.insert(ent);
-
-        try {
-            Gson gson = new Gson();
-            String json = gson.toJson(ent);
-            setProjectInputList(ent.getFkProjectId(), ent.getId(), json);
-        } catch (Exception err) {
-        }
-
-        Carrier cout = new Carrier();
-        EntityManager.mapEntityToCarrier(ent, cout, true);
-        EntityManager.mapEntityToCarrier(ent, cout, "inputTable", true);
-
-        getInputList4Select(ent.getId()).copyTo(cout);
-        getBacklogList4Select(ent.getFkBacklogId()).copyTo(cout);
-        
-        //setNewBacklogHistory4InputNew(ent);
-        setNewBacklogHistory4InputNew2(ent);
-        
-        return cout;
-    }
-    
-    // 1. INPUT CREATED history
-    private static void setNewBacklogHistory4InputNew2(EntityTmInput ent) throws QException {
-        EntityTmBacklog entBacklog = new EntityTmBacklog();
-        entBacklog.setId(ent.getFkBacklogId());
-        EntityManager.select(entBacklog);
-
-
-
-        setNewBacklogHistory2(entBacklog.getFkProjectId(), ent.getFkBacklogId(),
-                BACKLOG_HISTORY_TYPE_INPUT_NEW, ent.getId(),
-                ent.getId(), "", ent.getInputName(),
-                "", ent.getInputName(), "", ent.getInputType());
-    }
-
-    // 2. INPUT RENAMED
-    public static Carrier updateInputByInputName(Carrier carrier) throws QException, FileNotFoundException, IOException {
-        EntityTmInput entity = new EntityTmInput();
-        entity.setId(carrier.getValue(EntityTmInput.ID).toString());
-        EntityManager.select(entity);
-
-        carrier.set("fkBacklogId", entity.getFkBacklogId());
-        carrier = hasPermissionToModifyBacklogAsApi(carrier);
-
-        if (carrier.hasError()) {
-            return carrier;
-        }
-
-        String oldName = entity.getInputName();
-        entity.setInputName(carrier.getValue(EntityTmInput.INPUT_NAME).toString());
-        EntityManager.update(entity);
-        carrier = EntityManager.select(entity);
-        carrier.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
-
-        setNewBacklogHistory4InputUpdateName(entity, oldName);
-
-        Gson gson = new Gson();
-        String json = gson.toJson(entity);
-        setProjectInputList(entity.getFkProjectId(), entity.getId(), json);
-
-        getInputList4Select(entity.getId()).copyTo(carrier);
-        return carrier;
-    }
-
-    // 2. INPUT RENAMED history
-    private static void setNewBacklogHistory4InputUpdateName(EntityTmInput ent, String oldName) throws QException {
-        EntityTmBacklog entNew = new EntityTmBacklog();
-        entNew.setId(ent.getFkBacklogId());
-        EntityManager.select(entNew);
-
-        setNewBacklogHistory2(entNew.getFkProjectId(), ent.getFkBacklogId(),
-                BACKLOG_HISTORY_TYPE_INPUT_UPDATE, ent.getId(),
-                ent.getId(), "", ent.getInputName(),
-                oldName, ent.getInputName(), "", ent.getInputType());
-    }
-
-    // 3. INPUT DELETE
-    public static Carrier deleteInput(Carrier carrier) throws QException {
-        EntityTmInput entity = new EntityTmInput();
-        entity.setId(carrier.getValue(EntityTmInput.ID).toString());
-        EntityManager.select(entity);
-
-        carrier.set("fkBacklogId", entity.getFkBacklogId());
-
-        carrier = hasPermissionToModifyBacklogAsApi(carrier);
-        if (carrier.hasError()) {
-            return carrier;
-        }
-
-        EntityManager.delete(entity);
-
-        Gson gson = new Gson();
-        String json = gson.toJson(entity);
-        setProjectInputList(entity.getFkProjectId(), entity.getId(), "deleted");
-
-        EntityTmRelTableInput entTbl = new EntityTmRelTableInput();
-        entTbl.setFkInputId(carrier.get("id"));
-        String inputIds = EntityManager.select(entTbl).getValueLine(entTbl.toTableName());
-        if (inputIds.length() > 1) {
-            entTbl.setId(inputIds);
-            EntityManager.delete(entTbl);
-        }
-
-//        decreaseBacklogInputCount(entity.getFkBacklogId(), 1);
-//        carrier.setValue("isSourced", isBacklogSourced(entity.getFkBacklogId()));
-        setNewBacklogHistory4InputDelete(entity);
-
-        if (entity.getFkBacklogId().length() == 0) {
-            return carrier;
-        }
-
-        Carrier cout = new Carrier();
-        cout.set("fkBacklogId", entity.getFkBacklogId());
-        cout.set("asc", "orderNo");
-        cout = getInputList(cout);
-        cout.renameTableName(CoreLabel.RESULT_SET, "inputListTable");
-        cout.copyTo(carrier);
-
-        EntityTmInput ent1 = new EntityTmInput();
-        ent1.setFkBacklogId(entity.getFkBacklogId());
-        ent1.setInputType("OUT");
-        Carrier cout1 = EntityManager.select(ent1);
-        cout1.renameTableName(ent1.toTableName(), "inputOutputList");
-        cout1.copyTo(carrier);
-
-        getBacklogList4Select(entity.getFkBacklogId()).copyTo(carrier);
-        getTableListOfInput(entity.getFkBacklogId(), entity.getFkProjectId()).copyTo(carrier);
-        getTabListOfInput(entity.getFkBacklogId(), entity.getFkProjectId()).copyTo(carrier);
-        return carrier;
-    }
-
-
-    // 3. INPUT DELETE history
-    private static void setNewBacklogHistory4InputDelete(EntityTmInput ent) throws QException {
-        EntityTmBacklog entNew = new EntityTmBacklog();
-        entNew.setId(ent.getFkBacklogId());
-        EntityManager.select(entNew);
-
-        setNewBacklogHistory2(entNew.getFkProjectId(), ent.getFkBacklogId(),
-                BACKLOG_HISTORY_TYPE_INPUT_DELETE, ent.getId(),
-                ent.getId(), "", ent.getInputName(),
-                ent.getInputName(), "", "", ent.getInputType());
-    }
-
-    // 4. INPUT Select Data from Database
-    // 6. INPUT Sent Data to Database
-    public static Carrier addDatabaseRelation(Carrier carrier) throws QException {
-        ControllerPool cp = new ControllerPool();
-        carrier.addController(EntityTmDocument.ID, cp.hasValue(carrier, EntityTmDocument.ID));
-        carrier.addController("dbId", cp.hasValue(carrier, "dbId"));
-        carrier.addController("action", cp.hasValue(carrier, "action"));
-        carrier.addController("tableId", cp.hasValue(carrier, "tableId"));
-        carrier.addController("fieldId", cp.hasValue(carrier, "fieldId"));
-
-        String newDbName = "";
-        EntityTmDatabase entDB = new EntityTmDatabase();
-        entDB.setId(carrier.get("dbId"));
-        EntityManager.select(entDB);
-        newDbName = entDB.getDbName();
-
-        String newTableName = "";
-        EntityTmTable entTable = new EntityTmTable();
-        entTable.setId(carrier.get("tableId"));
-        EntityManager.select(entTable);
-        newTableName = entTable.getTableName();
-
-        String newFieldName = "";
-        EntityTmField entField = new EntityTmField();
-        entField.setId(carrier.get("fieldId"));
-        EntityManager.select(entField);
-        newFieldName = entField.getFieldName();
-
-        if (carrier.hasError()) {
-            return carrier;
-        }
-
-        EntityTmInput entInput = new EntityTmInput();
-        entInput.setId(carrier.get("id"));
-        EntityManager.select(entInput);
-
-        String oldDbName = "";
-        String oldTableName = "";
-        String oldFieldName = "";
-        String oldValue = "";
-
-
-
-        String htype = "";
-        if (carrier.get("action").equals("select")) {
-            htype = BACKLOG_HISTORY_TYPE_SELECT_DB_INPUT_RELATION_ADDED;
-            if(entInput.getSelectFromDbId().trim().length() > 0) {
-                EntityTmDatabase entOldDB = new EntityTmDatabase();
-                entOldDB.setId(entInput.getSelectFromDbId());
-                EntityManager.select(entOldDB);
-                oldDbName = entOldDB.getDbName();
-
-                EntityTmTable entOldTable = new EntityTmTable();
-                entOldTable.setId(entInput.getSelectFromTableId());
-                EntityManager.select(entOldTable);
-                oldTableName = entOldTable.getTableName();
-
-                EntityTmField entOldField = new EntityTmField();
-                entOldField.setId(entInput.getSelectFromFieldId());
-                EntityManager.select(entOldField);
-                oldFieldName = entOldField.getFieldName();
-
-                oldValue = oldDbName.concat(".").concat(oldTableName).concat(".").concat(oldFieldName);
-
-                htype = BACKLOG_HISTORY_TYPE_SELECT_DB_INPUT_RELATION_UPDATED;
-            }
-
-            entInput.setSelectFromDbId(carrier.get("dbId"));
-            entInput.setSelectFromTableId(carrier.get("tableId"));
-            entInput.setSelectFromFieldId(carrier.get("fieldId"));
-
-        } else if (carrier.get("action").equals("send")) {
-            htype = BACKLOG_HISTORY_TYPE_SEND_DB_INPUT_RELATION_ADDED;
-
-            if(entInput.getSendToDbId().trim().length() > 0) {
-                EntityTmDatabase entOldDB = new EntityTmDatabase();
-                entOldDB.setId(entInput.getSendToDbId());
-                EntityManager.select(entOldDB);
-                oldDbName = entOldDB.getDbName();
-
-                EntityTmTable entOldTable = new EntityTmTable();
-                entOldTable.setId(entInput.getSendToTableId());
-                EntityManager.select(entOldTable);
-                oldTableName = entOldTable.getTableName();
-
-                EntityTmField entOldField = new EntityTmField();
-                entOldField.setId(entInput.getSendToFieldId());
-                EntityManager.select(entOldField);
-                oldFieldName = entOldField.getFieldName();
-
-                oldValue = oldDbName.concat(".").concat(oldTableName).concat(".").concat(oldFieldName);
-
-                htype = BACKLOG_HISTORY_TYPE_SEND_DB_INPUT_RELATION_UPDATED;
-            }
-
-            entInput.setSendToDbId(carrier.get("dbId"));
-            entInput.setSendToTableId(carrier.get("tableId"));
-            entInput.setSendToFieldId(carrier.get("fieldId"));
-        }
-
-        Carrier inputAtt = new Carrier();
-        inputAtt.set("fkInputId", entInput.getId());
-        inputAtt.set("attrName", "sa-selectedfield");
-        inputAtt.set("attrValue", entField.getFieldName());
-        inputAtt.set("attrType", "comp");
-        inputAtt.set("fkProjectId", entInput.getFkProjectId());
-        inputAtt.set("fkBacklogId", entInput.getFkBacklogId());
-        insertNewInputAttribute(inputAtt);
-
-        EntityManager.update(entInput);
-
-        getInputList4Select(entInput.getId()).copyTo(carrier);
-
-        String newValue = newDbName.concat(".").concat(newTableName).concat(".").concat(newFieldName);
-        setNewBacklogHistory4AddDatabaseRelation(htype, entInput, oldValue, newValue);
-
-        return carrier;
-    }
-
-
-    // 4. INPUT Select Data from Database history
-    // 6. INPUT Sent Data to Database history
-    private static void setNewBacklogHistory4AddDatabaseRelation(String htype, EntityTmInput ent, String oldValue, String newValue) throws QException {
-        EntityTmBacklog entBacklog = new EntityTmBacklog();
-        entBacklog.setId(ent.getFkBacklogId());
-        EntityManager.select(entBacklog);
-
-        setNewBacklogHistory2(entBacklog.getFkProjectId(), ent.getFkBacklogId(),
-                htype, ent.getId(),
-                ent.getId(), "", ent.getInputName(), oldValue, newValue, "", ent.getInputType());
-    }
-
-    // 5. INPUT Remove Select Data from Database
-    public static Carrier removeDBRelation(Carrier carrier) throws QException {
-        ControllerPool cp = new ControllerPool();
-        carrier.addController(EntityTmDocument.ID, cp.hasValue(carrier, EntityTmDocument.ID));
-        if (carrier.hasError()) {
-            return carrier;
-        }
-
-        EntityTmInput entInput = new EntityTmInput();
-        entInput.setId(carrier.get("id"));
-        EntityManager.select(entInput);
-
-        String htype = BACKLOG_HISTORY_TYPE_SELECT_DB_INPUT_RELATION_DELETED;
-
-        String dbName = "";
-        EntityTmDatabase entDB = new EntityTmDatabase();
-        entDB.setId(entInput.getSelectFromDbId());
-        EntityManager.select(entDB);
-        dbName = entDB.getDbName();
-
-        String tableName = "";
-        EntityTmTable entTable = new EntityTmTable();
-        entTable.setId(entInput.getSelectFromTableId());
-        EntityManager.select(entTable);
-        tableName = entTable.getTableName();
-
-        String fieldName = "";
-        EntityTmField entField = new EntityTmField();
-        entField.setId(entInput.getSelectFromFieldId());
-        EntityManager.select(entField);
-        fieldName = entField.getFieldName();
-
-        String value = dbName.concat(".").concat(tableName).concat(".").concat(fieldName);
-
-        entInput.setSelectFromDbId("");
-        entInput.setSelectFromTableId("");
-        entInput.setSelectFromFieldId("");
-        EntityManager.update(entInput);
-
-        Gson gson = new Gson();
-        String json = gson.toJson(entInput);
-        setProjectInputList(entInput.getFkProjectId(), entInput.getId(), json);
-        getInputList4Select(entInput.getId()).copyTo(carrier);
-
-        setNewBacklogHistory4RemoveDBRelation(htype, entInput, value);
-
-        return carrier;
-    }
-
-
-    // 5. INPUT Remove Select Data from Database history
-    private static void setNewBacklogHistory4RemoveDBRelation(String htype, EntityTmInput ent, String value) throws QException {
-        EntityTmBacklog entBacklog = new EntityTmBacklog();
-        entBacklog.setId(ent.getFkBacklogId());
-        EntityManager.select(entBacklog);
-
-        setNewBacklogHistory2(entBacklog.getFkProjectId(), ent.getFkBacklogId(),
-                htype, ent.getId(),
-                ent.getId(), "", ent.getInputName(), value,
-                "", "", ent.getInputType());
     }
 
     public static Carrier supplementOfInsertNewInput4Select(Carrier carrier) throws QException {
@@ -11399,8 +11592,8 @@ public class TmModel {
     }
 
     private static void setNewBacklogHistory(String projectId, String backlogId,
-            String body, String htype, String relationId,
-            String param1, String param2, String param3) throws QException {
+                                             String body, String htype, String relationId,
+                                             String param1, String param2, String param3) throws QException {
         if (projectId.length() == 0 || backlogId.length() == 0 || htype.length() == 0) {
             return;
         }
@@ -11421,13 +11614,13 @@ public class TmModel {
 
         setNotification(ent.getFkBacklogId(), ent.getId(), "");
     }
-    
+
     //3 history
     private static void setNewBacklogHistory2(String projectId, String backlogId, String htype,
                                               String relationId, String inputId,
                                               String fkBacklogDescriptionId, String inputName, String oldValue,
                                               String newValue, String descriptionName, String actionType) throws QException {
-        
+
         if (projectId.length() == 0 || backlogId.length() == 0 || htype.length() == 0) {
             return;
         }
@@ -11450,14 +11643,14 @@ public class TmModel {
         ent.setNewValue(newValue);
         ent.setDescriptionName(descriptionName);
 
-        if(actionType.equals("IN")) {
+        if (actionType.equals("IN")) {
             actionType = "input";
         } else if (actionType.equalsIgnoreCase("OUT")) {
             actionType = "output";
         }
 
         ent.setActionType(actionType);
-        
+
         ent.setHistoryTellerId(SessionManager.getCurrentUserId());
         EntityManager.insert(ent);
 
@@ -11616,8 +11809,6 @@ public class TmModel {
                 body, BACKLOG_HISTORY_TYPE_INPUT_UPDATE, ent.getId(),
                 ent.getInputName(), ent.getInputType(), ent.getTableName());
     }
-
-    
 
 
     public static Carrier updateInputByTableName(Carrier carrier) throws QException {
@@ -12022,7 +12213,7 @@ public class TmModel {
     }
 
     private static void setNewBacklogHistory4InputRelatedSUSUpdate(EntityTmInput ent,
-            String arg, String relatedBacklogId, String relatedInputId) throws QException {
+                                                                   String arg, String relatedBacklogId, String relatedInputId) throws QException {
         EntityTmBacklog entNew = new EntityTmBacklog();
         entNew.setId(ent.getFkBacklogId());
         EntityManager.select(entNew);
@@ -12034,7 +12225,7 @@ public class TmModel {
     }
 
     private static void setNewBacklogHistory4InputRelatedSUSDelete(EntityTmInput ent,
-            String arg, String relatedBacklogId, String relatedInputId) throws QException {
+                                                                   String arg, String relatedBacklogId, String relatedInputId) throws QException {
         EntityTmBacklog entNew = new EntityTmBacklog();
         entNew.setId(ent.getFkBacklogId());
         EntityManager.select(entNew);
@@ -12163,7 +12354,7 @@ public class TmModel {
     }
 
     private static void deleteBacklogDependence(String projectId, String parentBacklogId,
-            String childBacklogId) throws QException {
+                                                String childBacklogId) throws QException {
         if (childBacklogId.trim().length() == 0) {
             return;
         }
@@ -12179,7 +12370,7 @@ public class TmModel {
     }
 
     private static void addBacklogDependence(String projectId, String parentBacklogId,
-            String childBacklogId) throws QException {
+                                             String childBacklogId) throws QException {
         if (parentBacklogId.trim().length() == 0) {
             return;
         }
@@ -12193,8 +12384,6 @@ public class TmModel {
             EntityManager.insert(ent);
         }
     }
-
-    
 
 
     public static Carrier getInputList(Carrier carrier) throws QException {
@@ -12967,9 +13156,6 @@ public class TmModel {
         return ent.getInputName();
     }
 
-    
-
-    
 
     public static Carrier getInputDescriptionList(Carrier carrier) throws QException {
         EntityTmInput entIn = new EntityTmInput();
@@ -14859,32 +15045,32 @@ public class TmModel {
         c.mergeCarrier(entNoti.toTableName(), EntityTmNotification.FK_BACKLOG_ID,
                 cBL, entBL.toTableName(), EntityTmBacklogList.ID,
                 new String[]{EntityTmBacklogList.BACKLOG_NAME,
-                    EntityTmBacklogList.ASSIGNEE_NAME,
-                    EntityTmBacklogList.BACKLOG_STATUS,
-                    EntityTmBacklogList.COMMENT_COUNT,
-                    EntityTmBacklogList.CREATED_BY_NAME,
-                    EntityTmBacklogList.CREATED_DATE,
-                    EntityTmBacklogList.CREATED_TIME,
-                    EntityTmBacklogList.INPUT_COUNT,
-                    EntityTmBacklogList.IS_BOUNDED,
-                    EntityTmBacklogList.IS_FROM_CUSTOMER,
-                    EntityTmBacklogList.IS_INITIAL,
-                    EntityTmBacklogList.IS_SOURCED,
-                    EntityTmBacklogList.PRIORITY,
-                    EntityTmBacklogList.ORDER_NO,
-                    EntityTmBacklogList.TASK_COUNT,
-                    EntityTmBacklogList.BACKLOG_NAME
+                        EntityTmBacklogList.ASSIGNEE_NAME,
+                        EntityTmBacklogList.BACKLOG_STATUS,
+                        EntityTmBacklogList.COMMENT_COUNT,
+                        EntityTmBacklogList.CREATED_BY_NAME,
+                        EntityTmBacklogList.CREATED_DATE,
+                        EntityTmBacklogList.CREATED_TIME,
+                        EntityTmBacklogList.INPUT_COUNT,
+                        EntityTmBacklogList.IS_BOUNDED,
+                        EntityTmBacklogList.IS_FROM_CUSTOMER,
+                        EntityTmBacklogList.IS_INITIAL,
+                        EntityTmBacklogList.IS_SOURCED,
+                        EntityTmBacklogList.PRIORITY,
+                        EntityTmBacklogList.ORDER_NO,
+                        EntityTmBacklogList.TASK_COUNT,
+                        EntityTmBacklogList.BACKLOG_NAME
                 });
 
         c.mergeCarrier(entNoti.toTableName(), EntityTmNotification.FK_BACKLOG_HISTORY_ID,
                 cBH, entBH.toTableName(), EntityTmBacklogHistoryList.ID,
                 new String[]{EntityTmBacklogHistoryList.HISTORY_BODY,
-                    EntityTmBacklogHistoryList.HISTORY_DATE,
-                    EntityTmBacklogHistoryList.HISTORY_TELLER_ID,
-                    EntityTmBacklogHistoryList.HISTORY_TELLER_IMAGE,
-                    EntityTmBacklogHistoryList.HISTORY_TELLER_NAME,
-                    EntityTmBacklogHistoryList.HISTORY_TIME,
-                    EntityTmBacklogHistoryList.HISTORY_TYPE
+                        EntityTmBacklogHistoryList.HISTORY_DATE,
+                        EntityTmBacklogHistoryList.HISTORY_TELLER_ID,
+                        EntityTmBacklogHistoryList.HISTORY_TELLER_IMAGE,
+                        EntityTmBacklogHistoryList.HISTORY_TELLER_NAME,
+                        EntityTmBacklogHistoryList.HISTORY_TIME,
+                        EntityTmBacklogHistoryList.HISTORY_TYPE
                 });
 
         //update all notifications as is_reviewed by current user
@@ -14998,7 +15184,7 @@ public class TmModel {
     }
 
     private static boolean getAllParentTreeOfBacklogDependency(String projectId, String parentBacklogId,
-            ArrayList<String> backlogList) throws QException {
+                                                               ArrayList<String> backlogList) throws QException {
 
         ArrayList<String> parentBacklogList = new ArrayList<String>();
         parentBacklogList.add(parentBacklogId);
@@ -15007,7 +15193,7 @@ public class TmModel {
     }
 
     private static boolean getAllParentTreeOfBacklog(String projectId, String parentBacklogId,
-            ArrayList<String> backlogList) throws QException {
+                                                     ArrayList<String> backlogList) throws QException {
 
         EntityTmBacklogDependencyList ent = new EntityTmBacklogDependencyList();
         ent.setFkProjectId(projectId);
@@ -15036,7 +15222,7 @@ public class TmModel {
     }
 
     private static void getAllChildTreeOfBacklog(ArrayList<String> backlogList,
-            String projectId, String backlogId) throws QException {
+                                                 String projectId, String backlogId) throws QException {
 
         EntityTmBacklogDependencyList ent = new EntityTmBacklogDependencyList();
         ent.setFkProjectId(projectId);
@@ -15655,12 +15841,12 @@ public class TmModel {
             entComment.setIsNotifiedBug(trialId);
             entComment.setComment(
                     "Sent By: " + entTrialList.getCreatedByName()
-                    + " \n"
-                    + "*TEST SCENARIO:* " + entScenario.getScenarioName()
-                    + "  \n"
-                    + "*EXPECTED RESULT:* " + entScenario.getExpectedResult()
-                    + "  \n"
-                    + "*ACTUAL RESULT:* " + entTrial.getActualResult());
+                            + " \n"
+                            + "*TEST SCENARIO:* " + entScenario.getScenarioName()
+                            + "  \n"
+                            + "*EXPECTED RESULT:* " + entScenario.getExpectedResult()
+                            + "  \n"
+                            + "*ACTUAL RESULT:* " + entTrial.getActualResult());
             EntityManager.insert(entComment);
 
             String files[] = entTrial.getFileName().trim().split("\\|");
@@ -16272,7 +16458,7 @@ public class TmModel {
     }
 
     private static void addInputDesction4InputTable(Carrier cr, String tn, int i,
-            String fkDependentBacklogId, String fkDependentOutputId) throws QException {
+                                                    String fkDependentBacklogId, String fkDependentOutputId) throws QException {
         EntityTmInputDescription entDescRel = new EntityTmInputDescription();
 
         entDescRel.setFkInputId(fkDependentOutputId);
@@ -16396,7 +16582,7 @@ public class TmModel {
         for (int i = 0; i < rc; i++) {
             EntityManager.mapCarrierToEntity(cout, tn, i, entInput);
             if ((entInput.getComponentType().equals("sctn") //                    || entInput.getComponentType().equals("tab")
-                    ) && entInput.getParam1().length() > 0) {
+            ) && entInput.getParam1().length() > 0) {
                 String out = getInputDetailedList4AllGui(backlogList, entInput.getParam1());
                 cout.setValue(tn, i, "inputTable", out);
             }
@@ -16448,7 +16634,7 @@ public class TmModel {
             String param1 = cr.getValue(tn, i, "param1").toString();
 
             if ((compType.equals("sctn") //                    || compType.equals("tab")
-                    ) && param1.length() > 0) {
+            ) && param1.length() > 0) {
                 String out = getInputDetailedList4AllGui(backlogList, param1);
                 cr.setValue(tn, i, "inputTable", out);
             }
@@ -17324,7 +17510,7 @@ public class TmModel {
     }
 
     private void checkTimes(Carrier carrier,
-            String table, String stime, String etime) throws QException {
+                            String table, String stime, String etime) throws QException {
 
         int rc = carrier.getTableRowCount(table);
         ArrayList<Integer> list = new ArrayList<>();
@@ -18549,7 +18735,7 @@ public class TmModel {
     }
 
     private static String getUserIdOrFirstUserIdByJiraAccountId(String accountId,
-            String reporterAccountId) throws QException {
+                                                                String reporterAccountId) throws QException {
         String userId = "";
         if (accountId.length() > 0) {
             EntityCrUser ent = new EntityCrUser();
@@ -18699,61 +18885,7 @@ public class TmModel {
         }
     }
 
-    public Carrier addInputDescCriterias(Carrier carrier) throws QException {
-        String currentInputId = carrier.get("fkInputId");
-        String projectId = carrier.get("fkProjectId");
-        String backlogId = carrier.get("fkBacklogId");
-        String checkedInputIds[] = (currentInputId + "," + carrier.get("checkedInputIds")).split(",");
-        String tn = "inputDescTable";
-        String col = "criteriaLine";
 
-//        if (currentInputId.trim().length() == 0) {
-//            return carrier;
-//        }
-//        EntityTmInput entInput = new EntityTmInput();
-//        entInput.setId(currentInputId);
-//        EntityManager.select(entInput);
-        String inputIds4Frontend = "";
-        String inputDescIds4Frontend = "";
-
-        int rc = carrier.getTableRowCount(tn);
-        for (int i = 0; i < rc; i++) {
-            String v = carrier.getValue(tn, i, col).toString();
-            if (v.length() == 0) {
-                continue;
-            }
-            for (String id : checkedInputIds) {
-                if (id.trim().length() == 0) {
-                    continue;
-                }
-                EntityTmInputDescription ent = new EntityTmInputDescription();
-                ent.setFkInputId(id);
-                ent.setFkProjectId(projectId);
-                ent.setDescription(v);
-                Carrier cr = EntityManager.select(ent);
-                if (cr.getTableRowCount(ent.toTableName()) > 0) {
-                    continue;
-                }
-                EntityManager.insert(ent);
-
-                inputIds4Frontend += id + CoreLabel.IN;
-                inputDescIds4Frontend += ent.getId() + CoreLabel.IN;
-
-                EntityTmInput entInput = new EntityTmInput();
-                entInput.setId(id);
-                entInput.setFkBacklogId(backlogId);
-                entInput.setInputName(v);
-
-                setNewBacklogHistory4InputDescriptionNew(ent, entInput);
-            }
-        }
-
-        getInputDescriptionList4Select(inputDescIds4Frontend).copyTo(carrier);
-        getInputList4Select(inputIds4Frontend).copyTo(carrier);
-        getBacklogDependencyList4Select(carrier).copyTo(carrier);
-        return carrier;
-
-    }
 }
 
 class Analytics {
@@ -19302,7 +19434,7 @@ class DashboardStatistics {
     }
 
     public static Carrier getProjectSummary_StoryCardByOwner4Select(String createdBy,
-            String statusType, String selectedProjectList, String sprintList, String labelList) throws QException {
+                                                                    String statusType, String selectedProjectList, String sprintList, String labelList) throws QException {
         String projectList = selectedProjectList.length() > 1
                 ? selectedProjectList
                 : getMyProjects();
