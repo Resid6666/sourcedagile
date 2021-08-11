@@ -7,6 +7,8 @@ package module.cr.entity;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import module.tm.TmModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 import utility.CoreEntity;
@@ -31,7 +33,6 @@ public class EntityCrRelRoleRule extends CoreEntity {
             obj.put(FK_ROLE_ID, this.getFkRoleId());
             obj.put(FK_RULE_ID, this.getFkRuleId());
         } catch (JSONException ex) {
-            Logger.getLogger(EntityCrRule.class.getName()).log(Level.SEVERE, null, ex);
         }
         return obj.toString();
     }
@@ -43,7 +44,6 @@ public class EntityCrRelRoleRule extends CoreEntity {
             this.setFkRoleId(obj.getString(FK_ROLE_ID));
             this.setId(obj.getString(FK_RULE_ID));
         } catch (JSONException ex) {
-            Logger.getLogger(EntityCrRule.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

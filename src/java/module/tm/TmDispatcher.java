@@ -8,7 +8,11 @@ package module.tm;
 import module.cr.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import utility.*;
+import utility.sqlgenerator.SQLConnection;
 
 /**
  *
@@ -45,7 +49,7 @@ public class TmDispatcher {
 
             return carrier;
         } catch (Exception ex) {
-            new QException(new Object() 
+            new QException(new Object()
             {
             }.getClass().getEnclosingClass().getName(),
                     new Object() {

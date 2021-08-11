@@ -620,7 +620,6 @@ public class EntityManager {
     }
 
     public static void delete(CoreEntity entity) throws QException {
-
         delete(entity, CoreLabel.DB_PRIMARY);
     }
 

@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import label.CoreLabel;
 import module.cr.entity.EntityCrUser;
@@ -149,15 +148,41 @@ import utility.ApiIntegration;
  */
 public class TmModel {
 
-    private static String BACKLOG_STATUS_NEW = "new";
-    private static String BACKLOG_STATUS_ONGOING = "ongoing";
-    private static String BACKLOG_STATUS_CLOSED = "closed";
-    private static String BACKLOG_STATUS_RESOVLEd = "resolved";
+    private static String BACKLOG_STATUS_NEW = "backlog_status_new";
+    private static String BACKLOG_STATUS_ONGOING = "backlog_status_ongoing";
+    private static String BACKLOG_STATUS_CLOSED = "backlog_status_closed";
+    private static String BACKLOG_STATUS_RESOVLEd = "backlog_status_resolved";
 
     private static String BACKLOG_PRIORITY_HIGH = "high";
     private static String BACKLOG_PRIORITY_LOW = "low";
     private static String BACKLOG_PRIORITY_MEDIUM = "medium";
     private static String BACKLOG_PRIORITY_URGENT = "urgent";
+    
+    private static String BACKLOG_IS_API = "backlog.is.api";
+    private static String BACKLOG_NOT_API = "backlog.not.api";
+    
+    private static String BACKLOG_SHOW_PROTOTYPE = "backlog.show.prototype";
+    private static String BACKLOG_HIDE_PROTOTYPE = "backlog.hide.prototype";
+    private static String BACKLOG_SHARE_FOR_PROJECT = "backlog.share.for.project";
+    private static String BACKLOG_DO_NOT_SHARE_FOR_PROJECT = "backlog.do.not.share.for.project";
+    private static String BACKLOG_DO_NOT_RUN_IN_BACKEND = "backlog.do.not.run.in.backend";
+    private static String BACKLOG_RUN_IN_BACKEND = "backlog.run.in.backend";
+    private static String BACKLOG_ESTIMATED_HOURS_CHANGED = "backlog.estimated.hours.changed";
+    private static String BACKLOG_SPEND_HOURS_CHANGED = "backlog.spend.hours.changed";
+    private static String BACKLOG_OWNER_CHANGED = "backlog.owner.changed";
+    private static String BACKLOG_ESTIMATED_COUNTER_CHANGED = "backlog.estimated.counter.changed";
+    private static String BACKLOG_EXECUTED_COUNTER_CHANGED = "backlog.executed.counter.changed";
+    private static String BACKLOG_ESTIMATED_BUDGET_CHANGED = "backlog.estimated.budget.changed";
+    private static String BACKLOG_SPEND_BUDGET_CHANGED = "backlog.spend.budget.changed";
+    
+    private static String BACKLOG_PRIORITY_2 = "backlog_priority_2";
+    private static String BACKLOG_PRIORITY_3 = "backlog_priority_3";
+    private static String BACKLOG_PRIORITY_4 = "backlog_priority_4";
+    private static String BACKLOG_PRIORITY_5 = "backlog_priority_5";
+    private static String BACKLOG_PRIORITY_6 = "backlog_priority_6";
+    private static String BACKLOG_PRIORITY_7 = "backlog_priority_7";
+    private static String BACKLOG_PRIORITY_8 = "backlog_priority_8";
+    private static String BACKLOG_PRIORITY_9 = "backlog_priority_9";
 
     private static String BACKLOG_HISTORY_TYPE_INPUT_NEW = "input_new";
     private static String BACKLOG_HISTORY_TYPE_INPUT_UPDATE = "input_update";
@@ -198,7 +223,6 @@ public class TmModel {
     private static String BACKLOG_SYSTEM_MVP_DB = "system_mvp_db";
 
     //<process>
-
     private static String BACKLOG_HISTORY_TYPE_PROCESS_FIELD_ADDED = "process_field_added";
     private static String BACKLOG_HISTORY_TYPE_PROCESS_FIELD_UPDATED = "process_field_updated";
     private static String BACKLOG_HISTORY_TYPE_PROCESS_FIELD_DELETED = "process_field_deleted";
@@ -210,11 +234,14 @@ public class TmModel {
     private static String BACKLOG_HISTORY_TYPE_PROCESS_ADD_RELATED_FUNCTION = "process_add_related_function";
     private static String BACKLOG_HISTORY_TYPE_PROCESS_UPDATE_RELATED_FUNCTION = "process_update_related_function";
     private static String BACKLOG_HISTORY_TYPE_PROCESS_DELETE_RELATED_FUNCTION = "process_delete_related_function";
-
     private static String BACKLOG_HISTORY_TYPE_PROCESS_ORDER_UPDATED = "process_order_updated";
-
-
     //</process>
+
+    // backlog
+    private static String BACKLOG_HISTORY_TYPE_BACKLOG_CREATED = "backlog_created";
+    private static String BACKLOG_HISTORY_TYPE_BACKLOG_RENAMED = "backlog_rename";
+    private static String BACKLOG_HISTORY_TYPE_BACKLOG_DELETED = "backlog_deleted";
+    // backlog
 
     private static String ENGLIS_ABC = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm012345678";
 
@@ -3622,9 +3649,7 @@ public class TmModel {
             updateBacklogLastModificationDateAndTime(ent.getFkBacklogId());
 
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(TmModel.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(TmModel.class.getName()).log(Level.SEVERE, null, ex);
         }
 
 //        try {
@@ -6949,6 +6974,7 @@ public class TmModel {
         getInputList4Select(entInput.getId()).copyTo(carrier);
 
         String newValue = newDbName.concat(".").concat(newTableName).concat(".").concat(newFieldName);
+
         setNewBacklogHistory4AddDatabaseRelation(htype, entInput, oldValue, newValue);
 
         return carrier;
@@ -9306,8 +9332,12 @@ public class TmModel {
         return carrier;
     }
 
-    public static Carrier insertNewBacklogShort(Carrier carrier) throws QException {
 
+    /**
+     * B ~ A ~ C ~ K ~ L ~ O ~ G
+     **/
+    // 1. BACKLOG CREATE
+    public static Carrier insertNewBacklogShort(Carrier carrier) throws QException {
         String fkProjectId = carrier.get("fkProjectId");
         String backlogName = carrier.get("backlogName");
         String backlogStatus = carrier.get("backlogStatus").length() == 0
@@ -9341,11 +9371,126 @@ public class TmModel {
 
         carrier.setValue("isNotAssign", false);
         getBacklogList4Select(ent.getId()).copyTo(carrier);
+
+        setNewBacklogHistory4InsertNewBacklogShort(ent);
+
         return carrier;
     }
 
-    public static Carrier updateUserStsory4ShortChange(Carrier carrier) throws QException {
+    // 1. BACKLOG CREATE history
+    private static void setNewBacklogHistory4InsertNewBacklogShort(EntityTmBacklog ent) throws QException {
+        setNewBacklogHistory2(ent.getFkProjectId(), ent.getId(),
+                BACKLOG_HISTORY_TYPE_BACKLOG_CREATED, "",
+                "", "", "",
+                "", ent.getBacklogName(), "", "backlog");
+    }
 
+    // 2. BACKLOG RENAME
+    public static Carrier updateBacklog(Carrier carrier) throws QException {
+        EntityTmBacklog entity = new EntityTmBacklog();
+        entity.setId(carrier.getValue(EntityTmBacklog.ID).toString());
+        EntityManager.select(entity);
+
+        String oldName = entity.getBacklogName();
+
+        EntityManager.mapCarrierToEntity(carrier, entity, false);
+        entity.setJiraKey(carrier.get("jiraIssueKey"));
+        EntityManager.update(entity);
+        Carrier tc = EntityManager.select(entity);
+        tc.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
+
+        carrier.setValue("isNotAssign", false);
+        insertNewBacklogSprint(carrier);
+        insertNewBacklogLabel(carrier);
+
+        getBacklogList4Select(entity.getId()).copyTo(tc);
+
+        return tc;
+    }
+
+    // 2. BACKLOG RENAMED history
+    private static void setNewBacklogHistory4UpdateBacklog(EntityTmBacklog ent, String oldName) throws QException {
+        setNewBacklogHistory2(ent.getFkProjectId(), ent.getId(),
+                BACKLOG_HISTORY_TYPE_BACKLOG_RENAMED, "",
+                "", "", "",
+                oldName, ent.getBacklogName(), "", "backlog");
+    }
+
+    // 3. BACKLOG DELETED
+    public static Carrier deleteBacklog(Carrier carrier) throws QException {
+        EntityTmBacklog entity = new EntityTmBacklog();
+        entity.setId(carrier.getValue(EntityTmBacklog.ID).toString());
+        String oldName = entity.getBacklogName();
+        String backlogID = entity.getId();
+        String projectID = entity.getFkProjectId();
+        EntityManager.delete(entity);
+
+        try {
+            EntityTmRelBacklogAndLabel entLbl = new EntityTmRelBacklogAndLabel();
+
+            entLbl.setFkBacklogId(entity.getId());
+            String lblIds = EntityManager.select(entLbl)
+                    .getValueLine(entLbl.toTableName());
+            entLbl.setFkBacklogId("");
+            entLbl.setId(lblIds);
+            EntityManager.delete(entLbl);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            EntityTmRelBacklogAndSprint entSprint = new EntityTmRelBacklogAndSprint();
+            entSprint.setFkBacklogId(entity.getId());
+            String sprintIds = EntityManager.select(entSprint)
+                    .getValueLine(entSprint.toTableName());
+            entSprint.setFkBacklogId("");
+            entSprint.setId(sprintIds);
+            EntityManager.delete(entSprint);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            EntityTmBacklogDependency entDependency = new EntityTmBacklogDependency();
+            entDependency.setFkBacklogId(entity.getId());
+            String ids = EntityManager.select(entDependency)
+                    .getValueLine(entDependency.toTableName());
+            entDependency.setFkBacklogId("");
+            entDependency.setId(ids);
+            EntityManager.delete(entDependency);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            EntityTmBacklogDependency entDependency = new EntityTmBacklogDependency();
+            entDependency.setFkParentBacklogId(entity.getId());
+            String ids = EntityManager.select(entDependency)
+                    .getValueLine(entDependency.toTableName());
+            entDependency.setFkBacklogId("");
+            entDependency.setId(ids);
+            EntityManager.delete(entDependency);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        setNewBacklogHistory4DeleteBacklog(entity, oldName, backlogID, projectID);
+
+        return carrier;
+    }
+
+    // 3. BACKLOG DELETED history
+    private static void setNewBacklogHistory4DeleteBacklog(EntityTmBacklog ent, String oldName, String backlogId, String projectId) throws QException {
+        setNewBacklogHistory2(ent.getFkProjectId(), backlogId,
+                BACKLOG_HISTORY_TYPE_BACKLOG_DELETED, "",
+                "", "", "",
+                oldName, "", "", "backlog");
+    }
+
+
+    // 4. BACKLOG STATUS changed
+    public static Carrier updateUserStsory4ShortChange(Carrier carrier) throws QException {
         carrier.set("fkBacklogId", carrier.get("id"));
         carrier = hasPermissionToModifyBacklogAsApi(carrier);
         if (carrier.hasError()) {
@@ -9355,6 +9500,110 @@ public class TmModel {
         EntityTmBacklog ent = new EntityTmBacklog();
         ent.setId(carrier.get("id"));
         EntityManager.select(ent);
+
+        String oldValue = "";
+        String newValue = carrier.get("value");
+        
+        String htype = "";
+        
+        String type = carrier.get("type");
+        String value = carrier.get("value");
+        
+        if(type.equals("backlogStatus")){
+            oldValue = ent.getBacklogStatus();
+            if(value.equals("new")){
+                htype = BACKLOG_STATUS_NEW;
+            }else if(value.equals("ongoing")){
+                htype = BACKLOG_STATUS_ONGOING;
+            }else if(value.equals("closed")){
+                htype = BACKLOG_STATUS_CLOSED;
+            }
+        } else if(type.equals("priority")){
+            oldValue = ent.getPriority();
+            switch (value) {
+                case "2":
+                    htype = BACKLOG_PRIORITY_2;
+                    break;
+                case "3":
+                    htype = BACKLOG_PRIORITY_3;
+                    break;
+                case "4":
+                    htype = BACKLOG_PRIORITY_4;
+                    break;
+                case "5":
+                    htype = BACKLOG_PRIORITY_5;
+                    break;
+                case "6":
+                    htype = BACKLOG_PRIORITY_6;
+                    break;
+                case "7":
+                    htype = BACKLOG_PRIORITY_7;
+                    break;
+                case "8":
+                    htype = BACKLOG_PRIORITY_8;
+                    break;
+                case "9":
+                    htype = BACKLOG_PRIORITY_9;
+                    break;
+                default:
+                    break;
+            }
+        } else if(type.equals("isApi")) {
+            oldValue = ent.getIsApi();
+            if(value.equals("0")){
+                htype = BACKLOG_NOT_API;
+            } else {
+                htype = BACKLOG_IS_API;
+            }
+        } else if(type.equals("showPrototype")) {
+            oldValue = ent.getShowPrototype();
+            if(value.equals("0")){
+                htype = BACKLOG_HIDE_PROTOTYPE;
+            } else {
+                htype = BACKLOG_SHOW_PROTOTYPE;
+            }
+        } else if(type.equals("isBounded")) {
+            oldValue = ent.getIsBounded();
+            if(value.equals("0")){
+                htype = BACKLOG_SHARE_FOR_PROJECT;
+            } else {
+                htype = BACKLOG_DO_NOT_SHARE_FOR_PROJECT;
+            }
+        } else if(type.equals("runInBackend")) {
+            oldValue = ent.getRunInBackend();
+            if(value.equals("0")){
+                htype = BACKLOG_RUN_IN_BACKEND;
+            } else {
+                htype = BACKLOG_DO_NOT_RUN_IN_BACKEND;
+            }
+        } else if(type.equals("estimatedHours")) {
+            oldValue = ent.getEstimatedHours();
+            htype = BACKLOG_ESTIMATED_HOURS_CHANGED;
+        } else if(type.equals("spentHours")) {
+            oldValue = ent.getSpentHours();
+            htype = BACKLOG_SPEND_HOURS_CHANGED;
+        } else if(type.equals("fkOwnerId")) {
+            oldValue = ent.getFkOwnerId();
+            htype = BACKLOG_OWNER_CHANGED;
+        } else if(type.equals("estimatedCounter")) {
+            oldValue = ent.getEstimatedCounter();
+            htype = BACKLOG_ESTIMATED_COUNTER_CHANGED;
+        } else if(type.equals("executedCounter")) {
+            oldValue = ent.getExecutedCounter();
+            htype = BACKLOG_EXECUTED_COUNTER_CHANGED;
+        } else if(type.equals("estimatedBudget")) {
+            oldValue = ent.getEstimatedBudget();
+            htype = BACKLOG_ESTIMATED_BUDGET_CHANGED;
+        } else if(type.equals("spentBudget")) {
+            oldValue = ent.getSpentBudget();
+            htype = BACKLOG_SPEND_BUDGET_CHANGED;
+        } else if(type.equals("spentBudget")) {
+            oldValue = ent.getSpentBudget();
+            htype = BACKLOG_SPEND_BUDGET_CHANGED;
+        }
+        
+        
+
         EntityManager.setEntityValue(ent, carrier.get("type"), carrier.get("value"));
         if (ent.getBacklogNo().length() == 0) {
             ent.setBacklogNo("0");
@@ -9362,8 +9611,20 @@ public class TmModel {
         EntityManager.update(ent);
 
         getBacklogList4Select(ent.getId()).copyTo(carrier);
+
+        setNewBacklogUpdateUserStsory4ShortChange(ent, oldValue, newValue, htype);
+
         return carrier;
     }
+
+    // 4. BACKLOG STATUS CHANGED history
+    private static void setNewBacklogUpdateUserStsory4ShortChange(EntityTmBacklog ent, String oldValue, String newValue, String htype)throws QException {
+        setNewBacklogHistory2(ent.getFkProjectId(), ent.getId(),
+                htype, "",
+                "", "", "",
+                oldValue, newValue, "", "backlog");
+    }
+
 
     public Carrier selectUsersByProject4Select(Carrier carrier) throws QException {
         EntityTmProjectPermissionList ent = new EntityTmProjectPermissionList();
@@ -9492,24 +9753,8 @@ public class TmModel {
         return tc;
     }
 
-    public static Carrier updateBacklog(Carrier carrier) throws QException {
-        EntityTmBacklog entity = new EntityTmBacklog();
-        entity.setId(carrier.getValue(EntityTmBacklog.ID).toString());
-        EntityManager.select(entity);
-        EntityManager.mapCarrierToEntity(carrier, entity, false);
-        entity.setJiraKey(carrier.get("jiraIssueKey"));
-        EntityManager.update(entity);
-        Carrier tc = EntityManager.select(entity);
-        tc.renameTableName(entity.toTableName(), CoreLabel.RESULT_SET);
 
-        carrier.setValue("isNotAssign", false);
-        insertNewBacklogSprint(carrier);
-        insertNewBacklogLabel(carrier);
 
-        getBacklogList4Select(entity.getId()).copyTo(tc);
-
-        return tc;
-    }
 
     public static Carrier updateBacklogByDesc(Carrier carrier) throws QException {
         EntityTmBacklog entity = new EntityTmBacklog();
@@ -9798,58 +10043,8 @@ public class TmModel {
                 BACKLOG_HISTORY_TYPE_INPUT_UPDATE, ent.getId(), ent.getDescriptionSourced(), "", "");
     }
 
-    public static Carrier deleteBacklog(Carrier carrier) throws QException {
-        EntityTmBacklog entity = new EntityTmBacklog();
-        entity.setId(carrier.getValue(EntityTmBacklog.ID).toString());
-        EntityManager.delete(entity);
 
-        try {
-            EntityTmRelBacklogAndLabel entLbl = new EntityTmRelBacklogAndLabel();
 
-            entLbl.setFkBacklogId(entity.getId());
-            String lblIds = EntityManager.select(entLbl)
-                    .getValueLine(entLbl.toTableName());
-            entLbl.setFkBacklogId("");
-            entLbl.setId(lblIds);
-            EntityManager.delete(entLbl);
-
-        } catch (Exception e) {
-        }
-
-        try {
-            EntityTmRelBacklogAndSprint entSprint = new EntityTmRelBacklogAndSprint();
-            entSprint.setFkBacklogId(entity.getId());
-            String sprintIds = EntityManager.select(entSprint)
-                    .getValueLine(entSprint.toTableName());
-            entSprint.setFkBacklogId("");
-            entSprint.setId(sprintIds);
-            EntityManager.delete(entSprint);
-        } catch (Exception e) {
-        }
-
-        try {
-            EntityTmBacklogDependency entDependency = new EntityTmBacklogDependency();
-            entDependency.setFkBacklogId(entity.getId());
-            String ids = EntityManager.select(entDependency)
-                    .getValueLine(entDependency.toTableName());
-            entDependency.setFkBacklogId("");
-            entDependency.setId(ids);
-            EntityManager.delete(entDependency);
-        } catch (Exception e) {
-        }
-
-        try {
-            EntityTmBacklogDependency entDependency = new EntityTmBacklogDependency();
-            entDependency.setFkParentBacklogId(entity.getId());
-            String ids = EntityManager.select(entDependency)
-                    .getValueLine(entDependency.toTableName());
-            entDependency.setFkBacklogId("");
-            entDependency.setId(ids);
-            EntityManager.delete(entDependency);
-        } catch (Exception e) {
-        }
-        return carrier;
-    }
 
     public static Carrier getBacklogList(Carrier carrier) throws QException {
         String fkBacklogId = "";
@@ -9977,8 +10172,6 @@ public class TmModel {
             EntityManager.executeUpdateByQuery("SET SESSION group_concat_max_len = 1000000;");
 
         } catch (Exception ex) {
-            Logger.getLogger(TmModel.class
-                    .getName()).log(Level.SEVERE, null, ex);
         }
 
         String ln4InputSql = " select fk_backlog_id,GROUP_CONCAT(id order by order_no asc) as id from " + SessionManager.getCurrentDomain() + ".tm_input\n";
@@ -10107,8 +10300,6 @@ public class TmModel {
             EntityManager.executeUpdateByQuery("SET SESSION group_concat_max_len = 1000000;");
 
         } catch (Exception ex) {
-            Logger.getLogger(TmModel.class
-                    .getName()).log(Level.SEVERE, null, ex);
         }
 
         String ln4InputSql = " select fk_backlog_id,GROUP_CONCAT(id order by order_no asc) as id from " + SessionManager.getCurrentDomain() + ".tm_input\n";
@@ -11621,7 +11812,7 @@ public class TmModel {
         if (projectId.length() == 0 || backlogId.length() == 0 || htype.length() == 0) {
             return;
         }
-
+        
         EntityTmBacklogHistory ent = new EntityTmBacklogHistory();
         ent.setHistoryDate(QDate.getCurrentDate());
         ent.setHistoryTime(QDate.getCurrentTime());
@@ -11649,6 +11840,9 @@ public class TmModel {
         ent.setActionType(actionType);
 
         ent.setHistoryTellerId(SessionManager.getCurrentUserId());
+
+        System.out.println("\n\n\n" + "ent:  " + ent + "\n\n\n");
+
         EntityManager.insert(ent);
 
         //setNotification(ent.getFkBacklogId(), ent.getId(), "");
@@ -12788,8 +12982,6 @@ public class TmModel {
                 theFile.createNewFile();
 
             } catch (IOException ex) {
-                Logger.getLogger(TmModel.class
-                        .getName()).log(Level.SEVERE, null, ex);
             }
         }
 

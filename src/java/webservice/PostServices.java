@@ -7,12 +7,17 @@ package webservice;
 
 import auth.SessionHandler;
 import module.cr.entity.EntityCrUser;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Locale;
+
 import utility.CallDispatcher;
+
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.GET;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -27,6 +32,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
+
 import module.cr.CrModel;
 import module.cr.entity.EntityCrCompany;
 import module.tm.entity.EntityTmBacklog;
@@ -47,6 +53,7 @@ import utility.sqlgenerator.QLogger;
 
 //import smssender.Config;
 //import smssender.SMSSender;
+
 /**
  * REST Web Service
  *
@@ -80,9 +87,8 @@ public class PostServices {
     @Path("zdupload/{domain}")
     @Produces(MediaType.APPLICATION_JSON)
     public static Response doPostRequestUploadWithoutAuth(@Context HttpHeaders headers,
-            @PathParam(value = "domain")
-            final String domain,
-            String jsonData) throws Exception {
+                                                          @PathParam(value = "domain") final String domain,
+                                                          String jsonData) throws Exception {
 
         if (domain.trim().length() == 0) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -197,7 +203,7 @@ public class PostServices {
     @Path("uploadd/{domain}")
     @Produces(MediaType.APPLICATION_JSON)
     public static Response doPostRequestUploadd(@Context HttpHeaders headers,
-            String jsonData) throws Exception {
+                                                String jsonData) throws Exception {
 
         Connection conn = null;
 //
@@ -469,13 +475,9 @@ public class PostServices {
     @Compress
     @Path(value = "cb/{servicename}/{key}/{value}")
     @Produces(value = MediaType.APPLICATION_JSON)
-    public void callServiceAsCombobox(@Context HttpHeaders headers, @Suspended
-            final AsyncResponse asyncResponse,
-            @PathParam(value = "servicename")
-            final String servicename, @PathParam(value = "key")
-            final String key,
-            @PathParam(value = "value")
-            final String value, final String json) {
+    public void callServiceAsCombobox(@Context HttpHeaders headers, @Suspended final AsyncResponse asyncResponse,
+                                      @PathParam(value = "servicename") final String servicename, @PathParam(value = "key") final String key,
+                                      @PathParam(value = "value") final String value, final String json) {
         executorService.submit(() -> {
             String jsonNew = "";
             jsonNew += "{\"b\": {\n";
@@ -492,10 +494,8 @@ public class PostServices {
     @Compress
     @Path(value = "li/{code}")
     @Produces(value = MediaType.APPLICATION_JSON)
-    public void callListItem(@Context HttpHeaders headers, @Suspended
-            final AsyncResponse asyncResponse,
-            @PathParam(value = "code")
-            final String itemCode, final String json) {
+    public void callListItem(@Context HttpHeaders headers, @Suspended final AsyncResponse asyncResponse,
+                             @PathParam(value = "code") final String itemCode, final String json) {
         executorService.submit(() -> {
 //            System.out.println("json->" + json);
 
@@ -530,18 +530,16 @@ public class PostServices {
     @Compress
     @Path(value = "nali/{code}")
     @Produces(value = MediaType.APPLICATION_JSON)
-    public void callNaListItem(@Context HttpHeaders headers, @Suspended
-            final AsyncResponse asyncResponse,
-            @PathParam(value = "code")
-            final String itemCode, final String json) {
+    public void callNaListItem(@Context HttpHeaders headers, @Suspended final AsyncResponse asyncResponse,
+                               @PathParam(value = "code") final String itemCode, final String json) {
 
         executorService.submit(new Runnable() {
             @Override
             public void run() {
                 String srv[] = new String[]{"sex",
-                    "country",
-                    "currency",
-                    "timezone"
+                        "country",
+                        "currency",
+                        "timezone"
                 };
 
                 if (!ArrayUtils.contains(srv, "")) {
@@ -573,9 +571,7 @@ public class PostServices {
     @Path(value = "srv/{servicename}")
     @Compress
     @Produces(value = MediaType.APPLICATION_JSON)
-    public void callDispatcher(@Context HttpHeaders headers, @Suspended
-            final AsyncResponse asyncResponse, @PathParam(value = "servicename")
-            final String servicename, final String json) {
+    public void callDispatcher(@Context HttpHeaders headers, @Suspended final AsyncResponse asyncResponse, @PathParam(value = "servicename") final String servicename, final String json) {
         executorService.submit(() -> {
             asyncResponse.resume(doCallDispatcher(headers, servicename, json));
         });
@@ -585,12 +581,11 @@ public class PostServices {
     @Path(value = "zdfn/{domain}/{function}")
     @Compress
     @Produces(value = MediaType.APPLICATION_JSON)
-    public void runFunction(@Context HttpHeaders headers, @Suspended
-            final AsyncResponse asyncResponse,
-            @PathParam(value = "servicename") final String servicename,
-            @PathParam("domain") String domain,
-            @PathParam(value = "function") final String fname,
-            final String json) {
+    public void runFunction(@Context HttpHeaders headers, @Suspended final AsyncResponse asyncResponse,
+                            @PathParam(value = "servicename") final String servicename,
+                            @PathParam("domain") String domain,
+                            @PathParam(value = "function") final String fname,
+                            final String json) {
         executorService.submit(() -> {
             asyncResponse.resume(doCallFunction(headers, domain, fname, json));
         });
@@ -600,12 +595,11 @@ public class PostServices {
     @Path(value = "zdfna/{domain}/{function}")
     @Compress
     @Produces(value = MediaType.APPLICATION_JSON)
-    public void runFunctionDirect(@Context HttpHeaders headers, @Suspended
-            final AsyncResponse asyncResponse,
-            @PathParam(value = "servicename") final String servicename,
-            @PathParam("domain") String domain,
-            @PathParam(value = "function") final String fname,
-            final String json) {
+    public void runFunctionDirect(@Context HttpHeaders headers, @Suspended final AsyncResponse asyncResponse,
+                                  @PathParam(value = "servicename") final String servicename,
+                                  @PathParam("domain") String domain,
+                                  @PathParam(value = "function") final String fname,
+                                  final String json) {
         executorService.submit(() -> {
             asyncResponse.resume(doCallFunctionDirect(headers, domain, fname, json));
         });
@@ -615,12 +609,11 @@ public class PostServices {
     @Path(value = "zd/{domain}/{api}")
     @Compress
     @Produces(value = MediaType.APPLICATION_JSON)
-    public void callApi(@Context HttpHeaders headers, @Suspended
-            final AsyncResponse asyncResponse,
-            @PathParam(value = "servicename") final String servicename,
-            @PathParam(value = "domain") final String domain,
-            @PathParam(value = "api") final String api,
-            final String json) {
+    public void callApi(@Context HttpHeaders headers, @Suspended final AsyncResponse asyncResponse,
+                        @PathParam(value = "servicename") final String servicename,
+                        @PathParam(value = "domain") final String domain,
+                        @PathParam(value = "api") final String api,
+                        final String json) {
         executorService.submit(() -> {
             asyncResponse.resume(doCallApi(headers, domain, api, json));
         });
@@ -630,12 +623,11 @@ public class PostServices {
     @Path(value = "cl/{domain}/{api}")
     @Compress
     @Produces(value = MediaType.APPLICATION_JSON)
-    public void callApiBackend(@Context HttpHeaders headers, @Suspended
-            final AsyncResponse asyncResponse,
-            @PathParam(value = "servicename") final String servicename,
-            @PathParam(value = "domain") final String domain,
-            @PathParam(value = "api") final String api,
-            final String json) {
+    public void callApiBackend(@Context HttpHeaders headers, @Suspended final AsyncResponse asyncResponse,
+                               @PathParam(value = "servicename") final String servicename,
+                               @PathParam(value = "domain") final String domain,
+                               @PathParam(value = "api") final String api,
+                               final String json) {
         executorService.submit(() -> {
             asyncResponse.resume(doCallApiBackend(headers, domain, api, json));
         });
@@ -645,9 +637,7 @@ public class PostServices {
     @Path(value = "nasrv/{servicename}")
     @Compress
     @Produces(value = MediaType.APPLICATION_JSON)
-    public void callNaDispatcher(@Context HttpHeaders headers, @Suspended
-            final AsyncResponse asyncResponse, @PathParam(value = "servicename")
-            final String servicename, final String json) {
+    public void callNaDispatcher(@Context HttpHeaders headers, @Suspended final AsyncResponse asyncResponse, @PathParam(value = "servicename") final String servicename, final String json) {
         executorService.submit(() -> {
             asyncResponse.resume(doCallDispatcherNoToken(headers, servicename, json));
 
@@ -659,9 +649,7 @@ public class PostServices {
     @Path(value = "register")
     @Compress
     @Produces(value = MediaType.APPLICATION_JSON)
-    public void call4Register(@Context HttpHeaders headers, @Suspended
-            final AsyncResponse asyncResponse, @PathParam(value = "servicename")
-            final String servicename, final String json) {
+    public void call4Register(@Context HttpHeaders headers, @Suspended final AsyncResponse asyncResponse, @PathParam(value = "servicename") final String servicename, final String json) {
         executorService.submit(() -> {
             asyncResponse.resume(doCallDispatcherNoToken4Register(headers, servicename, json));
 
@@ -673,9 +661,7 @@ public class PostServices {
     @Path(value = "activation")
     @Compress
     @Produces(value = MediaType.APPLICATION_JSON)
-    public void call4Activation(@Context HttpHeaders headers, @Suspended
-            final AsyncResponse asyncResponse, @PathParam(value = "servicename")
-            final String servicename, final String json) {
+    public void call4Activation(@Context HttpHeaders headers, @Suspended final AsyncResponse asyncResponse, @PathParam(value = "servicename") final String servicename, final String json) {
         executorService.submit(() -> {
             asyncResponse.resume(doCallDispatcherNoToken4Activation(headers, servicename, json));
 
@@ -687,9 +673,7 @@ public class PostServices {
     @Path(value = "signup/activate/{activationId}")
     @Compress
     @Produces(value = MediaType.APPLICATION_JSON)
-    public void activateCompany(@Context HttpHeaders headers, @Suspended
-            final AsyncResponse asyncResponse, @PathParam(value = "activationId")
-            final String activationId, final String json) {
+    public void activateCompany(@Context HttpHeaders headers, @Suspended final AsyncResponse asyncResponse, @PathParam(value = "activationId") final String activationId, final String json) {
         executorService.submit(() -> {
 
             Carrier carrier = new Carrier();
@@ -713,9 +697,7 @@ public class PostServices {
     @Path(value = "signup/resend/{userId}")
     @Compress
     @Produces(value = MediaType.APPLICATION_JSON)
-    public void resendEmail(@Context HttpHeaders headers, @Suspended
-            final AsyncResponse asyncResponse, @PathParam(value = "userId")
-            final String userId, final String json) {
+    public void resendEmail(@Context HttpHeaders headers, @Suspended final AsyncResponse asyncResponse, @PathParam(value = "userId") final String userId, final String json) {
         executorService.submit(() -> {
 
             Carrier carrier = new Carrier();
@@ -739,11 +721,8 @@ public class PostServices {
     @Compress
     @Path(value = "li/{code}/{sortbykey}")
     @Produces(value = MediaType.APPLICATION_JSON)
-    public void callListItemBySort(@Context HttpHeaders headers, @Suspended
-            final AsyncResponse asyncResponse,
-            @PathParam(value = "code")
-            final String itemCode, @PathParam(value = "sortbykey")
-            final String sortbykey, final String json) {
+    public void callListItemBySort(@Context HttpHeaders headers, @Suspended final AsyncResponse asyncResponse,
+                                   @PathParam(value = "code") final String itemCode, @PathParam(value = "sortbykey") final String sortbykey, final String json) {
         executorService.submit(() -> {
             String jsonNew = "";
             jsonNew += "{\"b\": {";
@@ -758,9 +737,9 @@ public class PostServices {
     }
 
     private Response doCallFunctionDirect(@Context HttpHeaders headers,
-            @PathParam("domain") String domain,
-            @PathParam("function") String fname,
-            String json) {
+                                          @PathParam("domain") String domain,
+                                          @PathParam("function") String fname,
+                                          String json) {
 
         String jsonCore = "{\"kv\":{"
                 + "\"pureJson\":'" + json + "'"
@@ -822,9 +801,9 @@ public class PostServices {
     }
 
     private Response doCallFunction(@Context HttpHeaders headers,
-            @PathParam("domain") String domain,
-            @PathParam("function") String fname,
-            String json) {
+                                    @PathParam("domain") String domain,
+                                    @PathParam("function") String fname,
+                                    String json) {
 
         if (fname.trim().length() == 0) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -882,8 +861,8 @@ public class PostServices {
     }
 
     private Response doCallApi(@Context HttpHeaders headers,
-            @PathParam("domain") String domain,
-            @PathParam("api") String api, String json) {
+                               @PathParam("domain") String domain,
+                               @PathParam("api") String api, String json) {
 
         if (domain.trim().length() == 0 || api.length() == 0) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -940,8 +919,8 @@ public class PostServices {
     }
 
     private Response doCallApiBackend(@Context HttpHeaders headers,
-            @PathParam("domain") String domain,
-            @PathParam("api") String api, String json) {
+                                      @PathParam("domain") String domain,
+                                      @PathParam("api") String api, String json) {
 
         if (domain.trim().length() == 0 || api.trim().length() == 0) {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -1007,7 +986,7 @@ public class PostServices {
     }
 
     private Response doCallDispatcher(@Context HttpHeaders headers,
-            @PathParam("servicename") String servicename, String json) {
+                                      @PathParam("servicename") String servicename, String json) {
 
         if (!SessionHandler.checkPermission(headers, json)) {
             return Response.status(Response.Status.FORBIDDEN).build();
@@ -1107,33 +1086,33 @@ public class PostServices {
     }
 
     private Response doCallDispatcherNoToken(@Context HttpHeaders headers,
-            @PathParam("servicename") String servicename, String json) {
+                                             @PathParam("servicename") String servicename, String json) {
         String srv[] = new String[]{"serviceCrSignupPersonal",
-            "serviceCrForgetPassword",
-            "frgtpwd.html",
-            "serviceCrSignupCompany",
-            "serviceCrSignupCompany",
-            "serviceCrActivateCompany",
-            "serviceCrGetMessageText",
-            "serviceCrGetModuleList4ComboNali",
-            "serviceCrIsCompanyDomainAvailable",
-            "serviceCrIsFieldValid",
-            "serviceCrGetTermPage",
-            "serviceCrIsPersonalUsernameExist",
-            "serviceCrGetListItemList4ComboNali",
-            "serviceTmGetBacklogHistoryByDate",
-            "serviceTmGetAssignedLabelByDates",
-            "serviceTmGetHistoryTimesByDate",
-            "serviceCrGetListItemList4ComboNali",
-            "serviceTmGetUserStoryInfoById",
-            "serviceTmGetBacklogTaskList",
-            "serviceTmLoadAssignedLabel",
-            "serviceTmGetBacklogCoreInfoById",
-            "serviceTmGetInputList",
-            "serviceTmSaveFormAction",
-            "serviceTmDeleteFromTable",
-            "serviceTmGetAssignedLabelById",
-            "serviceCrGetLabel"};
+                "serviceCrForgetPassword",
+                "frgtpwd.html",
+                "serviceCrSignupCompany",
+                "serviceCrSignupCompany",
+                "serviceCrActivateCompany",
+                "serviceCrGetMessageText",
+                "serviceCrGetModuleList4ComboNali",
+                "serviceCrIsCompanyDomainAvailable",
+                "serviceCrIsFieldValid",
+                "serviceCrGetTermPage",
+                "serviceCrIsPersonalUsernameExist",
+                "serviceCrGetListItemList4ComboNali",
+                "serviceTmGetBacklogHistoryByDate",
+                "serviceTmGetAssignedLabelByDates",
+                "serviceTmGetHistoryTimesByDate",
+                "serviceCrGetListItemList4ComboNali",
+                "serviceTmGetUserStoryInfoById",
+                "serviceTmGetBacklogTaskList",
+                "serviceTmLoadAssignedLabel",
+                "serviceTmGetBacklogCoreInfoById",
+                "serviceTmGetInputList",
+                "serviceTmSaveFormAction",
+                "serviceTmDeleteFromTable",
+                "serviceTmGetAssignedLabelById",
+                "serviceCrGetLabel"};
 
         if (!ArrayUtils.contains(srv, servicename)) {
             return Response.status(Response.Status.FORBIDDEN).build();
@@ -1186,7 +1165,7 @@ public class PostServices {
     }
 
     private Response doCallDispatcherNoToken4Register(@Context HttpHeaders headers,
-            String servicename, String json) {
+                                                      String servicename, String json) {
 
         Connection conn = null;
         try {
@@ -1214,7 +1193,7 @@ public class PostServices {
     }
 
     private Response doCallDispatcherNoToken4Activation(@Context HttpHeaders headers,
-            String servicename, String json) {
+                                                        String servicename, String json) {
 //        System.out.println("servicename="+servicename);
         Connection conn = null;
         try {
@@ -1301,8 +1280,7 @@ public class PostServices {
     @Path(value = "signup/{type}")
     @Compress
     @Produces(value = MediaType.TEXT_HTML)
-    public Response signup(@Context HttpHeaders headers, @PathParam(value = "type")
-            final String type, final String json) throws QException {
+    public Response signup(@Context HttpHeaders headers, @PathParam(value = "type") final String type, final String json) throws QException {
 
         Connection conn = null;
         try {

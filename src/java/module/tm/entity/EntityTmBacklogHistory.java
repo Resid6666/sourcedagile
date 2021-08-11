@@ -58,12 +58,12 @@ public class EntityTmBacklogHistory extends CoreEntity {
    //resid history
 
 
-    public void setActionType(String actionType) {
-        ACTION_TYPE = actionType;
+    public String getActionType() {
+        return actionType;
     }
 
-    public String getActionType() {
-        return ACTION_TYPE;
+    public void setActionType(String actionType) {
+        this.actionType = actionType;
     }
 
     public String getFkInputId() {
@@ -203,4 +203,27 @@ public class EntityTmBacklogHistory extends CoreEntity {
         this.historyBody = historyBody;
     }
 
+    @Override
+    public String toString() {
+        return "EntityTmBacklogHistory{" +
+                "fkBacklogId='" + fkBacklogId + '\'' +
+                ", historyType='" + historyType + '\'' +
+                ", historyDate='" + historyDate + '\'' +
+                ", historyTime='" + historyTime + '\'' +
+                ", historyTellerId='" + historyTellerId + '\'' +
+                ", historyBody='" + historyBody + '\'' +
+                ", relationId='" + relationId + '\'' +
+                ", param1='" + param1 + '\'' +
+                ", param2='" + param2 + '\'' +
+                ", param3='" + param3 + '\'' +
+                ", fkProjectId='" + fkProjectId + '\'' +
+                ", fkInputId='" + fkInputId + '\'' +
+                ", fkBacklogDescriptionId='" + fkBacklogDescriptionId + '\'' +
+                ", inputName='" + inputName + '\'' +
+                ", oldValue='" + oldValue + '\'' +
+                ", newValue='" + newValue + '\'' +
+                ", descriptionName='" + descriptionName + '\'' +
+                ", actionType='" + actionType + '\'' +
+                '}';
+    }
 }
