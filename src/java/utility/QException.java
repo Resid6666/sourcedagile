@@ -58,6 +58,7 @@ public class QException extends Exception {
         try {
             this.message = ((QException) e).getLocalMessage();
         } catch (Exception ex) {
+            ex.printStackTrace();
             this.message = e.getMessage();
         }
 

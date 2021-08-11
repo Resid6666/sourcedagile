@@ -133,6 +133,7 @@ public class CallDispatcher {
             manageIncAndExcResult(inc, exc, carrier);
             return carrier;
         } catch (InvocationTargetException ex) {
+            ex.printStackTrace();
             ex.getCause().printStackTrace();
             throw new QException(new Object() {
 

@@ -68,6 +68,7 @@ public class SQLConnection {
             Connection conn = SessionManager.getCurrentConnection();
             execInsertSql(sqlQuery, databaseNumber, values, conn);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new QException(new Object() {
             }.getClass().getEnclosingClass().getName(),
                     new Object() {

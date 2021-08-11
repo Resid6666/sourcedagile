@@ -1048,6 +1048,7 @@ public class PostServices {
             QLogger.saveExceptions(servicename, "loginException", ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (Exception ex) {
+            ex.printStackTrace();
             DBConnection.rollbackConnection(conn);
             QLogger.saveExceptions(servicename, json, ex.getMessage());
             return Response.status(Response.Status.NOT_FOUND).build();

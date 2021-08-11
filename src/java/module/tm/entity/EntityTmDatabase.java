@@ -30,7 +30,8 @@ public class EntityTmDatabase extends CoreEntity {
         this.dbDesc = dbDesc;
     }
 
-    
-    
-    
+    @Override
+    public String toString() {
+        return "EntityTmDatabase{" + "dbName=" + dbName + ", dbDesc=" + dbDesc + '}';
+    }
 }

@@ -49,6 +49,7 @@ public class TmDispatcher {
 
             return carrier;
         } catch (Exception ex) {
+            ex.printStackTrace();
             new QException(new Object()
             {
             }.getClass().getEnclosingClass().getName(),
