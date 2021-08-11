@@ -6994,7 +6994,7 @@ public class TmModel {
     /////////////////////////////////////////////////////
     
 
-    // Get All Backlog by ID
+    // List Backlog History
     public static Carrier getBacklogHistoryListByBacklogId(Carrier carrier) throws QException {
         EntityTmBacklogHistory ent = new EntityTmBacklogHistory();
         ent.setFkBacklogId(carrier.get("fkBacklogId"));
@@ -7002,7 +7002,7 @@ public class TmModel {
         return carrier;
     }
 
-    // Get All Backlog by ID
+    // List Backlog History by action type
     public static Carrier getBacklogHistoryListByBacklogIdByActionType(Carrier carrier) throws QException {
         EntityTmBacklogHistory ent = new EntityTmBacklogHistory();
         ent.setFkBacklogId(carrier.get("fkBacklogId"));
