@@ -163,6 +163,8 @@ public class TmModel {
     private static String BACKLOG_API_TYPE_DELETE = "backlog_api_type_delete";
     private static String BACKLOG_API_REQUEST_TYPE_SYNC = "backlog_api_request_type_sync";
     private static String BACKLOG_API_REQUEST_TYPE_ASYNCHRONIZE = "backlog_api_request_type_asynchronize";
+    private static String BACKLOG_TITLE_CREATED = "backlog_title_created";
+    private static String BACKLOG_TITLE_UPDATED = "backlog_title_updated";
     
     // backlog
 
@@ -8116,28 +8118,29 @@ public class TmModel {
         
 
         EntityTmBacklog ent = new EntityTmBacklog();
+        ent.setFkProjectId(fkProjectId);
+        ent.setBacklogName(backlogName);
         ent.setShowPrototype("0");
         ent.setIsBounded("0");
         ent.setRunInBackend("0");
         ent.setEstimatedHours("0");
         ent.setSpentHours("0");
-        ent.setFkOwnerId("0");
-        ent.setEstimatedCounter("0");
-        ent.setExecutedCounter("0");
         ent.setEstimatedBudget("0");
         ent.setSpentBudget("0");
+        ent.setEstimatedCounter("0");
+        ent.setFkOwnerId("0");
+        ent.setExecutedCounter("0");
         ent.setIsApi(carrier.get("isApi"));
-        ent.setFkProjectId(fkProjectId);
-        ent.setBacklogName(backlogName);
         ent.setPriority("1");
+        ent.setBacklogStatus(backlogStatus);
+        ent.setOrderNo(orderNo);
+        ent.setBacklogTitle(carrier.get("backlogTitle"));
+        ent.setApiSyncRequest(carrier.get("apiSyncRequest"));
+        ent.setBacklogNo(backlogNo);
         ent.setCreatedBy(SessionManager.getCurrentUserId());
         ent.setCreatedDate(QDate.getCurrentDate());
         ent.setCreatedTime(QDate.getCurrentTime());
-        ent.setBacklogStatus(backlogStatus);
-        ent.setOrderNo(orderNo);
         ent.setApiAction(carrier.get("apiAction").trim().isEmpty() ? "-1" : carrier.get("apiAction"));
-        ent.setApiSyncRequest(carrier.get("apiSyncRequest"));
-        ent.setBacklogNo(backlogNo);
         EntityManager.insert(ent);
 
         carrier.setValue("id", ent.getId());
@@ -8161,7 +8164,7 @@ public class TmModel {
                 "", ent.getBacklogName(), "", "backlog");
     }
 
-    // 2. BACKLOG RENAME
+    // 2. BACKLOG RENAME BACKLOG_NAME
     public static Carrier updateBacklog(Carrier carrier) throws QException {
         EntityTmBacklog entity = new EntityTmBacklog();
         entity.setId(carrier.getValue(EntityTmBacklog.ID).toString());
@@ -8403,9 +8406,15 @@ public class TmModel {
             } else {
                 htype = BACKLOG_API_REQUEST_TYPE_ASYNCHRONIZE;
             }
+        } else if(type.equals("backlogTitle")) {
+            oldValue = ent.getBacklogTitle();
+            if(oldValue.trim().isEmpty()) {
+                htype = BACKLOG_TITLE_CREATED;
+            } else {
+                htype = BACKLOG_TITLE_UPDATED;
+            }
         }
         
-
         EntityManager.setEntityValue(ent, carrier.get("type"), carrier.get("value"));
         if (ent.getBacklogNo().length() == 0) {
             ent.setBacklogNo("0");
@@ -10323,7 +10332,6 @@ public class TmModel {
         Carrier c = new Carrier();
         c.setValue("ids", ids);
         c.setValue("status", carrier.getValue(ent.toTableName(), 0, EntityTmBacklogList.BACKLOG_STATUS));
-
         return c;
     }
 
