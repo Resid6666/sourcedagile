@@ -1,7 +1,11 @@
 package utility;
 
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import utility.sqlgenerator.QLogger;
+import utility.sqlgenerator.SQLConnection;
 
 public class QException extends Exception {
 
@@ -39,6 +43,7 @@ public class QException extends Exception {
         try {
 //            this.message =  ((QException) e).getLocalMessage();
             this.message = e.getMessage();
+            e.printStackTrace();
         } catch (Exception ex) {
             this.message = e.getMessage();
         }
@@ -53,6 +58,7 @@ public class QException extends Exception {
         try {
             this.message = ((QException) e).getLocalMessage();
         } catch (Exception ex) {
+            ex.printStackTrace();
             this.message = e.getMessage();
         }
 

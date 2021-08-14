@@ -130,9 +130,6 @@ public class EntityTmInput extends CoreEntity {
         this.sendToFieldId = sendToFieldId;
     }
 
-    
-    
-    
     public String getSendToInputId() {
         return sendToInputId;
     }
@@ -373,4 +370,45 @@ public class EntityTmInput extends CoreEntity {
         this.componentType = componentType;
     }
 
+    @Override
+    public String toString() {
+        return "EntityTmInput{" +
+                "inputName='" + inputName + '\'' +
+                ", fkBacklogId='" + fkBacklogId + '\'' +
+                ", fkDependentBacklogId='" + fkDependentBacklogId + '\'' +
+                ", fkDependentOutputId='" + fkDependentOutputId + '\'' +
+                ", tableName='" + tableName + '\'' +
+                ", inputType='" + inputType + '\'' +
+                ", componentType='" + componentType + '\'' +
+                ", inputContent='" + inputContent + '\'' +
+                ", orderNo='" + orderNo + '\'' +
+                ", cellNo='" + cellNo + '\'' +
+                ", align='" + align + '\'' +
+                ", cssStyle='" + cssStyle + '\'' +
+                ", cssTemplateName='" + cssTemplateName + '\'' +
+                ", param1='" + param1 + '\'' +
+                ", param2='" + param2 + '\'' +
+                ", param3='" + param3 + '\'' +
+                ", param4='" + param4 + '\'' +
+                ", inputEvent='" + inputEvent + '\'' +
+                ", action='" + action + '\'' +
+                ", section='" + section + '\'' +
+                ", inputParam='" + inputParam + '\'' +
+                ", fkBacklogSectionId='" + fkBacklogSectionId + '\'' +
+                ", fkProjectId='" + fkProjectId + '\'' +
+                ", fkRelatedCompId='" + fkRelatedCompId + '\'' +
+                ", selectFromProjectId='" + selectFromProjectId + '\'' +
+                ", selectFromBacklogId='" + selectFromBacklogId + '\'' +
+                ", selectFromInputId='" + selectFromInputId + '\'' +
+                ", sendToInputId='" + sendToInputId + '\'' +
+                ", sendToBacklogId='" + sendToBacklogId + '\'' +
+                ", sendToProjectId='" + sendToProjectId + '\'' +
+                ", selectFromDbId='" + selectFromDbId + '\'' +
+                ", selectFromTableId='" + selectFromTableId + '\'' +
+                ", selectFromFieldId='" + selectFromFieldId + '\'' +
+                ", sendToDbId='" + sendToDbId + '\'' +
+                ", sendToTableId='" + sendToTableId + '\'' +
+                ", sendToFieldId='" + sendToFieldId + '\'' +
+                '}';
+    }
 }

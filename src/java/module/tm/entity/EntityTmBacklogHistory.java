@@ -31,9 +31,9 @@ public class EntityTmBacklogHistory extends CoreEntity {
     private String param3 = "";
     public static String FK_PROJECT_ID = "fkProjectId";
     private String fkProjectId = "";
-    
-    
-    //    //resid history
+
+
+    //resid history
     public static String FK_INPUT_ID = "fkInputId";
     private String fkInputId = "";
     
@@ -51,7 +51,20 @@ public class EntityTmBacklogHistory extends CoreEntity {
     
     public static String DESCRIPTION_NAME = "descriptionName";
     private String descriptionName = "";
-//    //resid history
+
+    public static String ACTION_TYPE = "actionType";
+    private String actionType = "";
+
+   //resid history
+
+
+    public String getActionType() {
+        return actionType;
+    }
+
+    public void setActionType(String actionType) {
+        this.actionType = actionType;
+    }
 
     public String getFkInputId() {
         return fkInputId;
@@ -190,4 +203,27 @@ public class EntityTmBacklogHistory extends CoreEntity {
         this.historyBody = historyBody;
     }
 
+    @Override
+    public String toString() {
+        return "EntityTmBacklogHistory{" +
+                "fkBacklogId='" + fkBacklogId + '\'' +
+                ", historyType='" + historyType + '\'' +
+                ", historyDate='" + historyDate + '\'' +
+                ", historyTime='" + historyTime + '\'' +
+                ", historyTellerId='" + historyTellerId + '\'' +
+                ", historyBody='" + historyBody + '\'' +
+                ", relationId='" + relationId + '\'' +
+                ", param1='" + param1 + '\'' +
+                ", param2='" + param2 + '\'' +
+                ", param3='" + param3 + '\'' +
+                ", fkProjectId='" + fkProjectId + '\'' +
+                ", fkInputId='" + fkInputId + '\'' +
+                ", fkBacklogDescriptionId='" + fkBacklogDescriptionId + '\'' +
+                ", inputName='" + inputName + '\'' +
+                ", oldValue='" + oldValue + '\'' +
+                ", newValue='" + newValue + '\'' +
+                ", descriptionName='" + descriptionName + '\'' +
+                ", actionType='" + actionType + '\'' +
+                '}';
+    }
 }

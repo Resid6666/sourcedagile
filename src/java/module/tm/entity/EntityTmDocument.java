@@ -160,7 +160,25 @@ public class EntityTmDocument extends CoreEntity {
         this.autoSaveInterval = autoSaveInterval;
     }
 
-    
-    
-    
+
+    @Override
+    public String toString() {
+        return "EntityTmDocument{" +
+                "fkProjectId='" + fkProjectId + '\'' +
+                ", documentName='" + documentName + '\'' +
+                ", documentBody='" + documentBody + '\'' +
+                ", marginTop='" + marginTop + '\'' +
+                ", marginRight='" + marginRight + '\'' +
+                ", marginBottom='" + marginBottom + '\'' +
+                ", marginLeft='" + marginLeft + '\'' +
+                ", createdBy='" + createdBy + '\'' +
+                ", createDate='" + createDate + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", updatedBy='" + updatedBy + '\'' +
+                ", updatedDate='" + updatedDate + '\'' +
+                ", updatedTime='" + updatedTime + '\'' +
+                ", pageSize='" + pageSize + '\'' +
+                ", autoSaveInterval='" + autoSaveInterval + '\'' +
+                '}';
+    }
 }
