@@ -52,4 +52,13 @@ public class EntityTmInputDescription extends CoreEntity {
         this.description = description;
     }
 
+    @Override
+    public String toString() {
+        return "EntityTmInputDescription{" +
+                "fkInputId='" + fkInputId + '\'' +
+                ", description='" + description + '\'' +
+                ", fkProjectId='" + fkProjectId + '\'' +
+                ", colored='" + colored + '\'' +
+                '}';
+    }
 }

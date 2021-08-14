@@ -33,7 +33,6 @@ public class EntityTmBacklog extends CoreEntity {
     private String isSourced = "";
     public static String IS_BOUNED = "isBounded";
     private String isBounded = "";
-    
     public static String DESCRIPTION_SOURCED = "descriptionSourced";
     private String descriptionSourced = "";
     public static String FK_SOURCED_ID = "fkSourcedId";
@@ -84,12 +83,20 @@ public class EntityTmBacklog extends CoreEntity {
     private String apiAction = "";
     public static String API_SYNC_REQUEST = "apiSyncRequest";
     private String apiSyncRequest = "";
-    
     public static String RUN_IN_BACKEND = "runInBackend";
     private String runInBackend = "";
-    
     public static String BACKEND_PLATFORM = "backendPlatform";
     private String backendPlatform = "";
+    public static String BACKLOG_TITLE = "backlog_title";
+    private String backlogTitle = "";
+
+    public void setBacklogTitle(String backlogTitle) {
+        this.backlogTitle = backlogTitle;
+    }
+
+    public String getBacklogTitle() {
+        return backlogTitle;
+    }
 
     public String getRunInBackend() {
         return runInBackend;
