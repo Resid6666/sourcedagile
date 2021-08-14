@@ -290,6 +290,37 @@ public class TmModel {
     /////////////////////////////////////////
     //// type code here
     ///////////////////////////////////////////////
+    public Carrier refreshBackendBacklogCacheForProduction(Carrier carrier) throws QException, IOException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkProjectId", cp.hasValue(carrier, "fkProjectId"));
+
+        if (carrier.hasError()) {
+            return carrier;
+        }
+
+        EntityTmBacklog ent = new EntityTmBacklog();
+        ent.setFkProjectId(carrier.get("fkProjectId"));
+        Carrier crOut = EntityManager.select(ent);
+
+        String tn = ent.toTableName();
+        int rc = crOut.getTableRowCount(tn);
+
+        for (int i = 0; i < rc; i++) {
+            try {
+                EntityManager.mapCarrierToEntity(crOut, tn, i, ent);
+                Carrier crTemp = new Carrier();
+                crTemp.set("fkProjectId", ent.getFkProjectId());
+                crTemp.set("fkBacklogId", ent.getId());
+//                System.out.println("fkBacklogid ->"+ent.getId());
+                getBacklogProductionDetailedInfo(crTemp);
+            } catch (Exception err) {
+                err.printStackTrace();
+            }
+        }
+
+        return new Carrier();
+    }
+
     public Carrier addTestByResid(Carrier carrier) throws QException {
         ControllerPool cp = new ControllerPool();
         carrier.addController("name", cp.hasValue(carrier, "name"));
@@ -5080,14 +5111,14 @@ public class TmModel {
         EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
         ent.setId(carrier.get("id"));
         EntityManager.select(ent);
-        
+
         carrier.set("fkBacklogId", ent.getFkBacklogId());
 
         carrier = hasPermissionToModifyBacklogAsApi(carrier);
         if (carrier.hasError()) {
             return carrier;
         }
-        
+
         ent.setFkRelatedScId(carrier.get("fkFunctionId"));
         EntityManager.update(ent);
         return carrier;
@@ -5103,16 +5134,14 @@ public class TmModel {
         EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
         ent.setId(carrier.get("id"));
         EntityManager.select(ent);
-        
-        
+
         carrier.set("fkBacklogId", ent.getFkBacklogId());
 
         carrier = hasPermissionToModifyBacklogAsApi(carrier);
         if (carrier.hasError()) {
             return carrier;
         }
-        
-        
+
         ent.setFkRelatedApiId("");
         ent.setShortDescForApi("");
         EntityManager.update(ent);
@@ -5129,15 +5158,14 @@ public class TmModel {
         EntityTmBacklogDescription ent = new EntityTmBacklogDescription();
         ent.setId(carrier.get("id"));
         EntityManager.select(ent);
-        
+
         carrier.set("fkBacklogId", ent.getFkBacklogId());
 
         carrier = hasPermissionToModifyBacklogAsApi(carrier);
         if (carrier.hasError()) {
             return carrier;
         }
-        
-        
+
         ent.setFkRelatedScId("");
         EntityManager.update(ent);
         return carrier;
@@ -9342,16 +9370,16 @@ public class TmModel {
         carrier = EntityManager.select(ent);
         carrier.renameTableName(ent.toTableName(), CoreLabel.RESULT_SET);
 
-        if (fkBacklogId.length() == 0) {
-            EntityTmBacklog ent4Shared = new EntityTmBacklog();
-            ent4Shared.setIsBounded("1");
-            ent4Shared.addAndStatementField(EntityTmBacklogList.BACKLOG_NAME);
-            ent4Shared.addSortBy("backlogNo");
-            ent4Shared.setSortByAsc(true);
-            Carrier cr4Shared = EntityManager.select(ent4Shared);
-            cr4Shared.renameTableName(ent4Shared.toTableName(), CoreLabel.RESULT_SET);
-            cr4Shared.copyTo((carrier));
-        }
+//        if (fkBacklogId.length() == 0) {
+//            EntityTmBacklog ent4Shared = new EntityTmBacklog();
+//            ent4Shared.setIsBounded("1");
+//            ent4Shared.addAndStatementField(EntityTmBacklogList.BACKLOG_NAME);
+//            ent4Shared.addSortBy("backlogNo");
+//            ent4Shared.setSortByAsc(true);
+//            Carrier cr4Shared = EntityManager.select(ent4Shared);
+//            cr4Shared.renameTableName(ent4Shared.toTableName(), CoreLabel.RESULT_SET);
+//            cr4Shared.copyTo((carrier));
+//        }
 
 //        crDesc.copyTo(carrier);
         String tn = CoreLabel.RESULT_SET;
@@ -10828,7 +10856,7 @@ public class TmModel {
                 } else if (ent.getCreatedBy().equals(SessionManager.getCurrentUserId())) {
                     f = true;
                 }
-            }else{
+            } else {
                 f = true;
             }
         }
@@ -10868,10 +10896,10 @@ public class TmModel {
 
         getInputList4Select(ent.getId()).copyTo(cout);
         getBacklogList4Select(ent.getFkBacklogId()).copyTo(cout);
-        
+
         //setNewBacklogHistory4InputNew(ent);
         setNewBacklogHistory4InputNew2(ent);
-        
+
         return cout;
     }
 
@@ -10912,15 +10940,14 @@ public class TmModel {
                 BACKLOG_HISTORY_TYPE_INPUT_NEW, ent.getId(),
                 ent.getInputName(), ent.getInputType(), ent.getTableName());
     }
-    
+
     //resid2
     private static void setNewBacklogHistory4InputNew2(EntityTmInput ent) throws QException {
         EntityTmBacklog entBacklog = new EntityTmBacklog();
         entBacklog.setId(ent.getFkBacklogId());
         EntityManager.select(entBacklog);
 
-        String body = "<b>Input Name</b>:  " + ent.getInputName() + "; and  <b>Table Name</b>: " + ent.getTableName() + ";";
-        setNewBacklogHistory2(entBacklog.getFkProjectId(), ent.getFkBacklogId(), body,
+        setNewBacklogHistory2(entBacklog.getFkProjectId(), ent.getFkBacklogId(), "",
                 BACKLOG_HISTORY_TYPE_INPUT_NEW, ent.getId(),
                 ent.getInputName(), ent.getInputType(), ent.getTableName(),
                 ent.getId(), "backlogDescriptionId", ent.getInputName(), ent.getInputName(), ent.getInputName(), "description");
@@ -11000,14 +11027,14 @@ public class TmModel {
 
         setNotification(ent.getFkBacklogId(), ent.getId(), "");
     }
-    
+
     //resid3
     private static void setNewBacklogHistory2(String projectId, String backlogId,
             String body, String htype, String relationId,
             String param1, String param2, String param3, String inputId,
             String fkBacklogDescriptionId, String inputName, String oldValue,
             String newValue, String descriptionName) throws QException {
-        
+
         if (projectId.length() == 0 || backlogId.length() == 0 || body.length() == 0 || htype.length() == 0) {
             return;
         }
@@ -11023,16 +11050,16 @@ public class TmModel {
         ent.setParam1(param1);
         ent.setParam2(param2);
         ent.setParam3(param3);
-        
+
         ent.setFkInputId(inputId);
         ent.setFkBacklogDescriptionId(fkBacklogDescriptionId);
         ent.setInputName(inputName);
         ent.setOldValue(oldValue);
         ent.setNewValue(newValue);
-        
+
         //???
         ent.setDescriptionName(descriptionName);
-        
+
         ent.setHistoryTellerId(SessionManager.getCurrentUserId());
         EntityManager.insert(ent);
 
