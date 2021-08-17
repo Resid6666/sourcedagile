@@ -124,10 +124,12 @@ public class TmModel {
     private static String BACKLOG_HISTORY_TYPE_BACKLOG_CREATED = "backlog_created";
     private static String BACKLOG_HISTORY_TYPE_BACKLOG_RENAMED = "backlog_rename";
     private static String BACKLOG_HISTORY_TYPE_BACKLOG_DELETED = "backlog_deleted";
-    private static String BACKLOG_STATUS_NEW = "backlog_status_new";
-    private static String BACKLOG_STATUS_ONGOING = "backlog_status_ongoing";
-    private static String BACKLOG_STATUS_CLOSED = "backlog_status_closed";
-    private static String BACKLOG_STATUS_RESOVLEd = "backlog_status_resolved";
+    
+    private static String BACKLOG_STATUS_NEW = "new";
+    private static String BACKLOG_STATUS_ONGOING = "ongoing";
+    private static String BACKLOG_STATUS_CLOSED = "closed";
+    private static String BACKLOG_STATUS_RESOVLED = "resolved";
+    
     private static String BACKLOG_PRIORITY_HIGH = "backlog_priority_high";
     private static String BACKLOG_PRIORITY_LOW = "backlog_priority_low";
     private static String BACKLOG_PRIORITY_MEDIUM = "backlog_priority_medium";
@@ -7438,7 +7440,10 @@ public class TmModel {
 
         String relationId = ent.getSelectFromDbId().concat(".")
                 .concat(ent.getSelectFromTableId()).concat(".")
-                .concat(ent.getSelectFromTableId());
+                .concat(ent.getSelectFromTableId())
+                ;
+        
+        
 
         setNewBacklogHistory2(entBacklog.getFkProjectId(), ent.getFkBacklogId(),
                 htype, relationId, ent.getId(), "", ent.getInputName(),
@@ -8265,7 +8270,7 @@ public class TmModel {
         ent.setPriority("1");
         ent.setBacklogStatus(backlogStatus);
         ent.setOrderNo(orderNo);
-        ent.setBacklogTitle(carrier.get("backlogTitle"));
+//        ent.setBacklogTitle(carrier.get("backlogTitle"));
         ent.setApiSyncRequest(carrier.get("apiSyncRequest"));
         ent.setBacklogNo(backlogNo);
         ent.setCreatedBy(SessionManager.getCurrentUserId());
@@ -8538,7 +8543,7 @@ public class TmModel {
                 htype = BACKLOG_API_REQUEST_TYPE_ASYNCHRONIZE;
             }
         } else if(type.equals("backlogTitle")) {
-            oldValue = ent.getBacklogTitle();
+//            oldValue = ent.getBacklogTitle();
             if(oldValue.trim().isEmpty()) {
                 htype = BACKLOG_TITLE_CREATED;
             } else {
