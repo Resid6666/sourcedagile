@@ -7131,6 +7131,12 @@ public class TmModel {
 
     // List Backlog History
     public static Carrier getBacklogHistoryListByBacklogId(Carrier carrier) throws QException {
+        ControllerPool cp = new ControllerPool();
+        carrier.addController("fkBacklogId", cp.hasValue(carrier, "fkBacklogId"));
+        if(carrier.hasError()){
+            return carrier;
+        }
+
         EntityTmBacklogHistory ent = new EntityTmBacklogHistory();
         ent.setFkBacklogId(carrier.get("fkBacklogId"));
         carrier = EntityManager.select(ent);
