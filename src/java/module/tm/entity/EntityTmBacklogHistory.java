@@ -55,6 +55,12 @@ public class EntityTmBacklogHistory extends CoreEntity {
     public static String ACTION_TYPE = "actionType";
     private String actionType = "";
 
+    public static String USER_NAME = "userName";
+    private String userName = "";
+
+    public static String LOGO_URL = "logoUrl";
+    private String logoUrl = "";
+
    //resid history
 
 
@@ -80,6 +86,22 @@ public class EntityTmBacklogHistory extends CoreEntity {
 
     public void setFkBacklogDescriptionId(String fkBacklogDescriptionId) {
         this.fkBacklogDescriptionId = fkBacklogDescriptionId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
+    public void setLogoUrl(String logoUrl) {
+        this.logoUrl = logoUrl;
     }
 
     public String getInputName() {
@@ -224,6 +246,8 @@ public class EntityTmBacklogHistory extends CoreEntity {
                 ", newValue='" + newValue + '\'' +
                 ", descriptionName='" + descriptionName + '\'' +
                 ", actionType='" + actionType + '\'' +
+                ", userName='" + userName + '\'' +
+                ", logoUrl='" + logoUrl + '\'' +
                 '}';
     }
 }

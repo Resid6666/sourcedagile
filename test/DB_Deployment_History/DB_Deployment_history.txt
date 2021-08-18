@@ -34,6 +34,11 @@ alter table `tm_rel_table_input` modify `SHOW_IN_TREE` VARCHAR(22)   NULL ;
 ALTER TABLE  `tm_backlog` 
 ADD COLUMN `BACKLOG_TITLE` VARCHAR(299) NULL  ;
 
+
+ALTER TABLE `tm_backlog_history`
+ADD COLUMN `USER_NAME` VARCHAR(77) NULL AFTER `NEW_VALUE`,
+ADD COLUMN `LOGO_URL` VARCHAR(99) NULL AFTER `USER_NAME`;
+
 ALTER TABLE  `tm_backlog_history` 
 modify COLUMN   `RELATION_ID` VARCHAR(555) NULL DEFAULT NULL ,
 modify COLUMN `ACTION_TYPE` VARCHAR(555) NULL DEFAULT NULL ;
@@ -100,3 +105,4 @@ CREATE TABLE `tm_process_list` (
   `modification_date` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
   `status` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
