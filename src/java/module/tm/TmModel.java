@@ -7004,13 +7004,10 @@ public class TmModel {
 
         EntityCrUser user = new EntityCrUser();
         user.setId(carrier.get("historyTellerId"));
+        EntityManager.select(user);
 
         carrier.set("userName", user.getUserPersonName());
         carrier.set("logoUrl", user.getUserImage());
-
-        System.out.println("\n\n\n");
-        System.out.println("carrier:  " + carrier.toJsonKeyValue());
-        System.out.println("\n\n\n");
 
         return carrier;
     }
