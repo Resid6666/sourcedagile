@@ -1450,7 +1450,7 @@ public class SQLGenerator {
             rs = fieldName + " " + COMMAND_LE + " " + QUOTE + vl + QUOTE;
         } else if (prefix.equals(LK) && (!vl.equals(""))) {
             rs = fieldName + " " + COMMAND_LK + " " + QUOTE + vl + QUOTE;
-        } else if (prefix.equals(BN)) {
+        } else if (prefix.contains(BN)) {
             String st[] = splitValueBy2DotsForBetweenCommand(value);
             rs = fieldName + " " + COMMAND_BN + " " + concatStringArrayForBetweenStatement(st);
         } else if (prefix.equals(IN)) {

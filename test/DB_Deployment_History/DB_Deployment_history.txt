@@ -16,15 +16,93 @@ CREATE TABLE IF NOT EXISTS `tm_backlog_mvp` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `tm_rel_table_input` ADD `SHOW_IN_TREE` VARCHAR(22) NOT NULL AFTER `SHOW_COLUMN_NAME`;
+ALTER TABLE `tm_rel_table_input` ADD `SHOW_IN_TREE` VARCHAR(22)   NULL ;
 
-ALTER TABLE `apd_backlog`.`tm_backlog` 
-ADD COLUMN `BACKLOG_TITLE` VARCHAR(99) NULL AFTER `BACKLOG_TITLE`;
+alter table `tm_rel_table_input` modify `SHOW_IN_TREE` VARCHAR(22)   NULL ;
+   
 
-ALTER TABLE `apd_backlog`.`tm_backlog_history` 
-CHANGE COLUMN `RELATION_ID` `RELATION_ID` VARCHAR(77) NULL DEFAULT NULL ,
-CHANGE COLUMN `ACTION_TYPE` `ACTION_TYPE` VARCHAR(77) NULL DEFAULT NULL ;
+ ALTER TABLE
+    `tm_backlog_history` ADD `GENERAL_TYPE` VARCHAR(55) NULL DEFAULT NULL ,
+    ADD `FK_INPUT_ID` VARCHAR(66) NULL DEFAULT NULL ,
+    ADD `FK_BACKLOG_DESCRIPTION_ID` VARCHAR(66) NULL DEFAULT NULL ,
+    ADD `INPUT_NAME` VARCHAR(666) NULL DEFAULT NULL ,
+    ADD `DESCRIPTION_NAME` VARCHAR(666) NULL DEFAULT NULL ,
+    ADD `ACTION_TYPE` VARCHAR(66) NULL DEFAULT NULL,
+    ADD `OLD_VALUE` TEXT NULL DEFAULT NULL ,
+    ADD `NEW_VALUE` TEXT NULL DEFAULT NULL ;
+ 
+ALTER TABLE  `tm_backlog` 
+ADD COLUMN `BACKLOG_TITLE` VARCHAR(299) NULL  ;
 
-ALTER TABLE `apd_backlog`.`tm_backlog_history`
+
+ALTER TABLE `tm_backlog_history`
 ADD COLUMN `USER_NAME` VARCHAR(77) NULL AFTER `NEW_VALUE`,
 ADD COLUMN `LOGO_URL` VARCHAR(99) NULL AFTER `USER_NAME`;
+
+ALTER TABLE  `tm_backlog_history` 
+modify COLUMN   `RELATION_ID` VARCHAR(555) NULL DEFAULT NULL ,
+modify COLUMN `ACTION_TYPE` VARCHAR(555) NULL DEFAULT NULL ;
+
+ 
+
+
+
+
+CREATE TABLE `tm_lane_table` (
+  `column_count` varchar(77) DEFAULT NULL,
+  `created_by` varchar(77) DEFAULT NULL,
+  `insert_date` varchar(45) DEFAULT NULL,
+  `lane_name` varchar(45) DEFAULT NULL,
+  `order_no` varchar(45) DEFAULT NULL,
+  `process_id` varchar(45) DEFAULT NULL,
+  `modification_date` varchar(45) DEFAULT NULL,
+  `status` varchar(45) DEFAULT NULL,
+  `id` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+
+
+CREATE TABLE `tm_figure_inside` (
+  `modification_date` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `insert_date` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `id` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `order_no` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `figure_color` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `figure_name` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `figure_text` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `story_card_id` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `fk_line_id` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `column_no` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `font_size_new` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `created_by` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
+CREATE TABLE `tm_leader_line` (
+  `color` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `fk_process_id` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `from_id` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `id` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `line_type` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `text` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `to_id` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `created_by` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `insert_date` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `modification_date` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+CREATE TABLE `tm_process_list` (
+  `id` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `process_name` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `created_by` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `insert_date` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `modification_date` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+

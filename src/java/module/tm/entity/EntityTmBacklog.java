@@ -87,16 +87,16 @@ public class EntityTmBacklog extends CoreEntity {
     private String runInBackend = "";
     public static String BACKEND_PLATFORM = "backendPlatform";
     private String backendPlatform = "";
-    public static String BACKLOG_TITLE = "backlog_title";
-    private String backlogTitle = "";
-
-    public void setBacklogTitle(String backlogTitle) {
-        this.backlogTitle = backlogTitle;
-    }
-
-    public String getBacklogTitle() {
-        return backlogTitle;
-    }
+//    public static String BACKLOG_TITLE = "backlog_title";
+//    private String backlogTitle = "";
+//
+//    public void setBacklogTitle(String backlogTitle) {
+//        this.backlogTitle = backlogTitle;
+//    }
+//
+//    public String getBacklogTitle() {
+//        return backlogTitle;
+//    }
 
     public String getRunInBackend() {
         return runInBackend;
