@@ -12173,7 +12173,7 @@ public class TmModel {
 
         EntityTmBacklogHistory ent = new EntityTmBacklogHistory();
         ent.setUserName(SessionManager.getCurrentUsername());
-        
+
         EntityCrUser user = new EntityCrUser();
         user.setId(SessionManager.getCurrentUserId());
         EntityManager.select(user);
