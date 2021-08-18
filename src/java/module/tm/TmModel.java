@@ -7001,6 +7001,17 @@ public class TmModel {
         EntityTmBacklogHistory ent = new EntityTmBacklogHistory();
         ent.setFkBacklogId(carrier.get("fkBacklogId"));
         carrier = EntityManager.select(ent);
+
+        EntityCrUser user = new EntityCrUser();
+        user.setId(carrier.get("historyTellerId"));
+
+        carrier.set("userName", user.getUserPersonName());
+        carrier.set("logoUrl", user.getUserImage());
+
+        System.out.println("\n\n\n");
+        System.out.println("carrier:  " + carrier.toJsonKeyValue());
+        System.out.println("\n\n\n");
+
         return carrier;
     }
 
